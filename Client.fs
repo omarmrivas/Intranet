@@ -8,6 +8,43 @@ open WebSharper.UI.Next.Html
 
 [<JavaScript>]
 module Client =
+    open WebSharper.Forms
+    module B = WebSharper.Forms.Bootstrap.Controls
+
+    let LoggedInUser () =
+        div [
+            p [text "Click here to log out:"]
+            buttonAttr [
+                on.click (fun _ _ ->
+                    async {
+                        do! Server.LogoutUser()
+                        return JS.Window.Location.Reload()
+                    } |> Async.Start
+                )
+            ] [text "Logout"]
+        ]
+
+    let AnonymousUser () =
+        Form.Return (fun user pass -> ({User = user; Password = pass} : Server.UserPassword))
+        <*> (Form.Yield ""
+            |> Validation.IsNotEmpty "Must enter a username")
+        <*> (Form.Yield ""
+            |> Validation.IsNotEmpty "Must enter a password")
+        |> Form.WithSubmit
+        |> Form.Run (fun userpass ->
+            async {
+                do! Server.LoginUser userpass
+                return JS.Window.Location.Reload()
+            } |> Async.Start
+        )
+        |> Form.Render (fun user pass submit ->
+            form [
+                B.Simple.InputWithError "Username" user submit.View
+                B.Simple.InputPasswordWithError "Password" pass submit.View
+                B.Button "Log in" [attr.``class`` "btn btn-primary"] submit.Trigger
+                B.ShowErrors [attr.style "margin-top:1em"] submit.View
+            ]
+        )
 
     let Main () =
         let rvInput = Var.Create ""
