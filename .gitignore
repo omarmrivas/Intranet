@@ -14,6 +14,7 @@ credentials.intranet
 *.userprefs
 
 # Build results
+[Cc]redentials/
 [Ss]cripts/
 [Dd]ebug/
 [Dd]ebugPublic/

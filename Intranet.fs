@@ -113,8 +113,9 @@ let login user password =
 
 let loginAdmin () =
     let (admin_user, admin_password) =
-        "credentials.intranet" |> Library.readLines
-                               |> (fun arr -> (arr.[0], arr.[1]))
+        "credentials.intranet" 
+                     |> Library.readLines
+                     |> (fun arr -> (arr.[0], arr.[1]))
     login admin_user admin_password
 
 let newCookie user password =

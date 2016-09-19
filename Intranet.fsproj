@@ -121,7 +121,7 @@
   </ItemGroup>
   <!-- F# targets -->
   <ItemGroup>
-    <None Include="credentials.intranet">
+    <None Include="credentials\credentials.intranet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
