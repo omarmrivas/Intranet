@@ -52,7 +52,7 @@
      };
      return Form.Render(renderFunction,x);
     },
-    LoggedInUser:function()
+    LoggedInUser:function(username)
     {
      var arg20,arg201;
      arg201=List.ofArray([Doc.TextNode("Click here to log out:")]);
@@ -63,7 +63,7 @@
        var arg00;
        arg00=Concurrency.Delay(function()
        {
-        return Concurrency.Bind(AjaxRemotingProvider.Async("Intranet:2",[]),function()
+        return Concurrency.Bind(AjaxRemotingProvider.Async("Intranet:2",[username]),function()
         {
          return Concurrency.Return(window.location.reload());
         });

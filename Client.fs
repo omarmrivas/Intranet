@@ -11,13 +11,13 @@ module Client =
     open WebSharper.Forms
     module B = WebSharper.Forms.Bootstrap.Controls
 
-    let LoggedInUser () =
+    let LoggedInUser username =
         div [
             p [text "Click here to log out:"]
             buttonAttr [
                 on.click (fun _ _ ->
                     async {
-                        do! Server.LogoutUser()
+                        do! Server.LogoutUser username
                         return JS.Window.Location.Reload()
                     } |> Async.Start
                 )

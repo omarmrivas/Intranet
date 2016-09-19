@@ -44,7 +44,7 @@ module Site =
                 match loggedIn with
                     Some username -> 
                         div [
-                            div [client <@ Client.LoggedInUser() @>]
+                            div [client <@ Client.LoggedInUser username @>]
                         ]
                   | None -> 
                         div [
@@ -55,10 +55,23 @@ module Site =
         }
 
     let AboutPage ctx =
-        Templating.Main ctx EndPoint.About "About" [
+        async {
+            let! loggedIn = ctx.UserSession.GetLoggedInUser()
+            let! fullname = match loggedIn with
+                                Some username -> Server.UserFullName username
+                              | None -> async.Return ""
+            return! Templating.Main ctx EndPoint.About "About" 
+                        [
+                            h1 [text "About"]
+                            h1 [text fullname]
+                            p [text "This is a template WebSharper client-server application."]
+                        ]
+        }
+(*        Templating.Main ctx EndPoint.About "About" [
             h1 [text "About"]
+            h1 [text ("Hola")]
             p [text "This is a template WebSharper client-server application."]
-        ]
+        ]*)
 
     [<Website>]
     let Main =

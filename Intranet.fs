@@ -26,6 +26,13 @@ let getFullName user =
         | Professor data -> data.FullName
         | Staff data -> data.FullName
 
+let getPassword user = 
+    match user with
+        | Student data -> data.Password
+        | Professor data -> data.Password
+        | Staff data -> data.Password
+
+
 let student_data = ("http://estudiantes.upslp.edu.mx:9080/Intralumno/go_alumno",
                     "http://estudiantes.upslp.edu.mx:9080/Intralumno/alumno.do",
                     "E",
@@ -81,13 +88,13 @@ let login user password =
         if welcome.Contains "<h1>Bienvenid@"
         then let welcome' = welcome.Substring (welcome.IndexOf "<h1>Bienvenid@")
              if welcome'.Contains "@ "
-             then let welcome'' = welcome'.Substring (welcome'.IndexOf "@ ")
+             then let welcome'' = welcome'.Substring (welcome'.IndexOf "@ " + 2)
                   if welcome''.Contains "!"
                   then //Some (kind (welcome''.Remove (welcome'.IndexOf "@ "), cookie))
-                       Some (kind {FullName = welcome''.Remove (welcome'.IndexOf "@ ")
+                       Some (kind {FullName = welcome''.Remove (welcome''.IndexOf "!")
                                    UserName = user
                                    Password = password
-                                   Cookie = new CookieContainer()})
+                                   Cookie = cookie})
                   else None
              else None
         else None
