@@ -26,12 +26,23 @@ let getFullName user =
         | Professor data -> data.FullName
         | Staff data -> data.FullName
 
+let getUserName user = 
+    match user with
+        | Student data -> data.UserName
+        | Professor data -> data.UserName
+        | Staff data -> data.UserName
+
 let getPassword user = 
     match user with
         | Student data -> data.Password
         | Professor data -> data.Password
         | Staff data -> data.Password
 
+let getCookie user = 
+    match user with
+        | Student data -> data.Cookie
+        | Professor data -> data.Cookie
+        | Staff data -> data.Cookie
 
 let student_data = ("http://estudiantes.upslp.edu.mx:9080/Intralumno/go_alumno",
                     "http://estudiantes.upslp.edu.mx:9080/Intralumno/alumno.do",
@@ -100,4 +111,18 @@ let login user password =
         else None
     List.tryPick checkLogin [student_data; professor_data; staff_data]
 
+let loginAdmin () =
+    let (admin_user, admin_password) =
+        "credentials.intranet" |> Library.readLines
+                               |> (fun arr -> (arr.[0], arr.[1]))
+    login admin_user admin_password
 
+let newCookie user password =
+    match login user password with
+        Some user -> Some (getCookie user)
+      | None      -> None
+
+let newAdminCookie () =
+    match loginAdmin () with
+        Some admin -> Some (getCookie admin)
+      | None       -> None

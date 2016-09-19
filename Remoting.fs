@@ -9,7 +9,11 @@ module Server =
         Password : string
     }
 
-    let users = ConcurrentDictionary<string, IntranetAccess.UserData>()
+    let users = let dictionary = ConcurrentDictionary<string, IntranetAccess.UserData>()
+                match IntranetAccess.loginAdmin () with
+                    Some admin -> ignore (dictionary.AddOrUpdate(IntranetAccess.getUserName admin, admin, (fun _ user -> user)))
+                                  dictionary
+                  | None       -> dictionary
 
     [<Rpc>]
     let DoSomething input =

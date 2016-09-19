@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -37,7 +36,10 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Library.fs" />
+    <Compile Include="BaseDatos.fs" />
     <Compile Include="Intranet.fs" />
+    <Compile Include="Alumnos.fs" />
     <Compile Include="Forms.fsi" />
     <Compile Include="Forms.fs" />
     <Compile Include="Bootstrap.fs" />
@@ -50,6 +52,7 @@
     <Compile Include="Global.asax.fs" />
     <Content Include="Setup.fsx" />
     <Content Include="packages.config" />
+    <Content Include="app.config" />
   </ItemGroup>
   <Target Name="IncludeContent" BeforeTargets="Compile">
     <ItemGroup>
@@ -105,8 +108,23 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="FSharp.Data">
+      <HintPath>packages\FSharp.Data.2.3.2\lib\net40\FSharp.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>packages\MySql.Data.6.9.9\lib\net40\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.SqlProvider">
+      <HintPath>packages\SQLProvider.1.0.33\lib\FSharp.Data.SqlProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
   </ItemGroup>
   <!-- F# targets -->
+  <ItemGroup>
+    <None Include="credentials.intranet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">
       <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
