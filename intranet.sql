@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.10deb1
+-- version 4.6.0
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 19, 2016 at 09:29 AM
--- Server version: 5.5.49-0ubuntu0.14.04.1
--- PHP Version: 7.0.8-4+deb.sury.org~trusty+1
+-- Generation Time: Sep 22, 2016 at 04:09 PM
+-- Server version: 5.6.10
+-- PHP Version: 5.5.36
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -24,18 +24,7 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`intranet`@`localhost` PROCEDURE `entrenamiento`(IN `codigo` CHAR(6))
-    DETERMINISTIC
-    SQL SECURITY INVOKER
-BEGIN
-  SELECT * FROM kardex A
-    WHERE EXISTS (SELECT * FROM kardex B
-    	  	  WHERE (B.materia = codigo AND A.matricula = B.matricula AND
-		        (A.semestre < B.semestre OR A.periodo < B.periodo OR A.materia = codigo) AND
-			(A.estatus = 'Aprobado' OR A.estatus = 'Reprobado') AND
-			(B.estatus = 'Aprobado' OR B.estatus = 'Reprobado')))
-ORDER BY matricula, materia, periodo;
-END$$
+$$
 
 DELIMITER ;
 
