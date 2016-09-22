@@ -61,6 +61,20 @@ let rec actualiza_alumno (matricula : string) (nombre : string) (genero : string
               registro.FechaNacimiento <- fecha_nacimiento
               ctx.SubmitUpdates()
 
+let obtener_clave carrera (materia : string) =
+    match query {for A in ctx.Intranet.Planes do
+                 where (A.Materia = materia && A.Carrera = carrera)
+                 select A.Clave}
+                |> Seq.toList with
+        [clave] -> clave.Trim()
+        | [] -> match query {for A in ctx.Intranet.Extracurriculares do
+                             where (A.Materia = materia)
+                             select A.Clave}
+                        |> Seq.toList with
+                    [clave] -> clave.Trim()
+                  | [] -> failwith (sprintf "Materia '%s' (%i) no encontrada." materia (String.length materia))
+                  | _ ->  failwith (sprintf "Más de una materia con nombre %s en la carrera %s" materia carrera)
+        | _ -> failwith (sprintf "Más de una materia con nombre %s en la carrera %s" materia carrera)
 
 let rec actualiza_inscripciones (matricula : string) (periodo : string) (estado : string) (semestre : string) (plan : string) (fecha : DateTime) =
     let result = query { for registro in ctx.Intranet.Inscripciones do

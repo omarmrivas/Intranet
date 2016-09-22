@@ -17,14 +17,14 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `curricula_upslp`
+-- Database: `intranet`
 --
 
 DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `entrenamiento`(IN `codigo` CHAR(6))
+CREATE DEFINER=`intranet`@`localhost` PROCEDURE `entrenamiento`(IN `codigo` CHAR(6))
     DETERMINISTIC
     SQL SECURITY INVOKER
 BEGIN

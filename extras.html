@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="ISO-8859-1"?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="sp" lang="sp"> 
+<head>
+<title>Plan de estudios</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+ <link rel="shortcut icon" href="images/favicon.ico" />
+<link href="./styles/global.css" type="text/css" rel="stylesheet" />
+
+<script type="text/javascript">
+if (window.history) {
+        function noBack(){window.history.forward()}
+        noBack();
+        window.onload=noBack;
+        window.onpageshow=function(evt){if(evt.persisted)noBack()}
+        window.onunload=function(){void(0)}
+}
+</script>
+</head>
+<body>
+
+
+<h2>&nbsp;</h2>
+
+<div id="pageHeader">
+<div id="logo"	onclick="location.href='http://intranet.upslp.edu.mx/'"
+	onkeypress="location.href='intranet.upslp.edu.mx/'">
+</div>
+<h1> </h1>
+</div>
+<br/>
+<div align="right"><br/>
+<font size="1">&copy; 2008 Derechos Reservados</font>
+</div>
+
+
+	  <script type="text/javascript" src="js/doiMenuDOM.js"></script>
+<script type="text/javascript" src="js/functions.js"></script>
+<script type="text/javascript">
+function deep1(no,deep)
+{
+  if(deep == 10)
+    return;
+  for(var i=0;i<5;i++)
+	  {
+		switch(no)
+		{
+case 2:
+eval("pmL"+no+""+deep+""+i+"=new TPopMenu('Menu "+i+"','0','','',' Menu "+deep+" "+i+"');");
+break;
+default:
+eval("pmL"+no+""+deep+""+i+"=new TPopMenu('Menu "+i+"','','','',' Menu "+deep+" "+i+"');");
+}
+}
+deep1(no,++deep);
+}
+function deep2(par,no,deep)
+{ 
+if(deep == 10)
+ return;
+var j = Math.round(Math.random()*4);
+for(var i=0;i<5;i++)
+{
+eval(par+".Add(pmL"+no+""+deep+""+i+");");
+if(i== j)
+{  
+var d = deep+1;  
+deep2("pmL"+no+""+deep+""+i,no,d);
+ }
+ }
+}
+	var CRDN = new TMainMenu('CRDN', 'horizontal');
+	var WLCM0 = new TPopMenu('Inicio','0','a','user.do?method=welcome','Inicio');
+	CRDN.Add(WLCM0);
+	var PLNCR = new TPopMenu('Planeación','5','','','Planeación');
+	CRDN.Add(PLNCR);
+	var PLNCR0 = new TPopMenu('Planes de estudio','5','a','planest.do?method=list','Planes de estudio');
+	PLNCR.Add(PLNCR0);
+	var PLNCR1 = new TPopMenu('Seriaciones','5','a','planest.do?method=ser','Seriaciones');
+	PLNCR.Add(PLNCR1);
+	var PLNCR2 = new TPopMenu('Calendario de eventos','5','a','periodo.do','Calendario de eventos');
+	PLNCR.Add(PLNCR2);
+	var CRDN2 = new TPopMenu('Grupos','5','a','periodo.do?method=grupos','Grupos');
+	CRDN.Add(CRDN2);
+	var RCOR = new TPopMenu('Reportes','5','','','Reportes');
+	CRDN.Add(RCOR);
+	var RCOR0 = new TPopMenu('Alumnos','5','a','periodo.do?method=inscritos','Alumnos');
+	RCOR.Add(RCOR0);
+	var RCOR1 = new TPopMenu('Horario Alumnos','5','a','periodo.do?method=horAlu','Horario Alumnos');
+	RCOR.Add(RCOR1);
+	var RCOR2 = new TPopMenu('Concentrado de parciales','5','a','kardex.do?method=parciales','Concentrado de parciales');
+	RCOR.Add(RCOR2);
+	var RCOR3 = new TPopMenu('Kardex','5','a','kardex.do','Kardex');
+	RCOR.Add(RCOR3);
+	var RCOR4 = new TPopMenu('Horarios Profesores','5','a','periodo.do?method=horarios','Horarios Profesores');
+	RCOR.Add(RCOR4);
+	var RCOR5 = new TPopMenu('Promedios por Periodo Escolar','5','a','periodo.do?method=promperesc','Promedios por Periodo Escolar');
+	RCOR.Add(RCOR5);
+	var RCOR5 = new TPopMenu('Promedios y Créditos','5','a','kardex.do?method=promcred','Promedios y Créditos');
+	RCOR.Add(RCOR5);
+	var INDCR = new TPopMenu('Indicadores','5','','','Indicadores');
+	CRDN.Add(INDCR);
+	var INDCR0 = new TPopMenu('Indicadores','5','a','periodo.do?method=indicadores','Indicadores');
+	INDCR.Add(INDCR0);
+	var INDCR1 = new TPopMenu('Doc.Indicadores','5','a','go_shindicadores','Doc.Indicadores');
+	INDCR.Add(INDCR1);
+	var CRDN4 = new TPopMenu('Captura Calif.','5','a','detmodcal.do?method=calgrupo','Captura Calif.');
+	CRDN.Add(CRDN4);
+	var CRDN5 = new TPopMenu('Captura Regu','5','a','detmodcal.do?method=calregu','Captura Regu');
+	CRDN.Add(CRDN5);
+	var CRDN6 = new TPopMenu('Certificaciones Inglés','5','a','cert.do?method=repcert','Certificaciones Inglés');
+	CRDN.Add(CRDN6);
+	var CRDN7 = new TPopMenu('Aspirantes','5','a','periodo.do?method=aspirantes','Aspirantes');
+	CRDN.Add(CRDN7);
+	var EXIT253 = new TPopMenu('Vehículos','0','a','admrecmat.do?method=edit','Vehículos');
+	var EXIT254 = new TPopMenu('Contacto','0','a','go_contacto','Contacto');
+	CRDN.Add(EXIT253);
+	CRDN.Add(EXIT254);
+	var EXIT255 = new TPopMenu('Salir','0','a','./go_academico','Salir');
+	CRDN.Add(EXIT255);
+</script>
+<table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+    <td align="center">
+      <script language="JavaScript" type="text/JavaScript">
+       CRDN.SetPosition('relative',0,0);
+       CRDN.SetCorrection(0,0);
+       CRDN.SetCellSpacing(2);
+       CRDN.SetItemDimension(50,20);
+       CRDN.SetShadow(true,'#B0B0B0',6);
+       CRDN.SetCorrection(0,0);
+       CRDN._pop.SetItemDimension(150,20);
+       CRDN._pop.SetPaddings(1);
+       CRDN._pop.SetBackground('whitesmoke','../img/xp.gif','repeat-y','top left');
+       CRDN._pop.SetSeparator(125,'right','gray','');
+       CRDN._pop.SetExpandIcon(true,'',6);
+       CRDN._pop.SetFont('tahoma,verdana,arial','8pt');
+       CRDN._pop.SetBorder(1,'gray','solid');
+       CRDN._pop.SetShadow(true,'#B0B0B0',6);
+       CRDN._pop.SetDelay(500);
+       CRDN.Build();
+       </script>
+      </td>
+   </tr>
+</table>
+
+
+
+<div id="container">
+
+
+<div id="content">
+
+
+
+
+
+<script type="text/javascript" language="Javascript">
+	document.oncontextmenu = function(){return false}
+</script>
+
+
+
+
+
+
+<h3><img src="images/btn-mode-nor-disabled.png">  Planes de estudio</h3>
+<fieldset><legend> B&uacute;squeda por: </legend> 
+<form action="planest.do" name="formareport" method="post">
+	<input type="hidden" name="method" value="list"> 
+	<input type="hidden" name="rep" value="si">
+
+<table>
+	<tr>
+		<td>&nbsp;</td>
+		<td colspan=2>Planes de estudio:<br/>
+		<select name="plan">
+		    <option value="0" selected>*Extracurriculares</option>
+			
+				
+				
+					<option value="1">(ISTI) Ing. en Sistemas y Tecnologías Industriales</option>
+				
+				
+			
+				
+				
+					<option value="5">(ITEM) Ing. Telemática</option>
+				
+				
+			
+				
+				
+					<option value="2">(ITI) Ing. en Tecnologías de Información</option>
+				
+				
+			
+				
+				
+					<option value="6">(ITMA) Ing. en Tecnologías de Manufactura</option>
+				
+				
+			
+				
+				
+					<option value="3">(LAG) Lic. en Administración y Gestión</option>
+				
+				
+			
+				
+				
+					<option value="4">(LMKT) Lic. en Mercadotecnia Internacional</option>
+				
+				
+			
+		</select>
+		<input	type="hidden" name="ultimo" value=""/>
+		</td>
+		
+		<td>&nbsp;</td>
+		<td colspan="3"><br>&nbsp;
+		<input type="submit" value="Generar" />
+		</td>
+	</tr>
+</table>
+</form>
+</fieldset>
+<br>
+
+<div align="center">
+
+Los alumnos de todas las carreras pueden cursar cualquiera de las siguientes materias:<br>
+<li>Materias extracurriculares</li>
+
+<table class="its" id="l3">
+<thead>
+<tr>
+<th class="sortable">
+<a href="planest.do?plan=0&amp;d-5397-s=0&amp;rep=si&amp;d-1782-e=3&amp;ultimo=&amp;6578706f7274=1&amp;d-5397-o=2&amp;method=list">Programa</a></th>
+<th class="sortable">
+<a href="planest.do?plan=0&amp;d-5397-s=1&amp;rep=si&amp;d-1782-e=3&amp;ultimo=&amp;6578706f7274=1&amp;d-5397-o=2&amp;method=list">Materia</a></th>
+<th class="sortable">
+<a href="planest.do?plan=0&amp;d-5397-s=2&amp;rep=si&amp;d-1782-e=3&amp;ultimo=&amp;6578706f7274=1&amp;d-5397-o=2&amp;method=list">Teoría</a></th>
+<th class="sortable">
+<a href="planest.do?plan=0&amp;d-5397-s=3&amp;rep=si&amp;d-1782-e=3&amp;ultimo=&amp;6578706f7274=1&amp;d-5397-o=2&amp;method=list">Práctica</a></th>
+<th class="sortable">
+<a href="planest.do?plan=0&amp;d-5397-s=4&amp;rep=si&amp;d-1782-e=3&amp;ultimo=&amp;6578706f7274=1&amp;d-5397-o=2&amp;method=list">Tipo Eval.</a></th></tr></thead>
+<tbody>
+<tr class="odd">
+<td>Cert. Cambridge</td>
+<td>Inglés-Examen de Certificación FCE</td>
+<td>5</td>
+<td>5</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="even">
+<td></td>
+<td>Inglés-Examen de Certificación KET</td>
+<td>10</td>
+<td>10</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="odd">
+<td></td>
+<td>Inglés-Examen de Certificación PET</td>
+<td>5</td>
+<td>5</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="even">
+<td>CISCO</td>
+<td>CCNA I</td>
+<td>5</td>
+<td>4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td></td>
+<td>CCNA II</td>
+<td>5</td>
+<td>4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td></td>
+<td>CCNA III</td>
+<td>5</td>
+<td>4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td></td>
+<td>CCNA IV</td>
+<td>5</td>
+<td>4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td></td>
+<td>CISCO I-II Act.</td>
+<td>5</td>
+<td>3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td>Cursos reg. CADI</td>
+<td>Inglés KET I</td>
+<td>5</td>
+<td>3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="even">
+<td></td>
+<td>Inglés KET II</td>
+<td>5</td>
+<td>3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td></td>
+<td>Inglés KET III</td>
+<td>5</td>
+<td>3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="even">
+<td></td>
+<td>Inglés KET IV</td>
+<td>5</td>
+<td>3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td></td>
+<td>Inglés-Conversación</td>
+<td>5</td>
+<td>5</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="even">
+<td></td>
+<td>Inglés-FCE B</td>
+<td>5</td>
+<td>3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td></td>
+<td>Inglés-FCE C</td>
+<td>5</td>
+<td>3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="even">
+<td></td>
+<td>Inglés-FCE I</td>
+<td>5</td>
+<td>10</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td></td>
+<td>Inglés-FCE II</td>
+<td>5</td>
+<td>10</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="even">
+<td></td>
+<td>Inglés-PET I</td>
+<td>5</td>
+<td>10</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td></td>
+<td>Inglés-PET II</td>
+<td>5</td>
+<td>10</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="even">
+<td></td>
+<td>Taller CompTIA</td>
+<td>0</td>
+<td>3</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="odd">
+<td>MS Office</td>
+<td>Taller para Certificación Ms Access</td>
+<td>0</td>
+<td>5</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="even">
+<td></td>
+<td>Taller para Certificación MS Excel</td>
+<td>0</td>
+<td>5</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="odd">
+<td></td>
+<td>Taller para Certificación MS Power Point</td>
+<td>0</td>
+<td>5</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="even">
+<td></td>
+<td>Taller para Certificación MS Word</td>
+<td>0</td>
+<td>5</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="odd">
+<td></td>
+<td>Taller para Certificación Office</td>
+<td>5</td>
+<td>0</td>
+<td>3 PARCIALES (Certificación Office)</td></tr>
+<tr class="even">
+<td>Otros cursos de certificación</td>
+<td title="Certificación de Neumática y Electroneumática">Certificación de Neumática y Electroneum...</td>
+<td>0</td>
+<td>5</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td>Propedéutico</td>
+<td>Curso de Praparación para EGEL-ISTI</td>
+<td>10</td>
+<td>10</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="even">
+<td></td>
+<td>Curso Propedéutico de Física</td>
+<td>10</td>
+<td>10</td>
+<td>EXAMEN FINAL/CALIFICACION FINAL</td></tr>
+<tr class="odd">
+<td></td>
+<td>Curso Propedéutico de Matemáticas</td>
+<td>10</td>
+<td>10</td>
+<td>EXAMEN FINAL/CALIFICACION FINAL</td></tr>
+<tr class="even">
+<td></td>
+<td>Inglés KET Intro</td>
+<td>5</td>
+<td>3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td></td>
+<td>Introducción a la Física</td>
+<td>5</td>
+<td>3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td></td>
+<td>Introducción a las Matemáticas</td>
+<td>5</td>
+<td>3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td>Talleres de Apoyo</td>
+<td>Basic Track I de Java</td>
+<td>3</td>
+<td>3</td>
+<td>ACREDITACION  (calificación con letra)</td></tr>
+<tr class="even">
+<td>Titulación</td>
+<td title="Examen General de Egresados de Licenciatura">Examen General de Egresados de Licenciat...</td>
+<td>8</td>
+<td>8</td>
+<td>ACREDITACION  (calificación con letra)</td></tr></tbody></table><br>
+
+<br></div>
+</div>
+
+</body>
+</html>
+

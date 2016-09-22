@@ -1,0 +1,1004 @@
+<html lang="sp" xml:lang="sp" xmlns="http://www.w3.org/1999/xhtml"><head>
+<title>Plan de estudios</title>
+<meta content="text/html; charset=utf-8" http-equiv="content-type">
+ <link href="images/favicon.ico" rel="shortcut icon">
+<link rel="stylesheet" type="text/css" href="./styles/global.css">
+
+<script type="text/javascript">
+if (window.history) {
+        function noBack(){window.history.forward()}
+        noBack();
+        window.onload=noBack;
+        window.onpageshow=function(evt){if(evt.persisted)noBack()}
+        window.onunload=function(){void(0)}
+}
+</script>
+</head>
+<body>
+
+
+<h2>&nbsp;</h2>
+
+<div id="pageHeader">
+<div onkeypress="location.href='intranet.upslp.edu.mx/'" onclick="location.href='http://intranet.upslp.edu.mx/'" id="logo">
+</div>
+<h1> </h1>
+</div>
+<br>
+<div align="right"><br>
+<font size="1">&copy; 2008 Derechos Reservados</font>
+</div>
+
+
+	  <script src="js/doiMenuDOM.js" type="text/javascript"></script>
+<script src="js/functions.js" type="text/javascript"></script>
+<script type="text/javascript">
+function deep1(no,deep)
+{
+  if(deep == 10)
+    return;
+  for(var i=0;i&lt;5;i++)
+	  {
+		switch(no)
+		{
+case 2:
+eval("pmL"+no+""+deep+""+i+"=new TPopMenu('Menu "+i+"','0','','',' Menu "+deep+" "+i+"');");
+break;
+default:
+eval("pmL"+no+""+deep+""+i+"=new TPopMenu('Menu "+i+"','','','',' Menu "+deep+" "+i+"');");
+}
+}
+deep1(no,++deep);
+}
+function deep2(par,no,deep)
+{ 
+if(deep == 10)
+ return;
+var j = Math.round(Math.random()*4);
+for(var i=0;i&lt;5;i++)
+{
+eval(par+".Add(pmL"+no+""+deep+""+i+");");
+if(i== j)
+{  
+var d = deep+1;  
+deep2("pmL"+no+""+deep+""+i,no,d);
+ }
+ }
+}
+	var CRDN = new TMainMenu('CRDN', 'horizontal');
+	var WLCM0 = new TPopMenu('Inicio','0','a','user.do?method=welcome','Inicio');
+	CRDN.Add(WLCM0);
+	var PLNCR = new TPopMenu('Planeación','5','','','Planeación');
+	CRDN.Add(PLNCR);
+	var PLNCR0 = new TPopMenu('Planes de estudio','5','a','planest.do?method=list','Planes de estudio');
+	PLNCR.Add(PLNCR0);
+	var PLNCR1 = new TPopMenu('Seriaciones','5','a','planest.do?method=ser','Seriaciones');
+	PLNCR.Add(PLNCR1);
+	var PLNCR2 = new TPopMenu('Calendario de eventos','5','a','periodo.do','Calendario de eventos');
+	PLNCR.Add(PLNCR2);
+	var CRDN2 = new TPopMenu('Grupos','5','a','periodo.do?method=grupos','Grupos');
+	CRDN.Add(CRDN2);
+	var RCOR = new TPopMenu('Reportes','5','','','Reportes');
+	CRDN.Add(RCOR);
+	var RCOR0 = new TPopMenu('Alumnos','5','a','periodo.do?method=inscritos','Alumnos');
+	RCOR.Add(RCOR0);
+	var RCOR1 = new TPopMenu('Horario Alumnos','5','a','periodo.do?method=horAlu','Horario Alumnos');
+	RCOR.Add(RCOR1);
+	var RCOR2 = new TPopMenu('Concentrado de parciales','5','a','kardex.do?method=parciales','Concentrado de parciales');
+	RCOR.Add(RCOR2);
+	var RCOR3 = new TPopMenu('Kardex','5','a','kardex.do','Kardex');
+	RCOR.Add(RCOR3);
+	var RCOR4 = new TPopMenu('Horarios Profesores','5','a','periodo.do?method=horarios','Horarios Profesores');
+	RCOR.Add(RCOR4);
+	var RCOR5 = new TPopMenu('Promedios por Periodo Escolar','5','a','periodo.do?method=promperesc','Promedios por Periodo Escolar');
+	RCOR.Add(RCOR5);
+	var RCOR5 = new TPopMenu('Promedios y Créditos','5','a','kardex.do?method=promcred','Promedios y Créditos');
+	RCOR.Add(RCOR5);
+	var INDCR = new TPopMenu('Indicadores','5','','','Indicadores');
+	CRDN.Add(INDCR);
+	var INDCR0 = new TPopMenu('Indicadores','5','a','periodo.do?method=indicadores','Indicadores');
+	INDCR.Add(INDCR0);
+	var INDCR1 = new TPopMenu('Doc.Indicadores','5','a','go_shindicadores','Doc.Indicadores');
+	INDCR.Add(INDCR1);
+	var CRDN4 = new TPopMenu('Captura Calif.','5','a','detmodcal.do?method=calgrupo','Captura Calif.');
+	CRDN.Add(CRDN4);
+	var CRDN5 = new TPopMenu('Captura Regu','5','a','detmodcal.do?method=calregu','Captura Regu');
+	CRDN.Add(CRDN5);
+	var CRDN6 = new TPopMenu('Certificaciones Inglés','5','a','cert.do?method=repcert','Certificaciones Inglés');
+	CRDN.Add(CRDN6);
+	var CRDN7 = new TPopMenu('Aspirantes','5','a','periodo.do?method=aspirantes','Aspirantes');
+	CRDN.Add(CRDN7);
+	var EXIT253 = new TPopMenu('Vehículos','0','a','admrecmat.do?method=edit','Vehículos');
+	var EXIT254 = new TPopMenu('Contacto','0','a','go_contacto','Contacto');
+	CRDN.Add(EXIT253);
+	CRDN.Add(EXIT254);
+	var EXIT255 = new TPopMenu('Salir','0','a','./go_personal','Salir');
+	CRDN.Add(EXIT255);
+</script>
+<table cellspacing="0" cellpadding="0" border="0">
+  <tbody><tr>
+    <td align="center">
+      <script type="text/JavaScript" language="JavaScript">
+       CRDN.SetPosition('relative',0,0);
+       CRDN.SetCorrection(0,0);
+       CRDN.SetCellSpacing(2);
+       CRDN.SetItemDimension(50,20);
+       CRDN.SetShadow(true,'#B0B0B0',6);
+       CRDN.SetCorrection(0,0);
+       CRDN._pop.SetItemDimension(150,20);
+       CRDN._pop.SetPaddings(1);
+       CRDN._pop.SetBackground('whitesmoke','../img/xp.gif','repeat-y','top left');
+       CRDN._pop.SetSeparator(125,'right','gray','');
+       CRDN._pop.SetExpandIcon(true,'',6);
+       CRDN._pop.SetFont('tahoma,verdana,arial','8pt');
+       CRDN._pop.SetBorder(1,'gray','solid');
+       CRDN._pop.SetShadow(true,'#B0B0B0',6);
+       CRDN._pop.SetDelay(500);
+       CRDN.Build();
+       </script><style type="text/css">table.TMenu0{cursor:default;visibility:hidden;position:relative;width:autopx;font-family:tahoma,verdana,sans-serif,arial;font-size:8pt;border-top:1px gray solid;border-right:1px gray solid;border-bottom:1px gray solid;border-left:1px gray solid;background-color:buttonface;background-image:none;background-position:top left;background-repeat:no-repeat;}td.TMenuItem0{padding: 0px 0px 0px 0px;height:20px;width:50px;border-top:1px gray solid;border-right:1px gray solid;border-bottom:1px gray solid;border-left:1px gray solid;text-align:center;color:black;text-decoration:none;white-space:normal;font-weight:normal;background-color:transparent;background-repeat:no-repeat;background-image:none;background-position:top left;}div.TPopUp0{position:absolute;padding:1px 1px 1px 1px;visibility:hidden;width:150px;border-top:1px gray solid;border-right:1px gray solid;border-bottom:1px gray solid;border-left:1px gray solid;background-color:whitesmoke;background-image:url('../img/xp.gif');background-position:top left;background-repeat:repeat-y;display:block;}table.TPopUpItem0{width:100%;height:20px;cursor:default;font-family:tahoma,verdana,arial;font-size:8pt;color:black;text-align:left;text-decoration:none;white-space:normal;font-weight:normal;}div.TPopUpItem0{cursor:default;background-color:transparent;background-image:none;background-position:top left;background-repeat:no-repeat;border-top:0px none solid;border-right:0px none solid;border-bottom:0px none solid;border-left:0px none solid;padding:1px 1px 1px 1px;}div.TPopUpItem0_1{cursor:default;background-color :#B6BDD2;background-image:none;background-position:top left;background-repeat:no-repeat;border-top:1px navy solid;border-right:1px navy solid;border-bottom:1px navy solid;border-left:1px navy solid;padding:0px 0px 0px 0px;}div.TSeparator0{margin:0px 0px 0px 24px;border-top:1px gray solid;border-bottom:0px none solid;}td.TExpand0{text-align:right;padding-right:2px;font-family:arial,times,sans-serif;font-size:6pt;font-weight:normal;text-decoration:none !important;white-space:nowrap !important;}td.TIcon0{width:24px;text-align:left;text-decoration:normal;white-space:nowrap;font-weight:normal;}img.0TIcon{vertical-align:middle;}</style><div id="sh__CRDNID" style="position: absolute; visibility: visible; top: 139px; left: 14px; width: 680px; height: 35px; background-color: rgb(176, 176, 176); z-index: 0;"></div><table cellspacing="2" id="_CRDNID" class="TMenu0" style="z-index: 1; visibility: visible;"><tbody><tr><td nowrap="" onclick="_openURL('user.do?method=welcome')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Inicio')" id="pr__CRDN-0ID" class="TMenuItem0">Inicio</td><td nowrap="" onmouseout="onMainMOut(event,this,'_CRDN-1ID',CRDN)" onclick="onMainClick(event,this,'_CRDN-1ID',CRDN)" onmouseover="onMainMOver(event,this,'_CRDN-1ID',-1,CRDN,'Planeación')" id="pr__CRDN-1ID" class="TMenuItem0">Planeación</td><td nowrap="" onclick="_openURL('periodo.do?method=grupos')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Grupos')" id="pr__CRDN-5ID" class="TMenuItem0">Grupos</td><td nowrap="" onmouseout="onMainMOut(event,this,'_CRDN-6ID',CRDN)" onclick="onMainClick(event,this,'_CRDN-6ID',CRDN)" onmouseover="onMainMOver(event,this,'_CRDN-6ID',-1,CRDN,'Reportes')" id="pr__CRDN-6ID" class="TMenuItem0">Reportes</td><td nowrap="" onmouseout="onMainMOut(event,this,'_CRDN-14ID',CRDN)" onclick="onMainClick(event,this,'_CRDN-14ID',CRDN)" onmouseover="onMainMOver(event,this,'_CRDN-14ID',-1,CRDN,'Indicadores')" id="pr__CRDN-14ID" class="TMenuItem0">Indicadores</td><td nowrap="" onclick="_openURL('detmodcal.do?method=calgrupo')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Captura Calif.')" id="pr__CRDN-17ID" class="TMenuItem0">Captura Calif.</td><td nowrap="" onclick="_openURL('detmodcal.do?method=calregu')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Captura Regu')" id="pr__CRDN-18ID" class="TMenuItem0">Captura Regu</td><td nowrap="" onclick="_openURL('cert.do?method=repcert')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Certificaciones Inglés')" id="pr__CRDN-19ID" class="TMenuItem0">Certificaciones Inglés</td><td nowrap="" onclick="_openURL('periodo.do?method=aspirantes')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Aspirantes')" id="pr__CRDN-20ID" class="TMenuItem0">Aspirantes</td><td nowrap="" onclick="_openURL('admrecmat.do?method=edit')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Vehículos')" id="pr__CRDN-21ID" class="TMenuItem0">Vehículos</td><td nowrap="" onclick="_openURL('go_contacto')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Contacto')" id="pr__CRDN-22ID" class="TMenuItem0">Contacto</td><td nowrap="" onclick="_openURL('./go_personal')" onmouseout="onMainMOut(event,this,'',CRDN)" onmouseover="onMainMOver(event,this,'',-1,CRDN,'Salir')" id="pr__CRDN-23ID" class="TMenuItem0">Salir</td></tr></tbody></table><div align="left" id="sh__CRDN-1ID" style="position: absolute; visibility: hidden; top: 172px; left: 70px; width: 154px; height: 70px; background-color: rgb(176, 176, 176); z-index: 2;"></div><div id="_CRDN-1ID" class="TPopUp0" style="top: 166px; left: 64px; z-index: 3;"><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('planest.do?method=list')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Planes de estudio')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Planes de estudio</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('planest.do?method=ser')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Seriaciones')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Seriaciones</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('periodo.do')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Calendario de eventos')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Calendario de eventos</td></tr></tbody></table></div></div><div align="left" id="sh__CRDN-6ID" style="position: absolute; visibility: hidden; top: 172px; left: 181px; width: 154px; height: 158px; background-color: rgb(176, 176, 176); z-index: 2;"></div><div id="_CRDN-6ID" class="TPopUp0" style="top: 166px; left: 175px; z-index: 3;"><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('periodo.do?method=inscritos')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Alumnos')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Alumnos</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('periodo.do?method=horAlu')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Horario Alumnos')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Horario Alumnos</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('kardex.do?method=parciales')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Concentrado de parciales')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Concentrado de parciales</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('kardex.do')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Kardex')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Kardex</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('periodo.do?method=horarios')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Horarios Profesores')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Horarios Profesores</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('periodo.do?method=promperesc')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Promedios por Periodo Escolar')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Promedios por Periodo Escolar</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('kardex.do?method=promcred')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Promedios y Créditos')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Promedios y Créditos</td></tr></tbody></table></div></div><div align="left" id="sh__CRDN-14ID" style="position: absolute; visibility: hidden; top: 172px; left: 235px; width: 154px; height: 48px; background-color: rgb(176, 176, 176); z-index: 2;"></div><div id="_CRDN-14ID" class="TPopUp0" style="top: 166px; left: 229px; z-index: 3;"><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('periodo.do?method=indicadores')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Indicadores')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Indicadores</td></tr></tbody></table></div><div class="TPopUpItem0"><table cellspacing="0" cellpadding="0" onclick="hideAll(CRDN);_openURL('go_shindicadores')" onmouseout="onPopItemMOut(event,this,'',CRDN)" onmouseover="onPopItemMOver(event,this,'',1,CRDN,'Doc.Indicadores')" class="TPopUpItem0"><tbody><tr><td style="padding-left:5px;">Doc.Indicadores</td></tr></tbody></table></div></div>
+      </td>
+   </tr>
+</tbody></table>
+
+
+
+<div id="container">
+
+
+<div id="content">
+
+
+
+
+
+<script language="Javascript" type="text/javascript">
+	document.oncontextmenu = function(){return false}
+</script>
+
+
+
+
+
+
+<h3><img src="images/btn-mode-nor-disabled.png">  Planes de estudio</h3>
+<fieldset><legend> Búsqueda por: </legend> 
+<form method="post" name="formareport" action="planest.do">
+	<input type="hidden" value="list" name="method"> 
+	<input type="hidden" value="si" name="rep">
+
+<table>
+	<tbody><tr>
+		<td>&nbsp;</td>
+		<td colspan="2">Planes de estudio:<br>
+		<select name="plan">
+		    <option selected="" value="0">*Extracurriculares</option>
+			
+				
+				
+					<option value="1">(ISTI) Ing. en Sistemas y Tecnologías Industriales</option>
+				
+				
+			
+				
+				
+					<option value="5">(ITEM) Ing. Telemática</option>
+				
+				
+			
+				
+					<option selected="" value="2">(ITI) Ing. en Tecnologías de Información</option>
+				
+				
+				
+			
+				
+				
+					<option value="6">(ITMA) Ing. en Tecnologías de Manufactura</option>
+				
+				
+			
+				
+				
+					<option value="3">(LAG) Lic. en Administración y Gestión</option>
+				
+				
+			
+				
+				
+					<option value="4">(LMKT) Lic. en Mercadotecnia Internacional</option>
+				
+				
+			
+		</select>
+		<input type="hidden" value="" name="ultimo">
+		</td>
+		
+		<td>&nbsp;</td>
+		<td colspan="3"><br>&nbsp;
+		<input type="submit" value="Generar">
+		</td>
+	</tr>
+</tbody></table>
+</form>
+</fieldset>
+<br>
+
+<div align="center">
+
+ Ing. en Tecnologías de Información
+
+</div>
+<li>Materias curriculares</li>
+
+<table id="l" class="its">
+<thead>
+<tr>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=0&amp;d-1782-o=2&amp;method=list">Sem.</a></th>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=1&amp;d-1782-o=2&amp;method=list">Materia</a></th>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=2&amp;d-1782-o=2&amp;method=list">Seriación</a></th>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=3&amp;d-1782-o=2&amp;method=list">Créditos</a></th>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=4&amp;d-1782-o=2&amp;method=list">&nbsp;&nbsp;&nbsp;Clave&nbsp;&nbsp;&nbsp;</a></th>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=5&amp;d-1782-o=2&amp;method=list">&nbsp;&nbsp;Horas&nbsp;&nbsp;</a></th>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=6&amp;d-1782-o=2&amp;method=list">Teoría</a></th>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=7&amp;d-1782-o=2&amp;method=list">Práctica</a></th>
+<th class="sortable">
+<a href="planest.do?plan=2&amp;rep=si&amp;ultimo=&amp;d-1782-s=8&amp;d-1782-o=2&amp;method=list">Tipo Eval.</a></th></tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align:center">1</td>
+<td>Matemáticas I</td>
+<td style="text-align:left"> -Introducción a las Matemáticas <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">110M</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Proyecto Integrador de Matemáticas</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">111M</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Física I</td>
+<td style="text-align:left"> -Introducción a la Física <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">110C</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td title="Curso del Núcleo General I: Desarrollo del Pensamiento Crítico">Curso del Núcleo General I: Desarrollo d...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">110G</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Inglés I</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">111G</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Introducción a la Computación</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">110F</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">2</td>
+<td>Matemáticas II</td>
+<td style="text-align:left"> -Matemáticas I <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">210M</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Física II</td>
+<td style="text-align:left"> -Física I <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">210C</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td title="Curso del Núcleo General II: Comunicación e Investigación">Curso del Núcleo General II: Comunicació...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">210G</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Inglés II</td>
+<td style="text-align:left"> -Inglés I <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">211G</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Programación I</td>
+<td style="text-align:left"> -Introducción a la Computación <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">210F</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Curso del Núcleo Optativo I</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">210O</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">3</td>
+<td>Matemáticas III</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">310M</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Matemáticas Discretas</td>
+<td style="text-align:left"> -Matemáticas II <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">311M</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Química</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">310C</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Inglés III</td>
+<td style="text-align:left"> -Inglés II <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">310G</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Programación II</td>
+<td style="text-align:left"> -Programación I <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">310F</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Curso del Núcleo Optativo II</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">310O</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">4</td>
+<td>Probabilidad y Estadística</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">410M</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Circuitos Eléctricos</td>
+<td style="text-align:left"> -Física II <br> </td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">410F</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td title="Curso del Núcleo General III: Filosofía y Valores">Curso del Núcleo General III: Filosofía ...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">410G</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Inglés IV</td>
+<td style="text-align:left"> -Inglés III <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">411G</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Programación III</td>
+<td style="text-align:left"> -Programación II <br> </td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">411F</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Proyecto Integrador y Comprensivo I</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">410P</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">5</td>
+<td>Matemáticas IV</td>
+<td style="text-align:left"> -Matemáticas II <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">510M</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Sistemas Digitales</td>
+<td style="text-align:left"> -Circuitos Eléctricos <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">510P</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Sistemas Operativos</td>
+<td style="text-align:left"> -Programación III <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">510F</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Inglés V</td>
+<td style="text-align:left"> -Inglés IV <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">510G</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>2 PARCIALES Y PROM.</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Análisis y Diseño de Algoritmos</td>
+<td style="text-align:left"> -Programación III <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">511P</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Curso del Núcleo Optativo III</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">510O</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">6</td>
+<td>Ingeniería de Software I</td>
+<td style="text-align:left"> -Programación III <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">610P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Lenguajes de Programación</td>
+<td style="text-align:left"> -Sistemas Operativos <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">610F</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Curso del Núcleo General IV: Creatividad</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">610G</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Arquitectura de Computadoras</td>
+<td style="text-align:left"> -Sistemas Digitales <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">611F</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Taller de Desarrollo Empresarial</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">611G</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Proyecto Integrador y Comprensivo II</td>
+<td style="text-align:left"> -Proyecto Integrador y Comprensivo I <br> </td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">611P</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">7</td>
+<td>Ingeniería de Software II</td>
+<td style="text-align:left"> -Ingeniería de Software I <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">710P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Base de Datos</td>
+<td style="text-align:left"> -Lenguajes de Programación <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">711P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Teoría Computacional</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">710F</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Organización Computacional</td>
+<td style="text-align:left"> -Lenguajes de Programación <br>  -Arquitectura de Computadoras <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">712P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Taller de Creatividad y Emprendedores</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">710G</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Curso del Núcleo Optativo IV</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">710O</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">8</td>
+<td>Minería de Datos</td>
+<td style="text-align:left"> -Base de Datos <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">810P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Inteligencia Artificial I</td>
+<td style="text-align:left"> -Lenguajes de Programación <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">810F</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td title="Curso del Núcleo General V: Desarrollo de Competencias">Curso del Núcleo General V: Desarrollo d...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">810G</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">3</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Curso del Núcleo Optativo V</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">810O</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Redes de Computadoras</td>
+<td style="text-align:left"> -Organización Computacional <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">811P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Proyecto Integrador y Comprensivo III</td>
+<td style="text-align:left"> -Proyecto Integrador y Comprensivo II <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">812P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">9</td>
+<td>Compiladores</td>
+<td style="text-align:left"> -Teoría Computacional <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">910P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Comercio Electrónico</td>
+<td style="text-align:left"> -Redes de Computadoras <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">911P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Sistemas Virtuales</td>
+<td style="text-align:left"> -Redes de Computadoras <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">912P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Curso del Núcleo Optativo VI</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">910O</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Inteligencia Artificial II</td>
+<td style="text-align:left"> -Inteligencia Artificial I <br> </td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">913P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td>Proyecto Profesional</td>
+<td style="text-align:left"> -Proyecto Integrador y Comprensivo III <br> </td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">914P</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">5</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td>Residencia Profesional</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">910RP</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">10</td>
+<td>ACREDITACION  (calificación con letra)</td></tr></tbody></table><br>
+
+
+<li>Materias optativas</li>
+
+<table id="l2" class="its">
+<thead>
+<tr>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=0&amp;method=list">Sem.</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=1&amp;method=list">Materia</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=2&amp;method=list">Optativa</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=3&amp;method=list">Seriación</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=4&amp;method=list">Créditos</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=5&amp;method=list">&nbsp;&nbsp;&nbsp;Clave&nbsp;&nbsp;&nbsp;</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=6&amp;method=list">&nbsp;&nbsp;Horas&nbsp;&nbsp;</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=7&amp;method=list">Teoría</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=8&amp;method=list">Práctica</a></th>
+<th class="sortable">
+<a href="planest.do?d-5396-o=2&amp;plan=2&amp;rep=si&amp;ultimo=&amp;d-5396-s=9&amp;method=list">Tipo Eval.</a></th></tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align:center">2</td>
+<td>Curso del Núcleo Optativo I</td>
+<td>Taller de Computación</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">210O</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td></td>
+<td>Programación Web I</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">210O</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">3</td>
+<td>Curso del Núcleo Optativo II</td>
+<td>Programación Web II</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">310O</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td></td>
+<td title="Tópicos Selectos de Programación">Tópicos Selectos de Progr...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">310O</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">2</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">5</td>
+<td>Curso del Núcleo Optativo III</td>
+<td title="Interacción Humana y Computadora">Interacción Humana y Comp...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">510O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td></td>
+<td>Modelado</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">510O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">7</td>
+<td>Curso del Núcleo Optativo IV</td>
+<td title="Introducción a la Didáctica">Introducción a la Didácti...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">710O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td></td>
+<td>Programación WAP</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">710O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td></td>
+<td title="Tópicos Avanzados de Programación">Tópicos Avanzados de Prog...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">710O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center">8</td>
+<td>Curso del Núcleo Optativo V</td>
+<td title="Didáctica de la Física y las Matemáticas en el Nivel Medio Superior y Superior">Didáctica de la Física y ...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">810O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td></td>
+<td>Criptografía</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">810O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td></td>
+<td>Seguridad Informática</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">810O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center">9</td>
+<td>Curso del Núcleo Optativo VI</td>
+<td>Sistemas ERP</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">910O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="even">
+<td style="text-align:center"></td>
+<td></td>
+<td title="Uso de la Informática y Multimedios para la Enseñanza">Uso de la Informática y M...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">910O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr>
+<tr class="odd">
+<td style="text-align:center"></td>
+<td></td>
+<td title="Bases de Datos Distribuidas">Bases de Datos Distribuid...</td>
+<td style="text-align:left"></td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">910O</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td>3 PARCIALES 60% Y FINAL 40%</td></tr></tbody></table><br>
+
+<br></div>
+</div>
+
+
+
+</body></html>

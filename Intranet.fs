@@ -38,11 +38,23 @@ let getPassword user =
         | Professor data -> data.Password
         | Staff data -> data.Password
 
+let getUserType user = 
+    match user with
+        | Student data -> "Student"
+        | Professor data -> "Professor"
+        | Staff data -> "Staff"
+
 let getCookie user = 
     match user with
         | Student data -> data.Cookie
         | Professor data -> data.Cookie
         | Staff data -> data.Cookie
+
+let changeCookie user cookie = 
+    match user with
+        | Student data -> Student {data with Cookie = cookie}
+        | Professor data -> Professor {data with Cookie = cookie}
+        | Staff data -> Staff {data with Cookie = cookie}
 
 let student_data = ("http://estudiantes.upslp.edu.mx:9080/Intralumno/go_alumno",
                     "http://estudiantes.upslp.edu.mx:9080/Intralumno/alumno.do",
@@ -113,7 +125,7 @@ let login user password =
 
 let loginAdmin () =
     let (admin_user, admin_password) =
-        "credentials.intranet" 
+        "credentials/credentials.intranet" 
                      |> Library.readLines
                      |> (fun arr -> (arr.[0], arr.[1]))
     login admin_user admin_password

@@ -42,10 +42,22 @@ module Site =
             let! loggedIn = ctx.UserSession.GetLoggedInUser()
             let content = 
                 match loggedIn with
-                    Some username -> 
-                        div [
-                            div [client <@ Client.LoggedInUser username @>]
-                        ]
+                    Some username ->
+                        let adminComponents = match Server.adminuser with
+                                                Some admin -> if IntranetAccess.getUserName admin = username
+                                                              then [client <@ Client.UpdatePrograms () @>]
+                                                              else []
+                                              | None       -> []
+                        if adminComponents = []
+                        then 
+                         div [
+                              div [client <@ Client.userComponents username @>]
+                         ]
+                        else 
+                         div [
+                              divAttr [attr.``class`` "jumbotron"] adminComponents
+                              div [client <@ Client.userComponents username @>]
+                         ]
                   | None -> 
                         div [
                             h1 [text "Say Hi to the server!"]

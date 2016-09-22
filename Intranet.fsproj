@@ -40,6 +40,9 @@
     <Compile Include="BaseDatos.fs" />
     <Compile Include="Intranet.fs" />
     <Compile Include="Alumnos.fs" />
+    <Compile Include="Planes.fs" />
+    <Compile Include="Seriaciones.fs" />
+    <Compile Include="Grupos.fs" />
     <Compile Include="Forms.fsi" />
     <Compile Include="Forms.fs" />
     <Compile Include="Bootstrap.fs" />

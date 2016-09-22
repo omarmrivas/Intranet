@@ -55,9 +55,9 @@ let TablaAlumnos = """
     </table>"""
 
 //type BD = XmlProvider<"salida.xml">
-type BD = XmlProvider<TablaAlumnos>
+type Alumnos = XmlProvider<TablaAlumnos>
 
-let obtener_alumnos cookie (matriculas : HashSet<string>) (carrera, periodo) = 
+let obtener_alumnos cookie (carrera, periodo) = 
     let rec aux cookie =
      try
       let f () =     Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/periodo.do",
@@ -69,13 +69,17 @@ let obtener_alumnos cookie (matriculas : HashSet<string>) (carrera, periodo) =
                                                   ("sem1","0"); ("sem2","0"); ("sexo","*"); ("ultimo","20013S")],
                                          cookieContainer = cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
-      let alumnos = BD.Parse(intranet)
+      let alumnos = Alumnos.Parse(intranet)
       (cookie, alumnos)
      with | :? System.Xml.XmlException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
                                           aux cookie
+          | :? System.Net.WebException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
+                                          aux cookie
     let (cookie, alumnos) = aux cookie
     printfn "Actualizando Alumnos de la carrera %s en el periodo %s..." carrera periodo
-    for alumno in alumnos.Rows do
+    let matriculas = set []
+    Array.fold (fun set (alumno : Alumnos.Row) ->
+//    for alumno in alumnos.Rows do
         let valores = [| for campo in alumno.Columns do
                             match campo.String with
                                 Some s -> yield s
@@ -85,7 +89,7 @@ let obtener_alumnos cookie (matriculas : HashSet<string>) (carrera, periodo) =
         let semestre = valores.[2]
         let plan = valores.[3]
         let matricula = valores.[4]
-        ignore (matriculas.Add matricula)
+//        ignore (matriculas.Add matricula)
         let nombre = valores.[5].Replace("'", "")
         let genero = valores.[6]
 //        printfn "%s" valores.[9]
@@ -100,6 +104,6 @@ let obtener_alumnos cookie (matriculas : HashSet<string>) (carrera, periodo) =
                                                             | _ -> DateTime.Now)
         BaseDatos.actualiza_alumno matricula nombre genero fecha_nacimiento
         BaseDatos.actualiza_inscripciones matricula periodo estado semestre plan fecha
-//    matriculas
-//        printfn "%A" valores
+        Set.add matricula set) matriculas alumnos.Rows
+        |> (fun matriculas -> (cookie, matriculas))
 

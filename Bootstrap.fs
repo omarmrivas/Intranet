@@ -27,6 +27,21 @@ module Controls =
             Doc.Input (cls "form-control" :: targetExtras) target
         ]
 
+(*    let Select lbl elems extras (target, labelExtras, targetExtras) =
+        divAttr (cls "select" :: extras) [
+            labelAttr labelExtras [text lbl]
+            Doc.Select (cls "form-control" :: targetExtras) id elems target
+        ]*)
+
+    let Select lbl elems extras (target, labelExtras, targetExtras) =
+        divAttr (cls "form-group" :: extras) [
+            labelAttr labelExtras [
+//                Doc.Select (cls "form-control" :: targetExtras) id elems target
+                Doc.Select (Attr.Create "class" "selectpicker" :: targetExtras) id elems target
+                text lbl
+            ]
+        ]
+
     let InputPassword lbl extras (target, labelExtras, targetExtras) =
         divAttr (cls "form-group" :: extras) [
             labelAttr labelExtras [text lbl]
@@ -108,6 +123,7 @@ module Controls =
 
     module Simple =
         let Input lbl target = Input lbl [] (target, [], [])
+        let Select lbl elems target = Select lbl elems [] (target, [], [])
         let InputWithError lbl target submit = InputWithError lbl [] (target, [], []) submit
         let InputPassword lbl target = InputPassword lbl [] (target, [], [])
         let InputPasswordWithError lbl target submit = InputPasswordWithError lbl [] (target, [], []) submit

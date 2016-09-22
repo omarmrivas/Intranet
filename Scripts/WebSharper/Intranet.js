@@ -1,6 +1,6 @@
 (function()
 {
- var Global=this,Runtime=this.IntelliFactory.Runtime,Concurrency,Remoting,AjaxRemotingProvider,window,Forms,Pervasives,Form,Validation,List,Bootstrap,Controls,Simple,UI,Next,AttrProxy,Doc,AttrModule,Var,Submitter1,View,T,View1,Result1,Doc1,Seq,View2,Attr,ErrorMessage,Form1,Fresh,Result,Utils,Dependent1,Dependent,Ref,Var1,Many,Fresh1,Submitter,Many1,ItemOperations,Collections,ResizeArray,ResizeArrayProxy,Array,CollectionWithDefault,Collection,Operators,Unchecked,Dictionary,RegExp;
+ var Global=this,Runtime=this.IntelliFactory.Runtime,Concurrency,Remoting,AjaxRemotingProvider,window,Forms,Pervasives,Form,Validation,List,Bootstrap,Controls,Simple,UI,Next,AttrProxy,Doc,AttrModule,Var,Submitter1,View,T,View1,Result1,Doc1,Seq,View2,Attr,ErrorMessage,Form1,Fresh,Result,Utils,Dependent1,Dependent,Many,CollectionWithDefault,Many1,Collection,Ref,Var1,Fresh1,Submitter,ItemOperations,Collections,ResizeArray,ResizeArrayProxy,Array,CollectionWithDefault1,Operators,Unchecked,Dictionary,RegExp;
  Runtime.Define(Global,{
   Intranet:{
    Client:{
@@ -102,6 +102,200 @@
      }),rvInput),Doc.Button("Send",Runtime.New(T,{
       $:0
      }),arg201),Doc.Element("hr",[],arg202),Doc.Element("h4",List.ofArray([AttrProxy.Create("class","text-muted")]),List.ofArray([Doc.TextNode("The server responded:")])),Doc.Element("div",List.ofArray([AttrProxy.Create("class","jumbotron")]),List.ofArray([Doc.Element("h1",[],arg203)]))]);
+     return Doc.Element("div",[],arg20);
+    },
+    UpdatePrograms:function()
+    {
+     var getCareers,careers1,_arg00_,_arg00_1,_arg10_,x,renderFunction;
+     getCareers=function(careers)
+     {
+      var result,result1,result2,result3,result4,result5;
+      result=careers.ITI?List.ofArray(["ITI"]):Runtime.New(T,{
+       $:0
+      });
+      result1=careers.ITEM?Runtime.New(T,{
+       $:1,
+       $0:"ITEM",
+       $1:result
+      }):result;
+      result2=careers.ISTI?Runtime.New(T,{
+       $:1,
+       $0:"ISTI",
+       $1:result1
+      }):result1;
+      result3=careers.ITMA?Runtime.New(T,{
+       $:1,
+       $0:"ITMA",
+       $1:result2
+      }):result2;
+      result4=careers.LAG?Runtime.New(T,{
+       $:1,
+       $0:"LAG",
+       $1:result3
+      }):result3;
+      result5=careers.LMKT?Runtime.New(T,{
+       $:1,
+       $0:"LMKT",
+       $1:result4
+      }):result4;
+      return result5;
+     };
+     careers1={
+      ITI:false,
+      ITEM:false,
+      ISTI:false,
+      ITMA:false,
+      LAG:false,
+      LMKT:false
+     };
+     _arg00_=function(career)
+     {
+      var arg00;
+      arg00=Concurrency.Delay(function()
+      {
+       return AjaxRemotingProvider.Async("Intranet:5",[getCareers(career)]);
+      });
+      return Concurrency.Start(arg00,{
+       $:0
+      });
+     };
+     _arg00_1=Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Form.Return(function(iti)
+     {
+      return function(item)
+      {
+       return function(isti)
+       {
+        return function(itma)
+        {
+         return function(lag)
+         {
+          return function(lmkt)
+          {
+           return{
+            ITI:iti,
+            ITEM:item,
+            ISTI:isti,
+            ITMA:itma,
+            LAG:lag,
+            LMKT:lmkt
+           };
+          };
+         };
+        };
+       };
+      };
+     }),Form.Yield(careers1.ITI)),Form.Yield(careers1.ITEM)),Form.Yield(careers1.ISTI)),Form.Yield(careers1.ITMA)),Form.Yield(careers1.LAG)),Form.Yield(careers1.LMKT));
+     _arg10_=Form.WithSubmit(_arg00_1);
+     x=Form.Run(_arg00_,_arg10_);
+     renderFunction=function(iti)
+     {
+      return function(item)
+      {
+       return function(isti)
+       {
+        return function(itma)
+        {
+         return function(lag)
+         {
+          return function(lmkt)
+          {
+           return function(submit)
+           {
+            var arg20,arg201,arg202,arg203;
+            arg201=List.ofArray([Doc.TextNode("Actualizar Programas de Carreras")]);
+            arg202=List.ofArray([Controls.Checkbox("ITI",Runtime.New(T,{
+             $:0
+            }),iti,Runtime.New(T,{
+             $:0
+            }),Runtime.New(T,{
+             $:0
+            })),Controls.Checkbox("ITEM",Runtime.New(T,{
+             $:0
+            }),item,Runtime.New(T,{
+             $:0
+            }),Runtime.New(T,{
+             $:0
+            })),Controls.Checkbox("ISTI",Runtime.New(T,{
+             $:0
+            }),isti,Runtime.New(T,{
+             $:0
+            }),Runtime.New(T,{
+             $:0
+            }))]);
+            arg203=List.ofArray([Controls.Checkbox("ITMA",Runtime.New(T,{
+             $:0
+            }),itma,Runtime.New(T,{
+             $:0
+            }),Runtime.New(T,{
+             $:0
+            })),Controls.Checkbox("LAG",Runtime.New(T,{
+             $:0
+            }),lag,Runtime.New(T,{
+             $:0
+            }),Runtime.New(T,{
+             $:0
+            })),Controls.Checkbox("LMKT",Runtime.New(T,{
+             $:0
+            }),lmkt,Runtime.New(T,{
+             $:0
+            }),Runtime.New(T,{
+             $:0
+            }))]);
+            arg20=List.ofArray([Doc.Element("h2",[],arg201),Doc.Element("div",[],arg202),Doc.Element("div",[],arg203),(((Controls.Button())("Actualizar Programa(s)"))(List.ofArray([AttrProxy.Create("class","btn btn-primary")])))(function()
+            {
+             return submit.Trigger();
+            })]);
+            return Doc.Element("form",[],arg20);
+           };
+          };
+         };
+        };
+       };
+      };
+     };
+     return Form.Render(renderFunction,x);
+    },
+    adminComponents:function()
+    {
+     var arg20,arg201;
+     arg201=List.ofArray([Doc.TextNode("Actualizar Base de Datos:")]);
+     arg20=List.ofArray([Doc.Element("p",[],arg201),Doc.Element("button",List.ofArray([AttrModule.Handler("click",function()
+     {
+      return function()
+      {
+       var arg00;
+       arg00=Concurrency.Delay(function()
+       {
+        return Concurrency.Return(window.location.assign("about"));
+       });
+       return Concurrency.Start(arg00,{
+        $:0
+       });
+      };
+     })]),List.ofArray([Doc.TextNode("Actualizar")]))]);
+     return Doc.Element("div",[],arg20);
+    },
+    userComponents:function(username)
+    {
+     var arg20,arg201;
+     arg201=List.ofArray([Doc.TextNode("Click here to log out:")]);
+     arg20=List.ofArray([Doc.Element("p",[],arg201),Doc.Element("button",List.ofArray([AttrModule.Handler("click",function()
+     {
+      return function()
+      {
+       var arg00;
+       arg00=Concurrency.Delay(function()
+       {
+        return Concurrency.Bind(AjaxRemotingProvider.Async("Intranet:2",[username]),function()
+        {
+         return Concurrency.Return(window.location.reload());
+        });
+       });
+       return Concurrency.Start(arg00,{
+        $:0
+       });
+      };
+     })]),List.ofArray([Doc.TextNode("Logout")]))]);
      return Doc.Element("div",[],arg20);
     }
    }
@@ -242,6 +436,21 @@
         $1:extras
        }),List.ofArray([Doc.Element("label",labelExtras,List.ofArray([Doc.Radio(targetExtras,true,target),Doc.TextNode(lbl)]))]));
       },
+      Select:function(lbl,elems,extras,target,labelExtras,targetExtras)
+      {
+       return Doc.Element("div",Runtime.New(T,{
+        $:1,
+        $0:(Controls.cls())("form-group"),
+        $1:extras
+       }),List.ofArray([Doc.Element("label",labelExtras,List.ofArray([Doc.Select(Runtime.New(T,{
+        $:1,
+        $0:AttrProxy.Create("class","selectpicker"),
+        $1:targetExtras
+       }),function(x)
+       {
+        return x;
+       },elems,target),Doc.TextNode(lbl)]))]));
+      },
       ShowErrors:function(extras,submit)
       {
        return Doc1.ShowErrors(submit,function(_arg1)
@@ -337,6 +546,16 @@
         arg22=tupledArg[2];
         return(clo2([arg20,arg21,arg22]))(submit);
        },
+       Select:function(lbl,elems,target)
+       {
+        return Controls.Select(lbl,elems,Runtime.New(T,{
+         $:0
+        }),target,Runtime.New(T,{
+         $:0
+        }),Runtime.New(T,{
+         $:0
+        }));
+       },
        ShowErrors:function(submit)
        {
         return Controls.ShowErrors(Runtime.New(T,{
@@ -412,7 +631,7 @@
       __InputWithError:function(inputFun,lbl,extras,target,labelExtras,targetExtras,submitView)
       {
        var tv,view,patternInput,errorOpt,errorClassOpt,ats;
-       tv=View2.Through1(submitView,target);
+       tv=View2.Through(submitView,target);
        view=View.Map(function(res)
        {
         var _,_1,errs,mapping,reduction,list,errors;
@@ -572,13 +791,13 @@
       return this.message;
      }
     },{
-     Create:function(p,text)
-     {
-      return ErrorMessage.New(p.id,text);
-     },
-     Create1:function(id,text)
+     Create:function(id,text)
      {
       return ErrorMessage.New(id,text);
+     },
+     Create1:function(p,text)
+     {
+      return ErrorMessage.New(p.id,text);
      },
      New:function(id,message)
      {
@@ -620,7 +839,7 @@
       {
        return function(arg10)
        {
-        return Result.Apply(arg001,arg10);
+        return Result1.Apply(arg001,arg10);
        };
       };
       arg101=pf.view;
@@ -639,7 +858,7 @@
      Builder:Runtime.Class({
       Bind:function(p,f)
       {
-       return Form.Dependent2(p,f);
+       return Form.Dependent3(p,f);
       },
       Return:function(x)
       {
@@ -698,7 +917,35 @@
        },pOut);
       }
      },
-     Dependent1:Runtime.Class({
+     Dependent1:{
+      New:function(renderPrimary,pOut)
+      {
+       var r;
+       r=Runtime.New(this,{});
+       r.renderPrimary=renderPrimary;
+       r.pOut=pOut;
+       r.out=View1.Bind(function(_arg1)
+       {
+        var _,m,p;
+        if(_arg1.$==1)
+         {
+          m=_arg1.$0;
+          _=View1.Const({
+           $:1,
+           $0:m
+          });
+         }
+        else
+         {
+          p=_arg1.$0;
+          _=p.view;
+         }
+        return _;
+       },r.pOut);
+       return r;
+      }
+     },
+     Dependent2:Runtime.Class({
       RenderDependent:function(f)
       {
        var _arg00_,_arg10_;
@@ -727,35 +974,8 @@
       {
        return this.out;
       }
-     },{
-      New:function(renderPrimary,pOut)
-      {
-       var r;
-       r=Runtime.New(this,{});
-       r.renderPrimary=renderPrimary;
-       r.pOut=pOut;
-       r.out=View1.Bind(function(_arg1)
-       {
-        var _,m,p;
-        if(_arg1.$==1)
-         {
-          m=_arg1.$0;
-          _=View1.Const({
-           $:1,
-           $0:m
-          });
-         }
-        else
-         {
-          p=_arg1.$0;
-          _=p.view;
-         }
-        return _;
-       },r.pOut);
-       return r;
-      }
      }),
-     Dependent2:function(input,output)
+     Dependent3:function(input,output)
      {
       var d;
       d=Dependent.Make(input,output);
@@ -785,6 +1005,12 @@
       return p.view;
      },
      Many:{
+      CollectionWithDefault:Runtime.Class({
+       AddOne:function()
+       {
+        return this.Add(this["default"]);
+       }
+      }),
       Fresh:{
        Int:Runtime.Field(function()
        {
@@ -1129,12 +1355,7 @@
         return r;
        }
       }),
-      CollectionWithDefault:Runtime.Class({
-       AddOne:function()
-       {
-        return this.Add(this["default"]);
-       }
-      },{
+      CollectionWithDefault:{
        New:function(p,inits,pInit,_default)
        {
         var r;
@@ -1142,7 +1363,7 @@
         r["default"]=_default;
         return r;
        }
-      }),
+      },
       ItemOperations:Runtime.Class({
        Delete:function()
        {
@@ -1179,7 +1400,7 @@
      {
       var pInit,m;
       pInit=p(init);
-      m=CollectionWithDefault.New(p,inits,pInit,init);
+      m=CollectionWithDefault1.New(p,inits,pInit,init);
       return Runtime.New(Form1,{
        id:Fresh.Id(),
        view:m.get_View(),
@@ -1649,6 +1870,44 @@
        }
       return _;
      },
+     Bind:function(f,rx)
+     {
+      var _,x,m;
+      if(rx.$==0)
+       {
+        x=rx.$0;
+        _=f(x);
+       }
+      else
+       {
+        m=rx.$0;
+        _={
+         $:1,
+         $0:m
+        };
+       }
+      return _;
+     },
+     FailWith:function(errorMessage,id)
+     {
+      var id1,_,id2;
+      if(id.$==0)
+       {
+        _=Fresh.Id();
+       }
+      else
+       {
+        id2=id.$0;
+        _=id2;
+       }
+      id1=_;
+      return{
+       $:1,
+       $0:List.ofArray([ErrorMessage.New(id1,errorMessage)])
+      };
+     }
+    }),
+    Result1:Runtime.Class({},{
      Apply:function(rf,rx)
      {
       var _,f,_1,x,mx,mf,_2,mx1;
@@ -1695,44 +1954,6 @@
        }
       return _;
      },
-     Bind:function(f,rx)
-     {
-      var _,x,m;
-      if(rx.$==0)
-       {
-        x=rx.$0;
-        _=f(x);
-       }
-      else
-       {
-        m=rx.$0;
-        _={
-         $:1,
-         $0:m
-        };
-       }
-      return _;
-     },
-     FailWith:function(errorMessage,id)
-     {
-      var id1,_,id2;
-      if(id.$==0)
-       {
-        _=Fresh.Id();
-       }
-      else
-       {
-        id2=id.$0;
-        _=id2;
-       }
-      id1=_;
-      return{
-       $:1,
-       $0:List.ofArray([ErrorMessage.New(id1,errorMessage)])
-      };
-     }
-    }),
-    Result1:Runtime.Class({},{
      IsFailure:function(r)
      {
       return r.$==1?true:false;
@@ -1852,7 +2073,7 @@
           {
            _1={
             $:1,
-            $0:List.ofArray([ErrorMessage.Create(p,msg)])
+            $0:List.ofArray([ErrorMessage.Create1(p,msg)])
            };
           }
          _=_1;
@@ -1863,7 +2084,7 @@
      }
     },
     View:Runtime.Class({},{
-     Through:function(_this,p)
+     Through:function(_this,v)
      {
       var arg00;
       arg00=function(x)
@@ -1874,7 +2095,7 @@
          msgs=x.$0;
          predicate=function(m)
          {
-          return m.get_Id()===p.id;
+          return m.get_Id()===Var1.GetId(v);
          };
          _={
           $:1,
@@ -1889,7 +2110,7 @@
       };
       return View.Map(arg00,_this);
      },
-     Through1:function(_this,v)
+     Through1:function(_this,p)
      {
       var arg00;
       arg00=function(x)
@@ -1900,7 +2121,7 @@
          msgs=x.$0;
          predicate=function(m)
          {
-          return m.get_Id()===Var1.GetId(v);
+          return m.get_Id()===p.id;
          };
          _={
           $:1,
@@ -1955,19 +2176,20 @@
   Utils=Runtime.Safe(Forms.Utils);
   Dependent1=Runtime.Safe(Form.Dependent1);
   Dependent=Runtime.Safe(Form.Dependent);
+  Many=Runtime.Safe(Form.Many);
+  CollectionWithDefault=Runtime.Safe(Many.CollectionWithDefault);
+  Many1=Runtime.Safe(Form.Many1);
+  Collection=Runtime.Safe(Many1.Collection);
   Ref=Runtime.Safe(Global.WebSharper.Ref);
   Var1=Runtime.Safe(Next.Var1);
-  Many=Runtime.Safe(Form.Many);
   Fresh1=Runtime.Safe(Many.Fresh);
   Submitter=Runtime.Safe(Next.Submitter);
-  Many1=Runtime.Safe(Form.Many1);
   ItemOperations=Runtime.Safe(Many1.ItemOperations);
   Collections=Runtime.Safe(Global.WebSharper.Collections);
   ResizeArray=Runtime.Safe(Collections.ResizeArray);
   ResizeArrayProxy=Runtime.Safe(ResizeArray.ResizeArrayProxy);
   Array=Runtime.Safe(Next.Array);
-  CollectionWithDefault=Runtime.Safe(Many1.CollectionWithDefault);
-  Collection=Runtime.Safe(Many1.Collection);
+  CollectionWithDefault1=Runtime.Safe(Many1.CollectionWithDefault);
   Operators=Runtime.Safe(Global.WebSharper.Operators);
   Unchecked=Runtime.Safe(Global.WebSharper.Unchecked);
   Dictionary=Runtime.Safe(Collections.Dictionary);

@@ -385,4 +385,5 @@ let readLines (filePath:string) =
             yield sr.ReadLine ()
     } |> Seq.toArray
 
-
+let normaliza_materia (materia : string) =
+    materia.Replace("  ", " ")
