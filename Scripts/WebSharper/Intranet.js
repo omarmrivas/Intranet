@@ -1,6 +1,6 @@
 (function()
 {
- var Global=this,Runtime=this.IntelliFactory.Runtime,Concurrency,Remoting,AjaxRemotingProvider,window,Forms,Pervasives,Form,Validation,List,Bootstrap,Controls,Simple,UI,Next,AttrProxy,Doc,AttrModule,Var,Submitter1,View,T,View1,Result1,Doc1,Seq,View2,Attr,ErrorMessage,Form1,Fresh,Result,Utils,Dependent1,Dependent,Many,CollectionWithDefault,Many1,Collection,Ref,Var1,Fresh1,Submitter,ItemOperations,Collections,ResizeArray,ResizeArrayProxy,Array,CollectionWithDefault1,Operators,Unchecked,Dictionary,RegExp;
+ var Global=this,Runtime=this.IntelliFactory.Runtime,Concurrency,Remoting,AjaxRemotingProvider,window,Forms,Pervasives,Form,Validation,List,Bootstrap,Controls,Simple,UI,Next,AttrProxy,Doc,AttrModule,Var,Submitter1,View,T,Intranet,Client,Seq,Operators,Date,PrintfHelpers,console,View1,Result1,Doc1,View2,Attr,ErrorMessage,Form1,Fresh,Result,Utils,Dependent1,Dependent,Many,CollectionWithDefault,Many1,Collection,Ref,Var1,Fresh1,Submitter,ItemOperations,Collections,ResizeArray,ResizeArrayProxy,Array,Unchecked,Dictionary,RegExp;
  Runtime.Define(Global,{
   Intranet:{
    Client:{
@@ -104,43 +104,191 @@
      }),arg201),Doc.Element("hr",[],arg202),Doc.Element("h4",List.ofArray([AttrProxy.Create("class","text-muted")]),List.ofArray([Doc.TextNode("The server responded:")])),Doc.Element("div",List.ofArray([AttrProxy.Create("class","jumbotron")]),List.ofArray([Doc.Element("h1",[],arg203)]))]);
      return Doc.Element("div",[],arg20);
     },
-    UpdatePrograms:function()
+    UpdateGroups:function()
     {
-     var getCareers,careers1,_arg00_,_arg00_1,_arg10_,x,renderFunction;
-     getCareers=function(careers)
+     var _arg00_,_arg00_1,pred,_arg10_,_arg20_,_arg10_1,x1,renderFunction;
+     _arg00_=function(period)
      {
-      var result,result1,result2,result3,result4,result5;
-      result=careers.ITI?List.ofArray(["ITI"]):Runtime.New(T,{
+      var arg00;
+      arg00=Concurrency.Delay(function()
+      {
+       var periods;
+       periods=period==="*"?Client.periodos():List.ofArray([period]);
+       return AjaxRemotingProvider.Async("Intranet:6",[periods]);
+      });
+      return Concurrency.Start(arg00,{
        $:0
       });
-      result1=careers.ITEM?Runtime.New(T,{
-       $:1,
-       $0:"ITEM",
-       $1:result
-      }):result;
-      result2=careers.ISTI?Runtime.New(T,{
-       $:1,
-       $0:"ISTI",
-       $1:result1
-      }):result1;
-      result3=careers.ITMA?Runtime.New(T,{
-       $:1,
-       $0:"ITMA",
-       $1:result2
-      }):result2;
-      result4=careers.LAG?Runtime.New(T,{
-       $:1,
-       $0:"LAG",
-       $1:result3
-      }):result3;
-      result5=careers.LMKT?Runtime.New(T,{
-       $:1,
-       $0:"LMKT",
-       $1:result4
-      }):result4;
-      return result5;
      };
-     careers1={
+     pred=function(x)
+     {
+      var value;
+      value=Client.vperiodo(x);
+      return!value;
+     };
+     _arg10_=Form.Yield("");
+     _arg20_=Validation.IsNotEmpty("Necesitas introducir una periodo no nulo, por ejmplo, 20051S o *",_arg10_);
+     _arg00_1=Pervasives.op_LessMultiplyGreater(Form.Return(function(period)
+     {
+      return period;
+     }),Validation.Is(pred,"Necesitas introducir una periodo válido, por ejmplo, 20051S o *",_arg20_));
+     _arg10_1=Form.WithSubmit(_arg00_1);
+     x1=Form.Run(_arg00_,_arg10_1);
+     renderFunction=function(period)
+     {
+      return function(submit)
+      {
+       var arg20,arg201;
+       arg201=List.ofArray([Doc.TextNode("Actualizar Grupos")]);
+       arg20=List.ofArray([Doc.Element("h2",[],arg201),Simple.InputWithError("Periodo",period,submit.get_View()),(((Controls.Button())("Actualizar Grupos"))(List.ofArray([AttrProxy.Create("class","btn btn-primary")])))(function()
+       {
+        return submit.Trigger();
+       }),Controls.ShowErrors(List.ofArray([AttrProxy.Create("style","margin-top:1em")]),submit.get_View())]);
+       return Doc.Element("form",[],arg20);
+      };
+     };
+     return Form.Render(renderFunction,x1);
+    },
+    UpdateProfessors:function()
+    {
+     var careers,_arg00_,pred,_arg10_,_arg20_,x1,_arg00_1,x2,renderFunction;
+     careers={
+      ITI:false,
+      ITEM:false,
+      ISTI:false,
+      ITMA:false,
+      LAG:false,
+      LMKT:false
+     };
+     pred=function(x)
+     {
+      var value;
+      value=Client.vperiodo(x);
+      return!value;
+     };
+     _arg10_=Form.Yield("");
+     _arg20_=Validation.IsNotEmpty("Necesitas introducir una periodo no nulo, por ejmplo, 20051S o *",_arg10_);
+     _arg00_=Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Form.Return(function(iti)
+     {
+      return function(item)
+      {
+       return function(isti)
+       {
+        return function(itma)
+        {
+         return function(lag)
+         {
+          return function(lmkt)
+          {
+           return function(period)
+           {
+            return[{
+             ITI:iti,
+             ITEM:item,
+             ISTI:isti,
+             ITMA:itma,
+             LAG:lag,
+             LMKT:lmkt
+            },period];
+           };
+          };
+         };
+        };
+       };
+      };
+     }),Form.Yield(careers.ITI)),Form.Yield(careers.ITEM)),Form.Yield(careers.ISTI)),Form.Yield(careers.ITMA)),Form.Yield(careers.LAG)),Form.Yield(careers.LMKT)),Validation.Is(pred,"Necesitas introducir una periodo válido, por ejmplo, 20051S o *",_arg20_));
+     x1=Form.WithSubmit(_arg00_);
+     _arg00_1=function(tupledArg)
+     {
+      var career,period,arg00;
+      career=tupledArg[0];
+      period=tupledArg[1];
+      arg00=Concurrency.Delay(function()
+      {
+       var periods;
+       periods=period==="*"?Client.periodos():List.ofArray([period]);
+       return AjaxRemotingProvider.Async("Intranet:7",[Client.getCareers(career),periods]);
+      });
+      return Concurrency.Start(arg00,{
+       $:0
+      });
+     };
+     x2=Form.Run(_arg00_1,x1);
+     renderFunction=function(iti)
+     {
+      return function(item)
+      {
+       return function(isti)
+       {
+        return function(itma)
+        {
+         return function(lag)
+         {
+          return function(lmkt)
+          {
+           return function(period)
+           {
+            return function(submit)
+            {
+             var arg20,arg201,arg202,arg203;
+             arg201=List.ofArray([Doc.TextNode("Actualizar Profesores")]);
+             arg202=List.ofArray([Controls.Checkbox("ITI",Runtime.New(T,{
+              $:0
+             }),iti,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             })),Controls.Checkbox("ITEM",Runtime.New(T,{
+              $:0
+             }),item,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             })),Controls.Checkbox("ISTI",Runtime.New(T,{
+              $:0
+             }),isti,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             }))]);
+             arg203=List.ofArray([Controls.Checkbox("ITMA",Runtime.New(T,{
+              $:0
+             }),itma,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             })),Controls.Checkbox("LAG",Runtime.New(T,{
+              $:0
+             }),lag,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             })),Controls.Checkbox("LMKT",Runtime.New(T,{
+              $:0
+             }),lmkt,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             }))]);
+             arg20=List.ofArray([Doc.Element("h2",[],arg201),Doc.Element("div",[],arg202),Doc.Element("div",[],arg203),Simple.InputWithError("Periodo",period,submit.get_View()),(((Controls.Button())("Actualizar Profesores"))(List.ofArray([AttrProxy.Create("class","btn btn-primary")])))(function()
+             {
+              return submit.Trigger();
+             })]);
+             return Doc.Element("form",[],arg20);
+            };
+           };
+          };
+         };
+        };
+       };
+      };
+     };
+     return Form.Render(renderFunction,x2);
+    },
+    UpdatePrograms:function()
+    {
+     var careers,_arg00_,_arg00_1,_arg10_,x,renderFunction;
+     careers={
       ITI:false,
       ITEM:false,
       ISTI:false,
@@ -153,7 +301,7 @@
       var arg00;
       arg00=Concurrency.Delay(function()
       {
-       return AjaxRemotingProvider.Async("Intranet:5",[getCareers(career)]);
+       return AjaxRemotingProvider.Async("Intranet:5",[Client.getCareers(career)]);
       });
       return Concurrency.Start(arg00,{
        $:0
@@ -184,7 +332,7 @@
         };
        };
       };
-     }),Form.Yield(careers1.ITI)),Form.Yield(careers1.ITEM)),Form.Yield(careers1.ISTI)),Form.Yield(careers1.ITMA)),Form.Yield(careers1.LAG)),Form.Yield(careers1.LMKT));
+     }),Form.Yield(careers.ITI)),Form.Yield(careers.ITEM)),Form.Yield(careers.ISTI)),Form.Yield(careers.ITMA)),Form.Yield(careers.LAG)),Form.Yield(careers.LMKT));
      _arg10_=Form.WithSubmit(_arg00_1);
      x=Form.Run(_arg00_,_arg10_);
      renderFunction=function(iti)
@@ -275,6 +423,58 @@
      })]),List.ofArray([Doc.TextNode("Actualizar")]))]);
      return Doc.Element("div",[],arg20);
     },
+    getCareers:function(careers)
+    {
+     var result,result1,result2,result3,result4,result5;
+     result=careers.ITI?List.ofArray(["ITI"]):Runtime.New(T,{
+      $:0
+     });
+     result1=careers.ITEM?Runtime.New(T,{
+      $:1,
+      $0:"ITEM",
+      $1:result
+     }):result;
+     result2=careers.ISTI?Runtime.New(T,{
+      $:1,
+      $0:"ISTI",
+      $1:result1
+     }):result1;
+     result3=careers.ITMA?Runtime.New(T,{
+      $:1,
+      $0:"ITMA",
+      $1:result2
+     }):result2;
+     result4=careers.LAG?Runtime.New(T,{
+      $:1,
+      $0:"LAG",
+      $1:result3
+     }):result3;
+     result5=careers.LMKT?Runtime.New(T,{
+      $:1,
+      $0:"LMKT",
+      $1:result4
+     }):result4;
+     return result5;
+    },
+    periodos:function()
+    {
+     return Runtime.New(T,{
+      $:1,
+      $0:"20013S",
+      $1:Seq.toList(Seq.delay(function()
+      {
+       var copyOfStruct;
+       copyOfStruct=Date.now();
+       return Seq.collect(function(ano)
+       {
+        return Seq.map(function(s)
+        {
+         return Global.String(ano)+Global.String(s)+"S";
+        },Operators.range(1,3));
+       },Operators.range(2002,(new Date(copyOfStruct)).getFullYear()));
+      }))
+     });
+    },
     userComponents:function(username)
     {
      var arg20,arg201;
@@ -297,6 +497,37 @@
       };
      })]),List.ofArray([Doc.TextNode("Logout")]))]);
      return Doc.Element("div",[],arg20);
+    },
+    vperiodo:function(period)
+    {
+     var _,clo1,arg10;
+     if(!Seq.exists(function(s)
+     {
+      return s===period;
+     },Runtime.New(T,{
+      $:1,
+      $0:"*",
+      $1:Client.periodos()
+     })))
+      {
+       clo1=function(_1)
+       {
+        var s;
+        s="El valor de periodo debe ser uno de los siguientes valores: "+PrintfHelpers.prettyPrint(_1);
+        return console?console.log(s):undefined;
+       };
+       arg10=function()
+       {
+        return Client.periodos();
+       };
+       clo1(arg10);
+       _=true;
+      }
+     else
+      {
+       _=false;
+      }
+     return _;
     }
    }
   },
@@ -1010,6 +1241,14 @@
        {
         return this.Add(this["default"]);
        }
+      },{
+       New:function(p,inits,pInit,_default)
+       {
+        var r;
+        r=Runtime.New(this,Collection.New(p,inits,pInit));
+        r["default"]=_default;
+        return r;
+       }
       }),
       Fresh:{
        Int:Runtime.Field(function()
@@ -1355,15 +1594,6 @@
         return r;
        }
       }),
-      CollectionWithDefault:{
-       New:function(p,inits,pInit,_default)
-       {
-        var r;
-        r=Runtime.New(this,Collection.New(p,inits,pInit));
-        r["default"]=_default;
-        return r;
-       }
-      },
       ItemOperations:Runtime.Class({
        Delete:function()
        {
@@ -1400,7 +1630,7 @@
      {
       var pInit,m;
       pInit=p(init);
-      m=CollectionWithDefault1.New(p,inits,pInit,init);
+      m=CollectionWithDefault.New(p,inits,pInit,init);
       return Runtime.New(Form1,{
        id:Fresh.Id(),
        view:m.get_View(),
@@ -2163,10 +2393,16 @@
   Submitter1=Runtime.Safe(Next.Submitter1);
   View=Runtime.Safe(Next.View);
   T=Runtime.Safe(List.T);
+  Intranet=Runtime.Safe(Global.Intranet);
+  Client=Runtime.Safe(Intranet.Client);
+  Seq=Runtime.Safe(Global.WebSharper.Seq);
+  Operators=Runtime.Safe(Global.WebSharper.Operators);
+  Date=Runtime.Safe(Global.Date);
+  PrintfHelpers=Runtime.Safe(Global.WebSharper.PrintfHelpers);
+  console=Runtime.Safe(Global.console);
   View1=Runtime.Safe(Next.View1);
   Result1=Runtime.Safe(Forms.Result1);
   Doc1=Runtime.Safe(Forms.Doc);
-  Seq=Runtime.Safe(Global.WebSharper.Seq);
   View2=Runtime.Safe(Forms.View);
   Attr=Runtime.Safe(Forms.Attr);
   ErrorMessage=Runtime.Safe(Forms.ErrorMessage);
@@ -2189,8 +2425,6 @@
   ResizeArray=Runtime.Safe(Collections.ResizeArray);
   ResizeArrayProxy=Runtime.Safe(ResizeArray.ResizeArrayProxy);
   Array=Runtime.Safe(Next.Array);
-  CollectionWithDefault1=Runtime.Safe(Many1.CollectionWithDefault);
-  Operators=Runtime.Safe(Global.WebSharper.Operators);
   Unchecked=Runtime.Safe(Global.WebSharper.Unchecked);
   Dictionary=Runtime.Safe(Collections.Dictionary);
   return RegExp=Runtime.Safe(Global.RegExp);

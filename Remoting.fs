@@ -30,13 +30,13 @@ module Server =
         LMKT : bool
     }
 
-    let carreras = ["ITI"; "ITEM"; "ISTI"; "ITMA"; "LAG"; "LMKT"]
+//    let carreras = ["ITI"; "ITEM"; "ISTI"; "ITMA"; "LAG"; "LMKT"]
 
-    let periodos = 
+(*    let periodos () = 
             "20013S" ::
                 [for ano in 2002 .. System.DateTime.Now.Year do
                     for s in 1..3 do
-                        yield string ano + string s + "S"]
+                        yield string ano + string s + "S"]*)
     // Database commands types/vars
 
     [<Rpc>]
@@ -95,11 +95,67 @@ module Server =
                         let cookie = IntranetAccess.getCookie userdata
                         let carreras = careers
                         printfn "Carreras: %A" carreras
-                        let cookie = Planes.obtener_extracurriculares cookie
-                        let cookie =  List.fold Planes.obtener_plan cookie carreras
-                        let userdata = IntranetAccess.changeCookie userdata cookie
-                        ignore (users.AddOrUpdate(username, userdata, (fun _ user -> user)))
+                        let thread = System.Threading.Thread (fun () ->
+                            let cookie = Planes.obtener_extracurriculares cookie
+                            let cookie =  List.fold Planes.obtener_plan cookie carreras
+                            let cookie = List.fold Seriaciones.obtener_seriacion_plan cookie carreras
+                            let userdata = IntranetAccess.changeCookie userdata cookie
+                            ignore (users.AddOrUpdate(username, userdata, (fun _ user -> user)))
+                            printfn "Excecution of UpdatePrograms finished successfully...")
+                        thread.Start()
                     | None -> printfn "You must log-in..."
                 return ()
         }
 
+    [<Rpc>]
+    let UpdateGroups (periods : string list) =
+        printfn "Executing UpdateGroups..."
+        let ctx = Web.Remoting.GetContext()
+        let loggedIn = ctx.UserSession.GetLoggedInUser()
+                        |> Async.RunSynchronously
+        async {
+                match loggedIn with
+                    | Some username ->
+                        let userdata = let v : IntranetAccess.UserData ref = ref Unchecked.defaultof<IntranetAccess.UserData>
+                                       if users.TryGetValue(username, v)
+                                       then !v
+                                       else failwith "User can not access this resource..."
+                        let cookie = IntranetAccess.getCookie userdata
+                        printfn "Periodos: %A" periods
+                        let thread = System.Threading.Thread (fun () ->
+                            let cookie =  List.fold Grupos.obtener_grupos cookie periods
+                            let userdata = IntranetAccess.changeCookie userdata cookie
+                            ignore (users.AddOrUpdate(username, userdata, (fun _ user -> user)))
+                            printfn "Excecution of UpdateGroups finished successfully...")
+                        thread.Start()
+                    | None -> printfn "You must log-in..."
+                return ()
+        }
+
+    [<Rpc>]
+    let UpdateProfessors (planes : string list) (periods : string list) =
+        printfn "Executing UpdateGroups..."
+        let ctx = Web.Remoting.GetContext()
+        let loggedIn = ctx.UserSession.GetLoggedInUser()
+                        |> Async.RunSynchronously
+        async {
+                match loggedIn with
+                    | Some username ->
+                        let userdata = let v : IntranetAccess.UserData ref = ref Unchecked.defaultof<IntranetAccess.UserData>
+                                       if users.TryGetValue(username, v)
+                                       then !v
+                                       else failwith "User can not access this resource..."
+                        let cookie = IntranetAccess.getCookie userdata
+                        printfn "Periodos: %A" periods
+                        let thread = System.Threading.Thread (fun () ->
+                            let muestras = [for carrera in planes do
+                                                for periodo in periods do
+                                                    yield (carrera, periodo)]
+                            let cookie =  List.fold Profesores.obtener_profesores cookie muestras
+                            let userdata = IntranetAccess.changeCookie userdata cookie
+                            ignore (users.AddOrUpdate(username, userdata, (fun _ user -> user)))
+                            printfn "Excecution of UpdateGroups finished successfully...")
+                        thread.Start()
+                    | None -> printfn "You must log-in..."
+                return ()
+        }

@@ -38,6 +38,7 @@ let to_number number (str : string) =
 
 let to_sbyte = to_number sbyte
 let to_double = to_number float32
+let to_uint32 = to_number uint32
 
 let select_matriculas carrera periodo =
     query { for registro in ctx.Intranet.Inscripciones do
@@ -133,6 +134,49 @@ let rec actualiza_planes carrera clave semestre materia seriacion creditos horas
               registro.Teoria <- to_sbyte teoria
               registro.Practica <- to_sbyte practica
               registro.Evaluacion <- evaluacion
+              ctx.SubmitUpdates()
+
+let rec actualiza_grupos grupo periodo materia aula lunes martes miercoles jueves viernes sabado profesor alumnos estado plan =
+    let result = query { for registro in ctx.Intranet.Grupos do
+                         where (registro.Grupo = grupo)
+                         select registro}
+                            |> Seq.toList
+    match result with
+        [registro] -> registro.Delete()
+                      ctx.SubmitUpdates()
+                      actualiza_grupos grupo periodo materia aula lunes martes miercoles jueves viernes sabado profesor alumnos estado plan
+       | _ -> let registro = ctx.Intranet.Grupos.Create()
+              registro.Grupo <- grupo
+              registro.Periodo <- periodo
+              registro.Materia <- materia
+              registro.Aula <- aula
+              registro.Lunes <- lunes
+              registro.Martes <- martes
+              registro.Miercoles <- miercoles
+              registro.Jueves <- jueves
+              registro.Viernes <- viernes
+              registro.Sabado <- sabado
+              registro.Profesor <- to_uint32 profesor
+              registro.Alumnos <- to_uint32 alumnos
+              registro.Estado <- estado
+              registro.Plan <- plan
+              ctx.SubmitUpdates()
+
+let rec actualiza_profesores profesor periodo nombre apellidos tipo =
+    let result = query { for registro in ctx.Intranet.Profesores do
+                         where (registro.Profesor = to_uint32 profesor && registro.Periodo = periodo)
+                         select registro}
+                            |> Seq.toList
+    match result with
+        [registro] -> registro.Delete()
+                      ctx.SubmitUpdates()
+                      actualiza_profesores profesor periodo nombre apellidos tipo
+       | _ -> let registro = ctx.Intranet.Profesores.Create()
+              registro.Profesor <- to_uint32 profesor
+              registro.Periodo <- periodo
+              registro.Nombre <- nombre
+              registro.Apellidos <- apellidos
+              registro.Tipo <- tipo
               ctx.SubmitUpdates()
 
 (*

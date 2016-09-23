@@ -14,7 +14,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `intranet`
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `algoritmos_clasificadores` (
   `comando_predecir` varchar(1000) NOT NULL,
   `descripcion` varchar(2000) NOT NULL,
   PRIMARY KEY (`clase`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `alumnos` (
   `genero` char(1) NOT NULL COMMENT 'Genero del alumno (M = Masculino, F = Femenino).).',
   `fecha_nacimiento` date NOT NULL COMMENT 'Fecha de nacimiento del alumno.',
   PRIMARY KEY (`matricula`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Almacena a todos los alumnos de la universidad sin importar la carrera.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Almacena a todos los alumnos de la universidad sin importar la carrera.';
 
 -- --------------------------------------------------------
 
@@ -84,7 +84,46 @@ CREATE TABLE IF NOT EXISTS `extracurriculares` (
   `practica` tinyint(4) NOT NULL,
   `evaluacion` varchar(200) NOT NULL,
   PRIMARY KEY (`clave`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `grupos`
+--
+
+CREATE TABLE IF NOT EXISTS `grupos` (
+  `grupo` varchar(7) NOT NULL,
+  `periodo` char(6) NOT NULL,
+  `materia` varchar(200) NOT NULL,
+  `aula` varchar(10) NOT NULL,
+  `lunes` varchar(15) NOT NULL,
+  `martes` varchar(15) NOT NULL,
+  `miercoles` varchar(15) NOT NULL,
+  `jueves` varchar(15) NOT NULL,
+  `viernes` varchar(15) NOT NULL,
+  `sabado` varchar(15) NOT NULL,
+  `profesor` int(11) NOT NULL,
+  `alumnos` int(11) NOT NULL,
+  `estado` varchar(15) NOT NULL,
+  `plan` varchar(50) NOT NULL,
+  PRIMARY KEY (`grupo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Contiene todos los grupos';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `profesores`
+--
+
+CREATE TABLE IF NOT EXISTS `profesores` (
+  `profesor` int(11) NOT NULL,
+  `periodo` char(6) NOT NULL,
+  `nombre` varchar(200) NOT NULL,
+  `apellidos` varchar(200) NOT NULL,
+  `tipo` varchar(100) NOT NULL,
+  PRIMARY KEY (`profesor`,`periodo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Contiene todos los grupos';
 
 -- --------------------------------------------------------
 
@@ -100,7 +139,7 @@ CREATE TABLE IF NOT EXISTS `inscripciones` (
   `plan` char(4) NOT NULL,
   `fecha` date NOT NULL,
   PRIMARY KEY (`matricula`,`periodo`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Contiene todas las incripciones de alumnos';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Contiene todas las incripciones de alumnos';
 
 -- --------------------------------------------------------
 
@@ -119,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `kardex` (
   `inasistencias` tinyint(4) NOT NULL,
   `estatus` varchar(20) NOT NULL,
   PRIMARY KEY (`matricula`,`periodo`,`materia`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
 
@@ -139,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `modelos` (
   `reprobados_correctos` int(11) NOT NULL,
   `modelo` mediumblob NOT NULL,
   PRIMARY KEY (`materia`,`periodo`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
 
@@ -159,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `planes` (
   `practica` tinyint(4) NOT NULL,
   `evaluacion` varchar(200) NOT NULL,
   PRIMARY KEY (`carrera`,`clave`,`materia`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

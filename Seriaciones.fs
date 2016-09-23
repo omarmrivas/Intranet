@@ -178,6 +178,5 @@ let obtener_seriacion_plan cookie carrera =
 //            printfn "Materia: '%s' (%s) - Seriada: '%s' (%s)" materia codigo_materia seriada codigo_seriada
             //ignore (DBin.actualiza_planes carrera clave semestre materia seriacion creditos horas teoria practica evaluacion)
             (materia, seriada)) ("", "")
-       |> ignore
-    with | :? System.Collections.Generic.KeyNotFoundException -> ()
-    ()
+       |> (fun _ -> cookie)
+    with | :? System.Collections.Generic.KeyNotFoundException -> cookie

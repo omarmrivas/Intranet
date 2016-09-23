@@ -105,5 +105,7 @@ let obtener_alumnos cookie (carrera, periodo) =
         BaseDatos.actualiza_alumno matricula nombre genero fecha_nacimiento
         BaseDatos.actualiza_inscripciones matricula periodo estado semestre plan fecha
         Set.add matricula set) matriculas alumnos.Rows
-        |> (fun matriculas -> (cookie, matriculas))
+        |> ignore
+    cookie
+//        |> (fun matriculas -> (cookie, matriculas))
 

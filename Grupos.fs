@@ -46,12 +46,19 @@ let TablaGrupos = """
 
 type Grupos = XmlProvider<TablaGrupos>
 
-let obtener_alumnos cookie periodo = 
+let extraerInfo (info : string) =
+    match info.Split [|'/'|] with
+        | [| id; pendiente |] -> (id.Trim(), (pendiente.Trim(), pendiente.Trim()))
+        | [| id; apellidos; nombre |] -> (id.Trim(), (apellidos.Trim(), nombre.Trim()))
+        | _ -> printfn "Información de profesor inválida: %s" info
+               ("", ("", ""))
+
+let obtener_grupos cookie periodo =
     let rec aux cookie =
      try
       let f () =     Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/periodo.do",
                                          query = [("6578706f7274","1"); ("aula", "0"); ("aulanom", "*"); ("cveMateria", "0");
-                                                  ("d-1782-e","3"); ("method","grupos"); ("nommat",""); ("nomprof", ""); 
+                                                  ("d-1782-e","3"); ("method","grupos"); ("nommat",""); ("nomprof", "");
                                                   ("pdo",periodo); ("rep", "si"); ("ultimo","20013S")],
                                          cookieContainer = cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
@@ -62,8 +69,8 @@ let obtener_alumnos cookie periodo =
           | :? System.Net.WebException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
                                           aux cookie
     let (cookie, grupos) = aux cookie
-    printfn "Actualizando Grupos de la carrera en el periodo %s..." periodo
-    Array.iter (fun (grupo : Grupos.Row) -> 
+    printfn "Actualizando grupos en el periodo %s..." periodo
+    Array.fold (fun m (grupo : Grupos.Row) -> 
         let valores = [| for campo in grupo.Columns do
                             match campo.String with
                                 Some s -> yield s
@@ -77,37 +84,12 @@ let obtener_alumnos cookie periodo =
         let jueves = valores.[6]
         let viernes = valores.[7]
         let sabado = valores.[8]
-        let profesor = valores.[9]
+        let (idProfesor, (apellidosProfesor, nombreProfesor)) = extraerInfo (valores.[9])
         let alumnos = valores.[12]
         let estado = valores.[13]
         let plan = valores.[14]
-        ()) grupos.Rows
-
-//    let matriculas = set []
-
-(*    Array.fold (fun set (alumno : BD.Row) ->
-        let valores = [| for campo in alumno.Columns do
-                            match campo.String with
-                                Some s -> yield s
-                                | _ -> yield "" |]
-        let periodo = valores.[0]
-        let estado = valores.[1]
-        let semestre = valores.[2]
-        let plan = valores.[3]
-        let matricula = valores.[4]
-        let nombre = valores.[5].Replace("'", "")
-        let genero = valores.[6]
-        let fecha = [| '/' |] |> valores.[9].Split
-                                         |> (fun arr -> match arr with
-                                                            [| dia; mes; ano |] -> DateTime(2000 + int ano, int mes, int dia)
-                                                            | _ -> DateTime.Now)
-        let fecha_nacimiento = [| '-' |] |> valores.[17].Split
-                                         |> (fun arr -> match arr with
-                                                            [| dia; mes; ano |] -> DateTime(int ano, int mes, int dia)
-                                                            | _ -> DateTime.Now)
-        BaseDatos.actualiza_alumno matricula nombre genero fecha_nacimiento
-        BaseDatos.actualiza_inscripciones matricula periodo estado semestre plan fecha
-        Set.add matricula set) matriculas alumnos.Rows
-        |> (fun matriculas -> (cookie, matriculas))*)
-
+//        printfn "grupo:%s periodo:%s materia:%s aula:%s lunes:%s martes:%s miercoles:%s jueves:%s viernes:%s sabado:%s idProfesor:%s alumnos:%s estado:%s plan:%s" grupo periodo materia aula lunes martes miercoles jueves viernes sabado idProfesor alumnos estado plan
+        BaseDatos.actualiza_grupos grupo periodo materia aula lunes martes miercoles jueves viernes sabado idProfesor alumnos estado plan
+        (Map.add (idProfesor,periodo) (apellidosProfesor, nombreProfesor) m)) Map.empty grupos.Rows
+        |> (fun x -> cookie)
 

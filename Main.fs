@@ -43,19 +43,24 @@ module Site =
             let content = 
                 match loggedIn with
                     Some username ->
-                        let adminComponents = match Server.adminuser with
-                                                Some admin -> if IntranetAccess.getUserName admin = username
-                                                              then [client <@ Client.UpdatePrograms () @>]
-                                                              else []
-                                              | None       -> []
-                        if adminComponents = []
+                        let isAdmin = match Server.adminuser with
+                                        Some admin -> if IntranetAccess.getUserName admin = username
+                                                      then true
+                                                      else false
+                                      | None       -> false
+                        let adminPrograms = [client <@ Client.UpdatePrograms () @>]
+                        let adminGroups = [client <@ Client.UpdateGroups () @>]
+                        let adminProfessors = [client <@ Client.UpdateProfessors () @>]
+                        if isAdmin
                         then 
                          div [
+                              divAttr [attr.``class`` "jumbotron"] adminPrograms
+                              divAttr [attr.``class`` "jumbotron"] adminGroups
+                              divAttr [attr.``class`` "jumbotron"] adminProfessors
                               div [client <@ Client.userComponents username @>]
                          ]
                         else 
                          div [
-                              divAttr [attr.``class`` "jumbotron"] adminComponents
                               div [client <@ Client.userComponents username @>]
                          ]
                   | None -> 
