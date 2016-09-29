@@ -4,6 +4,9 @@
 ## Password file
 credentials.intranet
 
+## .DS_Store
+.DS_Store
+
 # User-specific files
 *.suo
 *.user
