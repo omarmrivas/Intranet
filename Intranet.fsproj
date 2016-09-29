@@ -44,6 +44,7 @@
     <Compile Include="Seriaciones.fs" />
     <Compile Include="Grupos.fs" />
     <Compile Include="Profesores.fs" />
+    <Compile Include="Kardex.fs" />
     <Compile Include="Forms.fsi" />
     <Compile Include="Forms.fs" />
     <Compile Include="Bootstrap.fs" />

@@ -144,6 +144,41 @@ module Client =
             ]
         )
 
+    let UpdateKardex () =
+        let careers : Server.Career = {ITI = false; ITEM = false; ISTI = false; ITMA = false; LAG = false; LMKT = false}
+        Form.Return (fun iti item isti itma lag lmkt period -> (({ITI = iti; ITEM = item; ISTI = isti; ITMA = itma; LAG = lag; LMKT = lmkt} : Server.Career), period))
+        <*> Form.Yield careers.ITI
+        <*> Form.Yield careers.ITEM
+        <*> Form.Yield careers.ISTI
+        <*> Form.Yield careers.ITMA
+        <*> Form.Yield careers.LAG
+        <*> Form.Yield careers.LMKT
+        <*> (Form.Yield ""
+            |> Validation.IsNotEmpty "Necesitas introducir una periodo no nulo, por ejmplo, 20051S o *"
+            |> Validation.Is (not << vperiodo) "Necesitas introducir una periodo válido, por ejmplo, 20051S o *")
+        |> Form.WithSubmit
+        |> Form.Run (fun (career, period) ->
+            async {
+                let periods = if period = "*"
+                              then periodos ()
+                              else [period]
+                return! Server.UpdateKardex (getCareers career) periods
+            } |> Async.Start
+        )
+        |> Form.Render (fun iti item isti itma lag lmkt period submit ->
+            form [
+                h2 [text "Actualizar Kardex"]
+                div [B.Checkbox "ITI"  [] (iti, [], [])
+                     B.Checkbox "ITEM" [] (item, [], [])
+                     B.Checkbox "ISTI" [] (isti, [], [])]
+                div [B.Checkbox "ITMA" [] (itma, [], [])
+                     B.Checkbox "LAG"  [] (lag, [], [])
+                     B.Checkbox "LMKT" [] (lmkt, [], [])]
+                B.Simple.InputWithError "Periodo" period submit.View
+                B.Button "Actualizar Kardex" [attr.``class`` "btn btn-primary"] submit.Trigger
+            ]
+        )
+
     let LoggedInUser username =
         div [
             p [text "Click here to log out:"]

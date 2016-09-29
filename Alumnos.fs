@@ -92,6 +92,7 @@ let obtener_alumnos cookie (carrera, periodo) =
 //        ignore (matriculas.Add matricula)
         let nombre = valores.[5].Replace("'", "")
         let genero = valores.[6]
+        let ingreso = valores.[8]
 //        printfn "%s" valores.[9]
         let fecha = [| '/' |] |> valores.[9].Split
                                          |> (fun arr -> match arr with
@@ -102,7 +103,13 @@ let obtener_alumnos cookie (carrera, periodo) =
                                          |> (fun arr -> match arr with
                                                             [| dia; mes; ano |] -> DateTime(int ano, int mes, int dia)
                                                             | _ -> DateTime.Now)
-        BaseDatos.actualiza_alumno matricula nombre genero fecha_nacimiento
+        let telefono = valores.[10]
+        let direccion = valores.[11]
+        let colonia = valores.[12]
+        let cp = valores.[13]
+        let municipio = valores.[14]
+        let procedencia = valores.[15]
+        BaseDatos.actualiza_alumno matricula nombre genero fecha_nacimiento ingreso telefono direccion colonia cp municipio procedencia
         BaseDatos.actualiza_inscripciones matricula periodo estado semestre plan fecha
         Set.add matricula set) matriculas alumnos.Rows
         |> ignore

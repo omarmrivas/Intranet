@@ -51,12 +51,14 @@ module Site =
                         let adminPrograms = [client <@ Client.UpdatePrograms () @>]
                         let adminGroups = [client <@ Client.UpdateGroups () @>]
                         let adminProfessors = [client <@ Client.UpdateProfessors () @>]
+                        let adminKardex = [client <@ Client.UpdateKardex () @>]
                         if isAdmin
                         then 
                          div [
                               divAttr [attr.``class`` "jumbotron"] adminPrograms
                               divAttr [attr.``class`` "jumbotron"] adminGroups
                               divAttr [attr.``class`` "jumbotron"] adminProfessors
+                              divAttr [attr.``class`` "jumbotron"] adminKardex
                               div [client <@ Client.userComponents username @>]
                          ]
                         else 

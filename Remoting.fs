@@ -159,3 +159,33 @@ module Server =
                     | None -> printfn "You must log-in..."
                 return ()
         }
+
+    [<Rpc>]
+    let UpdateKardex (planes : string list) (periods : string list) =
+        printfn "Executing UpdateKardex..."
+        let ctx = Web.Remoting.GetContext()
+        let loggedIn = ctx.UserSession.GetLoggedInUser()
+                        |> Async.RunSynchronously
+        async {
+                match loggedIn with
+                    | Some username ->
+                        let userdata = let v : IntranetAccess.UserData ref = ref Unchecked.defaultof<IntranetAccess.UserData>
+                                       if users.TryGetValue(username, v)
+                                       then !v
+                                       else failwith "User can not access this resource..."
+                        let cookie = IntranetAccess.getCookie userdata
+                        printfn "Periodos: %A" periods
+                        let thread = System.Threading.Thread (fun () ->
+                            let muestras = [for carrera in planes do
+                                                for periodo in periods do
+                                                    yield (carrera, periodo)]
+//                            let cookie = List.fold Alumnos.obtener_alumnos cookie muestras
+                            let cookie = List.fold Kardex.obtener_kardex cookie muestras
+                            let userdata = IntranetAccess.changeCookie userdata cookie
+                            ignore (users.AddOrUpdate(username, userdata, (fun _ user -> user)))
+                            printfn "Excecution of UpdateGroups finished successfully...")
+                        thread.Start()
+                    | None -> printfn "You must log-in..."
+                return ()
+        }
+

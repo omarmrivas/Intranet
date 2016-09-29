@@ -1,6 +1,6 @@
 (function()
 {
- var Global=this,Runtime=this.IntelliFactory.Runtime,Concurrency,Remoting,AjaxRemotingProvider,window,Forms,Pervasives,Form,Validation,List,Bootstrap,Controls,Simple,UI,Next,AttrProxy,Doc,AttrModule,Var,Submitter1,View,T,Intranet,Client,Seq,Operators,Date,PrintfHelpers,console,View1,Result1,Doc1,View2,Attr,ErrorMessage,Form1,Fresh,Result,Utils,Dependent1,Dependent,Many,CollectionWithDefault,Many1,Collection,Ref,Var1,Fresh1,Submitter,ItemOperations,Collections,ResizeArray,ResizeArrayProxy,Array,Unchecked,Dictionary,RegExp;
+ var Global=this,Runtime=this.IntelliFactory.Runtime,Concurrency,Remoting,AjaxRemotingProvider,window,Forms,Pervasives,Form,Validation,List,Bootstrap,Controls,Simple,UI,Next,AttrProxy,Doc,AttrModule,Var,Submitter1,View,T,Intranet,Client,Seq,Operators,Date,PrintfHelpers,console,View1,Result1,Doc1,View2,Attr,ErrorMessage,Form1,Fresh,Utils,Dependent1,Dependent,Many,CollectionWithDefault,Many1,Collection,Ref,Var1,Fresh1,Submitter,ItemOperations,Collections,ResizeArray,ResizeArrayProxy,Array,Result,CollectionWithDefault1,Unchecked,Dictionary,RegExp;
  Runtime.Define(Global,{
   Intranet:{
    Client:{
@@ -148,6 +148,142 @@
       };
      };
      return Form.Render(renderFunction,x1);
+    },
+    UpdateKardex:function()
+    {
+     var careers,_arg00_,pred,_arg10_,_arg20_,x1,_arg00_1,x2,renderFunction;
+     careers={
+      ITI:false,
+      ITEM:false,
+      ISTI:false,
+      ITMA:false,
+      LAG:false,
+      LMKT:false
+     };
+     pred=function(x)
+     {
+      var value;
+      value=Client.vperiodo(x);
+      return!value;
+     };
+     _arg10_=Form.Yield("");
+     _arg20_=Validation.IsNotEmpty("Necesitas introducir una periodo no nulo, por ejmplo, 20051S o *",_arg10_);
+     _arg00_=Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Pervasives.op_LessMultiplyGreater(Form.Return(function(iti)
+     {
+      return function(item)
+      {
+       return function(isti)
+       {
+        return function(itma)
+        {
+         return function(lag)
+         {
+          return function(lmkt)
+          {
+           return function(period)
+           {
+            return[{
+             ITI:iti,
+             ITEM:item,
+             ISTI:isti,
+             ITMA:itma,
+             LAG:lag,
+             LMKT:lmkt
+            },period];
+           };
+          };
+         };
+        };
+       };
+      };
+     }),Form.Yield(careers.ITI)),Form.Yield(careers.ITEM)),Form.Yield(careers.ISTI)),Form.Yield(careers.ITMA)),Form.Yield(careers.LAG)),Form.Yield(careers.LMKT)),Validation.Is(pred,"Necesitas introducir una periodo válido, por ejmplo, 20051S o *",_arg20_));
+     x1=Form.WithSubmit(_arg00_);
+     _arg00_1=function(tupledArg)
+     {
+      var career,period,arg00;
+      career=tupledArg[0];
+      period=tupledArg[1];
+      arg00=Concurrency.Delay(function()
+      {
+       var periods;
+       periods=period==="*"?Client.periodos():List.ofArray([period]);
+       return AjaxRemotingProvider.Async("Intranet:8",[Client.getCareers(career),periods]);
+      });
+      return Concurrency.Start(arg00,{
+       $:0
+      });
+     };
+     x2=Form.Run(_arg00_1,x1);
+     renderFunction=function(iti)
+     {
+      return function(item)
+      {
+       return function(isti)
+       {
+        return function(itma)
+        {
+         return function(lag)
+         {
+          return function(lmkt)
+          {
+           return function(period)
+           {
+            return function(submit)
+            {
+             var arg20,arg201,arg202,arg203;
+             arg201=List.ofArray([Doc.TextNode("Actualizar Kardex")]);
+             arg202=List.ofArray([Controls.Checkbox("ITI",Runtime.New(T,{
+              $:0
+             }),iti,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             })),Controls.Checkbox("ITEM",Runtime.New(T,{
+              $:0
+             }),item,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             })),Controls.Checkbox("ISTI",Runtime.New(T,{
+              $:0
+             }),isti,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             }))]);
+             arg203=List.ofArray([Controls.Checkbox("ITMA",Runtime.New(T,{
+              $:0
+             }),itma,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             })),Controls.Checkbox("LAG",Runtime.New(T,{
+              $:0
+             }),lag,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             })),Controls.Checkbox("LMKT",Runtime.New(T,{
+              $:0
+             }),lmkt,Runtime.New(T,{
+              $:0
+             }),Runtime.New(T,{
+              $:0
+             }))]);
+             arg20=List.ofArray([Doc.Element("h2",[],arg201),Doc.Element("div",[],arg202),Doc.Element("div",[],arg203),Simple.InputWithError("Periodo",period,submit.get_View()),(((Controls.Button())("Actualizar Kardex"))(List.ofArray([AttrProxy.Create("class","btn btn-primary")])))(function()
+             {
+              return submit.Trigger();
+             })]);
+             return Doc.Element("form",[],arg20);
+            };
+           };
+          };
+         };
+        };
+       };
+      };
+     };
+     return Form.Render(renderFunction,x2);
     },
     UpdateProfessors:function()
     {
@@ -1047,7 +1183,7 @@
       {
        return function(arg10)
        {
-        return Result.ApJoin(arg001,arg10);
+        return Result1.ApJoin(arg001,arg10);
        };
       };
       arg101=pf.view;
@@ -1089,7 +1225,7 @@
      Builder:Runtime.Class({
       Bind:function(p,f)
       {
-       return Form.Dependent3(p,f);
+       return Form.Dependent2(p,f);
       },
       Return:function(x)
       {
@@ -1148,35 +1284,7 @@
        },pOut);
       }
      },
-     Dependent1:{
-      New:function(renderPrimary,pOut)
-      {
-       var r;
-       r=Runtime.New(this,{});
-       r.renderPrimary=renderPrimary;
-       r.pOut=pOut;
-       r.out=View1.Bind(function(_arg1)
-       {
-        var _,m,p;
-        if(_arg1.$==1)
-         {
-          m=_arg1.$0;
-          _=View1.Const({
-           $:1,
-           $0:m
-          });
-         }
-        else
-         {
-          p=_arg1.$0;
-          _=p.view;
-         }
-        return _;
-       },r.pOut);
-       return r;
-      }
-     },
-     Dependent2:Runtime.Class({
+     Dependent1:Runtime.Class({
       RenderDependent:function(f)
       {
        var _arg00_,_arg10_;
@@ -1205,8 +1313,35 @@
       {
        return this.out;
       }
+     },{
+      New:function(renderPrimary,pOut)
+      {
+       var r;
+       r=Runtime.New(this,{});
+       r.renderPrimary=renderPrimary;
+       r.pOut=pOut;
+       r.out=View1.Bind(function(_arg1)
+       {
+        var _,m,p;
+        if(_arg1.$==1)
+         {
+          m=_arg1.$0;
+          _=View1.Const({
+           $:1,
+           $0:m
+          });
+         }
+        else
+         {
+          p=_arg1.$0;
+          _=p.view;
+         }
+        return _;
+       },r.pOut);
+       return r;
+      }
      }),
-     Dependent3:function(input,output)
+     Dependent2:function(input,output)
      {
       var d;
       d=Dependent.Make(input,output);
@@ -1240,14 +1375,6 @@
        AddOne:function()
        {
         return this.Add(this["default"]);
-       }
-      },{
-       New:function(p,inits,pInit,_default)
-       {
-        var r;
-        r=Runtime.New(this,Collection.New(p,inits,pInit));
-        r["default"]=_default;
-        return r;
        }
       }),
       Fresh:{
@@ -1594,6 +1721,15 @@
         return r;
        }
       }),
+      CollectionWithDefault:{
+       New:function(p,inits,pInit,_default)
+       {
+        var r;
+        r=Runtime.New(this,Collection.New(p,inits,pInit));
+        r["default"]=_default;
+        return r;
+       }
+      },
       ItemOperations:Runtime.Class({
        Delete:function()
        {
@@ -1630,7 +1766,7 @@
      {
       var pInit,m;
       pInit=p(init);
-      m=CollectionWithDefault.New(p,inits,pInit,init);
+      m=CollectionWithDefault1.New(p,inits,pInit,init);
       return Runtime.New(Form1,{
        id:Fresh.Id(),
        view:m.get_View(),
@@ -2003,64 +2139,6 @@
      }
     },
     Result:Runtime.Class({},{
-     ApJoin:function(rf,rx)
-     {
-      var _,f,_1,_2,x,mx,mx1,mf,_3,mx2;
-      if(rf.$==0)
-       {
-        f=rf.$0;
-        if(rx.$==0)
-         {
-          if(rx.$0.$==0)
-           {
-            x=rx.$0.$0;
-            _2={
-             $:0,
-             $0:f(x)
-            };
-           }
-          else
-           {
-            mx=rx.$0.$0;
-            _2={
-             $:1,
-             $0:mx
-            };
-           }
-          _1=_2;
-         }
-        else
-         {
-          mx1=rx.$0;
-          _1={
-           $:1,
-           $0:mx1
-          };
-         }
-        _=_1;
-       }
-      else
-       {
-        mf=rf.$0;
-        if(rx.$==0)
-         {
-          _3={
-           $:1,
-           $0:mf
-          };
-         }
-        else
-         {
-          mx2=rx.$0;
-          _3={
-           $:1,
-           $0:List.append(mf,mx2)
-          };
-         }
-        _=_3;
-       }
-      return _;
-     },
      Append:function(app,r1,r2)
      {
       var _,x1,_1,x2,m1,_2,m2;
@@ -2138,6 +2216,64 @@
      }
     }),
     Result1:Runtime.Class({},{
+     ApJoin:function(rf,rx)
+     {
+      var _,f,_1,_2,x,mx,mx1,mf,_3,mx2;
+      if(rf.$==0)
+       {
+        f=rf.$0;
+        if(rx.$==0)
+         {
+          if(rx.$0.$==0)
+           {
+            x=rx.$0.$0;
+            _2={
+             $:0,
+             $0:f(x)
+            };
+           }
+          else
+           {
+            mx=rx.$0.$0;
+            _2={
+             $:1,
+             $0:mx
+            };
+           }
+          _1=_2;
+         }
+        else
+         {
+          mx1=rx.$0;
+          _1={
+           $:1,
+           $0:mx1
+          };
+         }
+        _=_1;
+       }
+      else
+       {
+        mf=rf.$0;
+        if(rx.$==0)
+         {
+          _3={
+           $:1,
+           $0:mf
+          };
+         }
+        else
+         {
+          mx2=rx.$0;
+          _3={
+           $:1,
+           $0:List.append(mf,mx2)
+          };
+         }
+        _=_3;
+       }
+      return _;
+     },
      Apply:function(rf,rx)
      {
       var _,f,_1,x,mx,mf,_2,mx1;
@@ -2408,7 +2544,6 @@
   ErrorMessage=Runtime.Safe(Forms.ErrorMessage);
   Form1=Runtime.Safe(Forms.Form1);
   Fresh=Runtime.Safe(Forms.Fresh);
-  Result=Runtime.Safe(Forms.Result);
   Utils=Runtime.Safe(Forms.Utils);
   Dependent1=Runtime.Safe(Form.Dependent1);
   Dependent=Runtime.Safe(Form.Dependent);
@@ -2425,6 +2560,8 @@
   ResizeArray=Runtime.Safe(Collections.ResizeArray);
   ResizeArrayProxy=Runtime.Safe(ResizeArray.ResizeArrayProxy);
   Array=Runtime.Safe(Next.Array);
+  Result=Runtime.Safe(Forms.Result);
+  CollectionWithDefault1=Runtime.Safe(Many1.CollectionWithDefault);
   Unchecked=Runtime.Safe(Global.WebSharper.Unchecked);
   Dictionary=Runtime.Safe(Collections.Dictionary);
   return RegExp=Runtime.Safe(Global.RegExp);

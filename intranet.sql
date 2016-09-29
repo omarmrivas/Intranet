@@ -54,6 +54,13 @@ CREATE TABLE IF NOT EXISTS `alumnos` (
   `nombre` varchar(200) NOT NULL COMMENT 'Nombre del alumno.',
   `genero` char(1) NOT NULL COMMENT 'Genero del alumno (M = Masculino, F = Femenino).).',
   `fecha_nacimiento` date NOT NULL COMMENT 'Fecha de nacimiento del alumno.',
+  `ingreso` char(6) NOT NULL COMMENT 'Ingreso a la UPSLP.',
+  `telefono` varchar(100) NOT NULL COMMENT 'Teléfono del alumno.',
+  `direccion` varchar(300) NOT NULL COMMENT 'Calle y número.',
+  `colonia` varchar(300) NOT NULL COMMENT 'Colonia.',
+  `cp` varchar(10) NOT NULL COMMENT 'Código postal.',
+  `municipio` varchar(200) NOT NULL COMMENT 'Lugar de nacimiento.',
+  `procedencia` varchar(500) NOT NULL COMMENT 'Escuela de procedencia.',
   PRIMARY KEY (`matricula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Almacena a todos los alumnos de la universidad sin importar la carrera.';
 
@@ -103,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `grupos` (
   `jueves` varchar(15) NOT NULL,
   `viernes` varchar(15) NOT NULL,
   `sabado` varchar(15) NOT NULL,
-  `profesor` int(11) NOT NULL,
+  `profesor` int(11) DEFAULT NULL,
   `alumnos` int(11) NOT NULL,
   `estado` varchar(15) NOT NULL,
   `plan` varchar(50) NOT NULL,
@@ -149,15 +156,23 @@ CREATE TABLE IF NOT EXISTS `inscripciones` (
 
 CREATE TABLE IF NOT EXISTS `kardex` (
   `matricula` char(6) NOT NULL,
+  `grupo` char(7) NOT NULL,
+  `materia` char(6) DEFAULT NULL,
   `semestre` tinyint(4) NOT NULL,
-  `materia` varchar(200) NOT NULL,
   `periodo` char(6) NOT NULL,
-  `final` float NOT NULL,
-  `extraordinario` float NOT NULL,
-  `regularizacion` float NOT NULL,
-  `inasistencias` tinyint(4) NOT NULL,
+  `c1` varchar(5) DEFAULT NULL,
+  `i1` int(11) NOT NULL,
+  `c2` varchar(5) DEFAULT NULL,
+  `i2` int(11) NOT NULL,
+  `c3` varchar(5) DEFAULT NULL,
+  `i3` int(11) NOT NULL,
+  `efinal` varchar(5) DEFAULT NULL,
+  `final` varchar(5) DEFAULT NULL,
+  `inasistencias` int(11) NOT NULL,
+  `extraordinario` varchar(5) DEFAULT NULL,
+  `regularizacion` varchar(5) DEFAULT NULL,
   `estatus` varchar(20) NOT NULL,
-  PRIMARY KEY (`matricula`,`periodo`,`materia`)
+  PRIMARY KEY (`matricula`,`grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------

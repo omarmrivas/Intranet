@@ -174,7 +174,7 @@ let obtener_plan cookie carrera =
             printfn "Semestre: %i - Materia: \"%s\"" semestre materia
             let seriacion = let dependencias = extrae_materias plan.Seriación
                             dependencias
-                               |> List.map (BaseDatos.obtener_clave carrera)
+                               |> List.choose (BaseDatos.obtener_clave_materia carrera)
                                |> String.concat ","
             let creditos = plan.Créditos
 //            let clave = plan.Clave
@@ -190,7 +190,7 @@ let obtener_plan cookie carrera =
             let teoria = plan.Teoría
             let practica = plan.Práctica
             let evaluacion = plan.``Tipo Eval.``
-            ignore (BaseDatos.actualiza_planes carrera clave (string semestre) materia seriacion (string creditos) (string horas) (string teoria) (string practica) evaluacion)
+            BaseDatos.actualiza_planes carrera clave (string semestre) materia seriacion (string creditos) (string horas) (string teoria) (string practica) evaluacion
             semestre) 1
        |> ignore
     [for plan in planes.Tables.``Planes de estudio 2``.Rows do
@@ -208,7 +208,7 @@ let obtener_plan cookie carrera =
             printfn "Semestre: %i - Materia: \"%s\"" semestre materia
             let seriacion = let dependencias = extrae_materias plan.Seriación
                             dependencias
-                                  |> List.map (BaseDatos.obtener_clave carrera)
+                                  |> List.choose (BaseDatos.obtener_clave_materia carrera)
                                   |> String.concat ","
             let creditos = plan.Créditos
 //            let clave = clave_optativa carrera (plan.Clave.Trim())
@@ -220,7 +220,7 @@ let obtener_plan cookie carrera =
             let teoria = plan.Teoría
             let practica = plan.Práctica
             let evaluacion = plan.``Tipo Eval.``
-            ignore (BaseDatos.actualiza_planes carrera clave (string semestre) materia seriacion (string creditos) (string horas) (string teoria) (string practica) evaluacion)
+            BaseDatos.actualiza_planes carrera clave (string semestre) materia seriacion (string creditos) (string horas) (string teoria) (string practica) evaluacion
             semestre ) 1
        |> ignore
     cookie

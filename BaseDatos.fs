@@ -46,7 +46,16 @@ let select_matriculas carrera periodo =
             select (registro.Matricula)}
             |> Seq.toList
 
-let rec actualiza_alumno (matricula : string) (nombre : string) (genero : string) (fecha_nacimiento : DateTime) =
+let obtener_clave_profesor (grupo : string) =
+    match query {for A in ctx.Intranet.Grupos do
+                 where (A.Grupo = grupo)
+                 select A.Profesor}
+                |> Seq.toList with
+        [profesor] -> Some profesor
+       | _ -> None
+
+// matricula nombre genero fecha_nacimiento ingreso telefono direccion colonia cp municipio procedencia
+let rec actualiza_alumno (matricula : string) (nombre : string) (genero : string) (fecha_nacimiento : DateTime) ingreso telefono direccion colonia cp municipio procedencia =
     let result = query { for registro in ctx.Intranet.Alumnos do
                          where (registro.Matricula = matricula)
                          select (registro)}
@@ -54,28 +63,38 @@ let rec actualiza_alumno (matricula : string) (nombre : string) (genero : string
     match result with
         [registro] -> registro.Delete()
                       ctx.SubmitUpdates()
-                      actualiza_alumno matricula nombre genero fecha_nacimiento
+                      actualiza_alumno matricula nombre genero fecha_nacimiento ingreso telefono direccion colonia cp municipio procedencia
        | _ -> let registro = ctx.Intranet.Alumnos.Create()
               registro.Matricula <- matricula
               registro.Nombre <- nombre
               registro.Genero <- genero
               registro.FechaNacimiento <- fecha_nacimiento
+              registro.Ingreso <- ingreso
+              registro.Telefono <- telefono
+              registro.Direccion <- direccion
+              registro.Colonia <- colonia
+              registro.Cp <- cp
+              registro.Municipio <- municipio
+              registro.Procedencia <- procedencia
               ctx.SubmitUpdates()
 
-let obtener_clave carrera (materia : string) =
+let obtener_clave_materia carrera (materia : string) =
     match query {for A in ctx.Intranet.Planes do
                  where (A.Materia = materia && A.Carrera = carrera)
                  select A.Clave}
                 |> Seq.toList with
-        [clave] -> clave.Trim()
+        [clave] -> Some (clave.Trim())
         | [] -> match query {for A in ctx.Intranet.Extracurriculares do
                              where (A.Materia = materia)
                              select A.Clave}
                         |> Seq.toList with
-                    [clave] -> clave.Trim()
-                  | [] -> failwith (sprintf "Materia '%s' (%i) no encontrada." materia (String.length materia))
-                  | _ ->  failwith (sprintf "Más de una materia con nombre %s en la carrera %s" materia carrera)
-        | _ -> failwith (sprintf "Más de una materia con nombre %s en la carrera %s" materia carrera)
+                    [clave] -> Some (clave.Trim())
+                  | [] -> printfn "Materia '%s' (%i) no encontrada." materia (String.length materia)
+                          None
+                  | _ ->  printfn "Más de una materia con nombre %s en la carrera %s" materia carrera
+                          None
+        | _ -> printfn "Más de una materia con nombre %s en la carrera %s" materia carrera
+               None
 
 let rec actualiza_inscripciones (matricula : string) (periodo : string) (estado : string) (semestre : string) (plan : string) (fecha : DateTime) =
     let result = query { for registro in ctx.Intranet.Inscripciones do
@@ -178,6 +197,36 @@ let rec actualiza_profesores profesor periodo nombre apellidos tipo =
               registro.Apellidos <- apellidos
               registro.Tipo <- tipo
               ctx.SubmitUpdates()
+
+let rec actualiza_kardex matricula grupo materia semestre periodo c1 i1 c2 i2 c3 i3 efinal final inasistencias extraordinario regularizacion estatus =
+    let result = query { for registro in ctx.Intranet.Kardex do
+                         where (registro.Matricula = matricula && registro.Grupo = grupo)
+                         select (registro)}
+                            |> Seq.toList
+    match result with
+        [registro] -> registro.Delete()
+                      ctx.SubmitUpdates()
+                      actualiza_kardex matricula grupo materia semestre periodo c1 i1 c2 i2 c3 i3 efinal final inasistencias extraordinario regularizacion estatus
+       | _ -> let registro = ctx.Intranet.Kardex.Create()
+              registro.Matricula <- matricula
+              registro.Grupo <- grupo
+              registro.Materia <- materia
+              registro.Semestre <- semestre
+              registro.Periodo <- periodo
+              registro.C1 <- c1
+              registro.I1 <- i1
+              registro.C2 <- c2
+              registro.I2 <- i2
+              registro.C3 <- c3
+              registro.I3 <- i3
+              registro.Efinal <- final
+              registro.Final <- final
+              registro.Inasistencias <- inasistencias
+              registro.Extraordinario <- extraordinario
+              registro.Regularizacion <- regularizacion
+              registro.Estatus <- estatus
+              ctx.SubmitUpdates()
+
 
 (*
 
