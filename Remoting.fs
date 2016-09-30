@@ -2,6 +2,8 @@ namespace Intranet
 
 open System.Collections.Concurrent
 open WebSharper
+open System.Security.Cryptography
+open System.Text
 
 module Server =
     // Log-in types/vars
@@ -45,6 +47,11 @@ module Server =
         async {
             return R input
         }
+
+
+    let Foo (planText : string) passPhrase =
+        let clearBytes = Encoding.Unicode.GetBytes(planText)
+        ()
 
     [<Rpc>]
     let LoginUser (userpass: UserPassword) =
@@ -179,8 +186,18 @@ module Server =
                             let muestras = [for carrera in planes do
                                                 for periodo in periods do
                                                     yield (carrera, periodo)]
+                            let alumnos_kardex cookie muestra =
+                                Kardex.obtener_kardex (Alumnos.obtener_alumnos cookie muestra) muestra
+
+                            let cookie = List.fold alumnos_kardex cookie muestras
+(*                            let alumnos_kardex muestra =
+                                let cookie = Option.get (IntranetAccess.newAdminCookie ())
+                                Kardex.obtener_kardex (Alumnos.obtener_alumnos cookie muestra) muestra
+                            muestras |> List.toArray
+                                     |> Array.Parallel.iter (ignore << alumnos_kardex)*)
 //                            let cookie = List.fold Alumnos.obtener_alumnos cookie muestras
-                            let cookie = List.fold Kardex.obtener_kardex cookie muestras
+//                            let cookie = List.fold Kardex.obtener_kardex cookie muestras
+//                            let cookie = Option.get (IntranetAccess.newAdminCookie ())
                             let userdata = IntranetAccess.changeCookie userdata cookie
                             ignore (users.AddOrUpdate(username, userdata, (fun _ user -> user)))
                             printfn "Excecution of UpdateGroups finished successfully...")

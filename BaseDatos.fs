@@ -89,7 +89,7 @@ let obtener_clave_materia carrera (materia : string) =
                              select A.Clave}
                         |> Seq.toList with
                     [clave] -> Some (clave.Trim())
-                  | [] -> printfn "Materia '%s' (%i) no encontrada." materia (String.length materia)
+                  | [] -> printfn "Materia '%s' (%i) no encontrada en la carrera '%s'." materia (String.length materia) carrera
                           None
                   | _ ->  printfn "Más de una materia con nombre %s en la carrera %s" materia carrera
                           None
@@ -219,7 +219,7 @@ let rec actualiza_kardex matricula grupo materia semestre periodo c1 i1 c2 i2 c3
               registro.I2 <- i2
               registro.C3 <- c3
               registro.I3 <- i3
-              registro.Efinal <- final
+              registro.Efinal <- efinal
               registro.Final <- final
               registro.Inasistencias <- inasistencias
               registro.Extraordinario <- extraordinario

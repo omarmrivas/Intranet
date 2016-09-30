@@ -75,6 +75,8 @@ let obtener_alumnos cookie (carrera, periodo) =
                                           aux cookie
           | :? System.Net.WebException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
                                           aux cookie
+          | :? System.AggregateException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
+                                            aux cookie
     let (cookie, alumnos) = aux cookie
     printfn "Actualizando Alumnos de la carrera %s en el periodo %s..." carrera periodo
     let matriculas = set []

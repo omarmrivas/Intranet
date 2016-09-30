@@ -46,6 +46,27 @@ CREATE TABLE IF NOT EXISTS `algoritmos_clasificadores` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `usuarios`
+--
+
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `matricula` char(6) NOT NULL COMMENT 'Matrícula del alumno.',
+  `nombre` varchar(200) NOT NULL COMMENT 'Nombre del alumno.',
+  `genero` char(1) NOT NULL COMMENT 'Genero del alumno (M = Masculino, F = Femenino).).',
+  `fecha_nacimiento` date NOT NULL COMMENT 'Fecha de nacimiento del alumno.',
+  `ingreso` char(6) NOT NULL COMMENT 'Ingreso a la UPSLP.',
+  `telefono` varchar(100) NOT NULL COMMENT 'Teléfono del alumno.',
+  `direccion` varchar(300) NOT NULL COMMENT 'Calle y número.',
+  `colonia` varchar(300) NOT NULL COMMENT 'Colonia.',
+  `cp` varchar(10) NOT NULL COMMENT 'Código postal.',
+  `municipio` varchar(200) NOT NULL COMMENT 'Lugar de nacimiento.',
+  `procedencia` varchar(500) NOT NULL COMMENT 'Escuela de procedencia.',
+  PRIMARY KEY (`matricula`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Almacena a todos los alumnos de la universidad sin importar la carrera.';
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `alumnos`
 --
 

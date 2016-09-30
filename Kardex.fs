@@ -52,7 +52,7 @@ let kardex_revalidado matricula materia final =
               c3             = None
               i3             = uint32 0
               efinal         = None
-              final          = Some final
+              final          = final
               inasistencias  = uint32 0
               extraordinario = None
               regularizacion = None}
@@ -142,10 +142,20 @@ let obtiener_semestre codigo =
     then sbyte 0
     else Seq.head semestre
 
-let calificacion cal =
+let rec calificacion cal =
     match cal with
         "" -> None
-      | str -> Some str
+      | str -> if str.Length > 5
+               then (try
+                        let v = double str
+                        if v > 10.0
+                        then let str' = string (v / 10.0)
+                             printfn "Cambiando calificación '%s' por '%s'" str str'
+                             Option.get (calificacion str')
+                        else printfn "Algun error en el valor numérico de '%s' (truncando)" str
+                             str.Substring(0,4)
+                     with | :? System.FormatException -> str.Substring(0,4)) |> Some
+               else Some str
 
 let extraerGrupo (info : string) =
     match info.Split [|'-'|] |> Array.toList with
@@ -185,6 +195,8 @@ let obtener_kardex cookie (carrera, periodo) =
                                           aux1 cookie
           | :? System.Net.WebException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
                                           aux1 cookie
+          | :? System.AggregateException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
+                                            aux1 cookie
     let (cookie, materias) = aux1 cookie
 //    printfn "Actualizando el kardex del alumno con matrícula %s de la carrera %s en el periodo %s..." matricula carrera periodo
     let calificaciones =
@@ -252,6 +264,8 @@ let obtener_kardex cookie (carrera, periodo) =
                                           aux2 cookie
           | :? System.Net.WebException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
                                           aux2 cookie
+          | :? System.AggregateException -> let cookie = Option.get (IntranetAccess.newAdminCookie ())
+                                            aux2 cookie
     let (cookie, materias) = aux2 cookie
 //    printfn "Actualizando el kardex del alumno con matrícula %s de la carrera %s en el periodo %s..." matricula carrera periodo
     for materia in materias.Rows do
@@ -262,11 +276,15 @@ let obtener_kardex cookie (carrera, periodo) =
         let grupo = valores.[4].Trim()
         let kardex = if grupo = "REV"
                      then let matricula = valores.[0]
-                          let materia = equivalente (valores.[3].Trim())
+                          let materia' = valores.[3].Trim()
+                          let materia = equivalente materia'
                                          |> Library.normaliza_materia
                                          |> BaseDatos.obtener_clave_materia carrera
-                          let final = valores.[6].Trim()
-                          Some (kardex_revalidado matricula materia final)
+                          let final = calificacion (valores.[6].Trim())
+                          match materia with
+                            Some _ -> Some (kardex_revalidado matricula materia final)
+                          | None -> printfn "Caso raro: %s - %s - %s - %s" matricula materia' carrera periodo
+                                    None
                      else if Map.containsKey grupo calificaciones
                           then Some (Map.find grupo calificaciones)
                           else None
@@ -274,7 +292,7 @@ let obtener_kardex cookie (carrera, periodo) =
         let estatus = valores.[10].Trim()
         match kardex with
             Some kardex -> 
-                BaseDatos.actualiza_kardex matricula grupo kardex.materia semestre periodo kardex.c1 kardex.i1 
+                BaseDatos.actualiza_kardex matricula kardex.grupo kardex.materia semestre periodo kardex.c1 kardex.i1 
                                            kardex.c2 kardex.i2 kardex.c3 kardex.i3 kardex.efinal kardex.final 
                                            kardex.inasistencias kardex.extraordinario kardex.regularizacion estatus
           | None -> printfn "Materia en kardex que no aparece en parciales: (%s) - %s" grupo (valores.[3].Trim())
