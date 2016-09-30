@@ -141,7 +141,7 @@ module Server =
 
     [<Rpc>]
     let UpdateProfessors (planes : string list) (periods : string list) =
-        printfn "Executing UpdateGroups..."
+        printfn "Executing UpdateProfessors..."
         let ctx = Web.Remoting.GetContext()
         let loggedIn = ctx.UserSession.GetLoggedInUser()
                         |> Async.RunSynchronously

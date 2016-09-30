@@ -69,14 +69,16 @@ let clave_optativa (carrera : string) (clave : string) =
 
 let obtener_extracurriculares cookie =
     printfn "Actualizando las materias extracurriculares ..."
-//    let mapa_nombre_codigo = new Dictionary<string, string>()
-//    mapa_nombre_codigo.[""] <- ""
     let rec aux cookie =
      try
-      let f () =   Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
+(*      let f () =   Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
                                        query = [("6578706f7274","1"); ("d-1782-e", "3"); ("method", "list");
                                                 ("plan", "0"); ("rep", "si"); ("ultimo","")],
-                                       cookieContainer = cookie)
+                                       cookieContainer = cookie)*)
+      let f () =   IntranetAccess.request_string' ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
+                                                   [("6578706f7274","1"); ("d-1782-e", "3"); ("method", "list");
+                                                    ("plan", "0"); ("rep", "si"); ("ultimo","")],
+                                                   cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
       let materias = TPlanExtra.Parse(intranet)
 //      ignore (materias.Tables.``Planes de estudio``.Html.Elements())
@@ -122,12 +124,18 @@ let obtener_plan cookie carrera =
     let plan' = plan_ carrera
     let rec aux cookie =
      try
-      let f () =   Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
+(*      let f () =   Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
                                        query = [("method", "list");
                                                 ("plan", plan'); 
                                                 ("rep", "si"); 
                                                 ("ultimo","")],
-                                       cookieContainer = cookie)
+                                       cookieContainer = cookie)*)
+      let f () =   IntranetAccess.request_string' ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
+                                                   [("method", "list");
+                                                    ("plan", plan'); 
+                                                    ("rep", "si"); 
+                                                    ("ultimo","")],
+                                                   cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
       let planes = TPlanes.Parse(intranet)
       (cookie, planes)

@@ -174,7 +174,7 @@ let obtener_kardex cookie (carrera, periodo) =
     printfn "%s" matricula
     let rec aux1 cookie =
      try
-      let f () = 
+(*      let f () = 
         Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/kardex.do",
                             query = [("6578706f7274","1");
                                      ("cveMateria","0");
@@ -187,7 +187,22 @@ let obtener_kardex cookie (carrera, periodo) =
                                      ("pdo",periodo);
                                      ("plan",carrera);
                                      ("rep","si")],
-                            cookieContainer = cookie)
+                            cookieContainer = cookie)*)
+      let f () = 
+        IntranetAccess.request_string' 
+                                   ("http://intranet.upslp.edu.mx:9080/Users/kardex.do",
+                                    [("6578706f7274","1");
+                                     ("cveMateria","0");
+                                     ("d-1782-e","3")
+                                     ("gpo","*");
+                                     ("matricula",matricula);
+                                     ("method","parciales");
+                                     ("nomalu","*");
+                                     ("nommat","*");
+                                     ("pdo",periodo);
+                                     ("plan",carrera);
+                                     ("rep","si")],
+                                    cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
       let materias = TParciales.Parse(intranet)
       (cookie, materias)
@@ -239,9 +254,7 @@ let obtener_kardex cookie (carrera, periodo) =
             Map.add grupo kardex m) Map.empty materias.Rows
     let rec aux2 cookie =
      try
-      let f () = 
-
-// http://intranet.upslp.edu.mx:9080/Users/kardex.do?aprobo=*&cveMateria=0&gpo=*&matricula=110618&method=list&nomalu=*&nommat=*&pdo=*&plan=0&rep=si&ultimo=20013S
+(*      let f () = 
         Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/kardex.do",
                             query = [("6578706f7274","1");
                                      ("aprobo","*");
@@ -256,7 +269,24 @@ let obtener_kardex cookie (carrera, periodo) =
                                      ("plan",carrera);
                                      ("rep","si");
                                      ("ultimo","20013S")],
-                            cookieContainer = cookie)
+                            cookieContainer = cookie)*)
+      let f () = 
+        IntranetAccess.request_string' 
+                                   ("http://intranet.upslp.edu.mx:9080/Users/kardex.do",
+                                    [("6578706f7274","1");
+                                     ("aprobo","*");
+                                     ("cveMateria","0");
+                                     ("d-1782-e","3");
+                                     ("gpo","*");
+                                     ("matricula",matricula);
+                                     ("method","list");
+                                     ("nomalu","*");
+                                     ("nommat","*");
+                                     ("pdo",periodo);
+                                     ("plan",carrera);
+                                     ("rep","si");
+                                     ("ultimo","20013S")],
+                                    cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
       let materias = TKardex.Parse(intranet)
       (cookie, materias)

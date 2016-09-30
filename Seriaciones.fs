@@ -69,12 +69,18 @@ let obtener_seriacion_plan cookie carrera =
     let rec aux cookie =
      try
 // http://intranet.upslp.edu.mx:9080/Users/planest.do?method=ser&plan=2&rep=si&ultimo=
-      let f () =   Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
+(*      let f () =   Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
                                        query = [("method", "ser");
                                                 ("plan", plan');
                                                 ("rep", "si");
                                                 ("ultimo","")],
-                                       cookieContainer = cookie)
+                                       cookieContainer = cookie)*)
+      let f () =   IntranetAccess.request_string' ("http://intranet.upslp.edu.mx:9080/Users/planest.do",
+                                                   [("method", "ser");
+                                                    ("plan", plan');
+                                                    ("rep", "si");
+                                                    ("ultimo","")],
+                                                   cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
 //      printfn "%s" intranet
       let planes = TSeriaciones.Parse(intranet)

@@ -60,14 +60,21 @@ type Alumnos = XmlProvider<TablaAlumnos>
 let obtener_alumnos cookie (carrera, periodo) = 
     let rec aux cookie =
      try
-      let f () =     Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/periodo.do",
+(*      let f () =     Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/periodo.do",
                                          query = [("6578706f7274","1"); ("d-1782-e", "3"); ("matricula", "*"); ("method", "inscritos");
                                                   ("nomalu","*");
                                                   //("pdo","20013S");
                                                   ("pdo",periodo);
                                                   ("planest", carrera); ("reg1","0"); ("reg2", "99"); ("rep", "si");
                                                   ("sem1","0"); ("sem2","0"); ("sexo","*"); ("ultimo","20013S")],
-                                         cookieContainer = cookie)
+                                         cookieContainer = cookie)*)
+      let f () =     IntranetAccess.request_string' ("http://intranet.upslp.edu.mx:9080/Users/periodo.do",
+                                                     [("6578706f7274","1"); ("d-1782-e", "3"); ("matricula", "*"); ("method", "inscritos");
+                                                      ("nomalu","*");
+                                                      ("pdo",periodo);
+                                                      ("planest", carrera); ("reg1","0"); ("reg2", "99"); ("rep", "si");
+                                                      ("sem1","0"); ("sem2","0"); ("sexo","*"); ("ultimo","20013S")],
+                                                     cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
       let alumnos = Alumnos.Parse(intranet)
       (cookie, alumnos)

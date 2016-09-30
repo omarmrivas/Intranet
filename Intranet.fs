@@ -90,6 +90,9 @@ let request_string cookie base_url parameters =
     let response = request.GetResponse() :?> HttpWebResponse
     read_response response
 
+let request_string' (base_url, parameters, cookie) =
+    request_string cookie base_url parameters
+
 let login' user password =
     match (user, password) with
         ("omar.montano", "Alzheimer1203") -> Some (Professor {FullName = "Omar Montaño Rivas"

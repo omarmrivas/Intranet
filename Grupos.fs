@@ -56,11 +56,16 @@ let extraerInfo (info : string) =
 let obtener_grupos cookie periodo =
     let rec aux cookie =
      try
-      let f () =     Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/periodo.do",
+(*      let f () =     Http.RequestString ("http://intranet.upslp.edu.mx:9080/Users/periodo.do",
                                          query = [("6578706f7274","1"); ("aula", "0"); ("aulanom", "*"); ("cveMateria", "0");
                                                   ("d-1782-e","3"); ("method","grupos"); ("nommat",""); ("nomprof", "");
                                                   ("pdo",periodo); ("rep", "si"); ("ultimo","20013S")],
-                                         cookieContainer = cookie)
+                                         cookieContainer = cookie)*)
+      let f () =     IntranetAccess.request_string' ("http://intranet.upslp.edu.mx:9080/Users/periodo.do",
+                                                     [("6578706f7274","1"); ("aula", "0"); ("aulanom", "*"); ("cveMateria", "0");
+                                                      ("d-1782-e","3"); ("method","grupos"); ("nommat",""); ("nomprof", "");
+                                                      ("pdo",periodo); ("rep", "si"); ("ultimo","20013S")],
+                                                     cookie)
       let intranet = Library.recursive_timeout BaseDatos.db_timeout f ()
       let grupos = Grupos.Parse(intranet)
       (cookie, grupos)
