@@ -59,7 +59,7 @@ module Site =
                               divAttr [attr.``class`` "jumbotron"] adminGroups
                               divAttr [attr.``class`` "jumbotron"] adminProfessors
                               divAttr [attr.``class`` "jumbotron"] adminKardex
-                              div [client <@ Client.userComponents username @>]
+                              divAttr [attr.``class`` "jumbotron"] [client <@ Client.userComponents username @>]
                          ]
                         else 
                          div [
