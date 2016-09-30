@@ -36,9 +36,18 @@ let to_number number (str : string) =
         number str
     with | :? System.FormatException -> number "0"
 
+let to_number_option number (str : string) =
+    try
+       Some (number str)
+    with | :? System.FormatException -> None
+
 let to_sbyte = to_number sbyte
 let to_double = to_number float32
 let to_uint32 = to_number uint32
+
+let to_sbyte_option  = to_number_option sbyte
+let to_double_option = to_number_option float32
+let to_uint32_option = to_number_option uint32
 
 let select_matriculas carrera periodo =
     query { for registro in ctx.Intranet.Inscripciones do
@@ -175,7 +184,7 @@ let rec actualiza_grupos grupo periodo materia aula lunes martes miercoles jueve
               registro.Jueves <- jueves
               registro.Viernes <- viernes
               registro.Sabado <- sabado
-              registro.Profesor <- to_uint32 profesor
+              registro.Profesor <- to_uint32_option profesor
               registro.Alumnos <- to_uint32 alumnos
               registro.Estado <- estado
               registro.Plan <- plan
