@@ -49,8 +49,9 @@ module Server =
         }
 
 
-    let Foo (planText : string) passPhrase =
+    let Encrypt (planText : string) (passPhrase : string) =
         let clearBytes = Encoding.Unicode.GetBytes(planText)
+        let encryptor = Aes.Create()
         ()
 
     [<Rpc>]
@@ -153,6 +154,7 @@ module Server =
                                        then !v
                                        else failwith "User can not access this resource..."
                         let cookie = IntranetAccess.getCookie userdata
+                        printfn "Carreras: %A" planes
                         printfn "Periodos: %A" periods
                         let thread = System.Threading.Thread (fun () ->
                             let muestras = [for carrera in planes do
@@ -200,7 +202,7 @@ module Server =
 //                            let cookie = Option.get (IntranetAccess.newAdminCookie ())
                             let userdata = IntranetAccess.changeCookie userdata cookie
                             ignore (users.AddOrUpdate(username, userdata, (fun _ user -> user)))
-                            printfn "Excecution of UpdateGroups finished successfully...")
+                            printfn "Excecution of UpdateKardex finished successfully...")
                         thread.Start()
                     | None -> printfn "You must log-in..."
                 return ()
