@@ -11,6 +11,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -74,6 +75,19 @@
     <Reference Include="FSharp.Core">
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="FSharp.Data">
+      <HintPath>packages\FSharp.Data.2.3.2\lib\net40\FSharp.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.SqlProvider">
+      <HintPath>packages\SQLProvider.1.0.33\lib\FSharp.Data.SqlProvider.dll</HintPath>
+    </Reference>
     <Reference Include="WebSharper.Core.JavaScript">
       <HintPath>packages\WebSharper.3.6.17.240\lib\net40\WebSharper.Core.JavaScript.dll</HintPath>
     </Reference>
@@ -110,19 +124,7 @@
     <Reference Include="WebSharper.UI.Next.Templating">
       <HintPath>packages\WebSharper.UI.Next.3.6.15.211\lib\net40\WebSharper.UI.Next.Templating.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="FSharp.Data">
-      <HintPath>packages\FSharp.Data.2.3.2\lib\net40\FSharp.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>packages\MySql.Data.6.9.9\lib\net40\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Data.SqlProvider">
-      <HintPath>packages\SQLProvider.1.0.33\lib\FSharp.Data.SqlProvider.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <!-- F# targets -->
   <ItemGroup>

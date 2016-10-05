@@ -10,13 +10,32 @@ open System.Net
 open System.Linq
 open System.Collections.Generic
 
+type Kardex = 
+    {Matricula : string
+     Grupo  : string
+     Materia   : string
+     Semestre  : int
+     Periodo   : string
+     C1        : string option
+     I1        : uint32
+     C2        : string option
+     I2        : uint32
+     C3        : string option
+     I3        : uint32
+     Efinal    : string option
+     Final     : string option
+     Inasistencias  : int
+     Extraordinario : string option
+     Regularizacion : string option
+     Estatus        : string}
+
 let db_timeout = 60000
 
 [<Literal>]
 let connectionString = @"Server=127.0.0.1; Port=3306; User ID=intranet; Password=intranet; Database=intranet"
 
 [<Literal>]
-let resolutionFolder = @"packages/MySql.Data.6.9.9/lib/net40"
+let resolutionFolder = @"packages/MySql.Data.6.9.9/lib/net45"
 
 [<Literal>]
 let dbVendor = Common.DatabaseProviderTypes.MYSQL
@@ -60,8 +79,39 @@ let obtener_clave_profesor (grupo : string) =
                  where (A.Grupo = grupo)
                  select A.Profesor}
                 |> Seq.toList with
-        [profesor] -> Some profesor
+        [profesor] -> profesor
        | _ -> None
+
+let obtener_kardex materia periodo =
+    query {for A in ctx.Intranet.Kardex do
+           where (A.Materia = Some materia && A.Periodo = periodo &&
+                  A.C1 <> None && A.C2 <> None && A.C3 <> None && A.Efinal <> None && A.Final <> None)
+           select (A.Grupo, A.C1, A.I1, A.C2, A.I2, A.C3, A.I3, A.Efinal, A.Final, A.Inasistencias)}
+           |> Seq.map (fun (grupo, c1, i1, c2, i2, c3, i3, efinal, final, inasistencias) -> 
+                        (Option.get (obtener_clave_profesor grupo), Option.get c1, i1, Option.get c2, i2, Option.get c3, i3, Option.get efinal, Option.get final, inasistencias))
+
+let obtener_claves_profesores (materia : string) (periodo : string) =
+    query {for A in ctx.Intranet.Grupos do
+              where (A.Materia = materia && A.Periodo = periodo)
+              select A.Profesor}
+            |> Seq.choose (fun x -> x)
+            |> Seq.toList
+
+let obtener_estatus (materia : string) (periodo : string) =
+    query {for A in ctx.Intranet.Kardex do
+              where (A.Materia = Some materia && A.Periodo = periodo)
+              select A.Estatus}
+            |> Seq.toList
+
+let obtener_datos periodoInicial periodoFinal codigo =
+    ctx.Procedures.DatosEntrenamiento.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
+        |> Seq.map (fun r -> r.MapTo<Kardex>())
+        |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
+        |> Seq.toList
+
+(*"510F" |> Library.tap (fun _ -> printfn "Calculo pesado empezando...")
+       |> obtener_datos "20141S" "20153S"
+       |>List.iter (printfn "%A")*)
 
 // matricula nombre genero fecha_nacimiento ingreso telefono direccion colonia cp municipio procedencia
 let rec actualiza_alumno (matricula : string) (nombre : string) (genero : string) (fecha_nacimiento : DateTime) ingreso telefono direccion colonia cp municipio procedencia =

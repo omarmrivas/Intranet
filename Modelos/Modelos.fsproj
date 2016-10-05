@@ -1,0 +1,114 @@
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{0DCBADD9-FDB5-4FAF-9200-812A9D37B011}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Modelos</RootNamespace>
+    <AssemblyName>Modelos</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <ExternalConsole>true</ExternalConsole>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <ExternalConsole>true</ExternalConsole>
+    <GenerateTailCalls>true</GenerateTailCalls>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="IKVM.OpenJDK.Beans">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.Beans.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Remoting">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.Remoting.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.SwingAWT">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.SwingAWT.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Util">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.API">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.XML.API.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Bind">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Parse">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Transform">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.WebServices">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.XML.WebServices.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.XPath">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\IKVM.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="LumenWorks.Framework.IO">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\LumenWorks.Framework.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="weka">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\weka.dll</HintPath>
+    </Reference>
+    <Reference Include="PicNetML">
+      <HintPath>packages\PicNetML.0.0.16\lib\net45\PicNetML.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.SqlProvider">
+      <HintPath>packages\SQLProvider.1.0.34\lib\FSharp.Data.SqlProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="IKVM.OpenJDK.Security">
+      <HintPath>..\..\PicNetML\lib\IKVM.OpenJDK.Security.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Parallel.fs" />
+    <Compile Include="BaseDatos.fs" />
+    <Compile Include="Weka.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(FSharpTargetsPath)" />
+</Project>
