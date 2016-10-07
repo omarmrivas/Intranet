@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `carreras` (
   `id` int(11) NOT NULL,
   `nombre_largo` varchar(100) NOT NULL,
   PRIMARY KEY (`nombre`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
 
@@ -190,21 +190,25 @@ CREATE TABLE IF NOT EXISTS `kardex` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `modelos`
+-- Table structure for table `modelos_nominales`
 --
 
-CREATE TABLE IF NOT EXISTS `modelos` (
+CREATE TABLE IF NOT EXISTS `modelos_nominales` (
   `materia` char(6) NOT NULL,
-  `periodo` char(6) NOT NULL,
+  `periodo_inicial` char(6) NOT NULL,
+  `periodo_final` char(6) NOT NULL,
+  `parcial` int(11) NOT NULL,
   `clase` varchar(100) NOT NULL,
   `continuo_discreto` tinyint(1) NOT NULL,
+  `ruta_materias` varchar(500) NOT NULL,
   `atributos` varchar(500) NOT NULL,
-  `aprobados_correctos` int(11) NOT NULL,
-  `reprobados_incorrectos` int(11) NOT NULL,
-  `aprobados_incorrectos` int(11) NOT NULL,
-  `reprobados_correctos` int(11) NOT NULL,
+  `matriz_confusion` mediumblob NOT NULL,
+  `numero_instancias` int(11) NOT NULL,
+  `correctas` int(11) NOT NULL,
   `modelo` mediumblob NOT NULL,
-  PRIMARY KEY (`materia`,`periodo`)
+  `instancias` mediumblob NOT NULL,
+  `fecha` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`materia`,`periodo_inicial`,`periodo_final`,`parcial`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
