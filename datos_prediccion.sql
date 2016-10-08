@@ -4,19 +4,14 @@ BEGIN
   SELECT * FROM kardex A
     WHERE ((A.periodo >= periodoInicial AND A.periodo <= periodoFinal) AND
            (A.materia IS NOT NULL) AND
+           (A.final IS NOT NULL) AND
            NOT (A.final IN('RV.','RV','REV','RE','Q','EQ.','EQ','E')) AND
            (EXISTS (SELECT * FROM Grupos G WHERE (G.grupo = A.grupo))) AND
            (EXISTS (SELECT * FROM Planes P WHERE (A.materia = P.clave))) AND
-            EXISTS (SELECT * FROM kardex B
-              WHERE (A.matricula = B.matricula AND
-                    (A.semestre <= B.semestre) AND
-                    (A.periodo <= B.periodo) AND
-                    NOT (B.final IN('RV.','RV','REV','RE','Q','EQ.','EQ','E')) AND
-                    (B.periodo >= periodoInicial AND B.periodo <= periodoFinal) AND
-                    (B.materia IS NOT NULL) AND
-                    (EXISTS (SELECT * FROM Grupos G WHERE (G.grupo = B.grupo))) AND
-                    (EXISTS (SELECT * FROM Planes P 
-                        WHERE (B.materia = P.clave))))))
+            (NOT (EXISTS (SELECT * FROM kardex B
+            WHERE (A.matricula = B.matricula AND B.materia = codigo))) OR
+            EXISTS (SELECT * FROM Kardex B WHERE (A.matricula = B.matricula AND B.materia = codigo AND
+                                                  B.final IS NULL))))
 ORDER BY matricula, materia, periodo;
 END //
 DELIMITER ;
