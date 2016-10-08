@@ -8,9 +8,10 @@ BEGIN
            (EXISTS (SELECT * FROM Grupos G WHERE (G.grupo = A.grupo))) AND
            (EXISTS (SELECT * FROM Planes P WHERE (A.materia = P.clave))) AND
             EXISTS (SELECT * FROM kardex B
-              WHERE (B.materia = codigo AND A.matricula = B.matricula AND
-                    (A.semestre < B.semestre OR A.materia = codigo) AND
+              WHERE (A.matricula = B.matricula AND
+                    (A.semestre <= B.semestre) AND
                     (A.periodo <= B.periodo) AND
+                    NOT (B.final IN('RV.','RV','REV','RE','Q','EQ.','EQ','E')) AND
                     (B.periodo >= periodoInicial AND B.periodo <= periodoFinal) AND
                     (B.materia IS NOT NULL) AND
                     (EXISTS (SELECT * FROM Grupos G WHERE (G.grupo = B.grupo))) AND

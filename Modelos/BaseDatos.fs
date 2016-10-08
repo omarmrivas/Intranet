@@ -76,6 +76,12 @@ let obtener_datos periodoInicial periodoFinal codigo =
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
 
+let obtener_datos_prediccion periodoInicial periodoFinal codigo =
+    ctx.Procedures.DatosPrediccion.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
+        |> Seq.map (fun r -> r.MapTo<Kardex>())
+        |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
+        |> Seq.toList
+
 let obtener_clave_profesor (grupo : string) =
     match query {for A in ctx.Intranet.Grupos do
                  where (A.Grupo = grupo)
@@ -417,6 +423,7 @@ let to_weka clase comando_filtro comando_construccion codigo periodoInicial peri
              clase                    = clase} |> Some
         | None -> None
 
+
 let modelo percent clase comando_filtro comando_construccion periodoInicial periodoFinal codigo =
     printfn "Construyendo modelo usando: %s" clase
     let datos = codigo |> obtener_datos periodoInicial periodoFinal
@@ -430,6 +437,7 @@ let modelo percent clase comando_filtro comando_construccion periodoInicial peri
 //         printfn "Alumnos: %i" (List.length por_alumnos)
          let matriculas = List.map fst por_alumnos
          let minAlumnos = int (double (List.length matriculas) * percent)
+         // matricula -> Map<materia, kardex>
          let por_matricula_mapa = 
                 List.fold (fun m (matricula, registros) -> registros |> List.map (fun k -> k.Materia)
                                                                      |> agrega_indice
@@ -485,6 +493,59 @@ let modelo percent clase comando_filtro comando_construccion periodoInicial peri
          then None
          else modelos |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)
                       |> Some
+
+let prediccion periodoInicial periodoFinal parcial codigo =
+    let modelo = query {for A in ctx.Intranet.ModelosNominales do
+                        where (A.Materia = codigo && A.PeriodoInicial = periodoInicial &&
+                               A.PeriodoFinal = periodoFinal && A.Parcial = parcial)
+                        select (A)}
+                        |> Seq.toList
+                        |> (fun L -> match L with
+                                        | [m] -> Some m
+                                        | _   -> None)
+    match modelo with
+        | Some modelo -> 
+            printfn "Predicción para la materia: %s" codigo
+            let (ruta, atributos) = (modelo.RutaMaterias, modelo.Atributos)
+            let clasificador = modelo.Modelo
+            let instancias = modelo.Instancias
+                                |> deserializar<weka.core.Instances>
+            let target = instancias.classAttribute()
+
+            printfn "%A" target
+
+            let datos = obtener_datos_prediccion periodoInicial periodoFinal codigo
+            if List.isEmpty datos
+            then ()
+            else 
+            let por_alumnos = 
+                 datos |> List.groupBy (fun registro -> registro.Matricula)
+                       |> List.map (fun (matricula, registros) -> (matricula, registros |> List.sortBy (fun r -> (r.Materia, r.Periodo))))
+            let matriculas = List.map fst por_alumnos
+            let por_matricula_mapa = 
+                List.fold (fun m (matricula, registros) -> registros |> List.map (fun k -> k.Materia)
+                                                                     |> agrega_indice
+                                                                     |> List.map2 (fun registro key -> (key, registro)) registros
+                                                                     |> List.fold (fun m (key, registro) -> Map.add key registro m) Map.empty
+                                                                     |> (fun m' -> Map.add matricula m' m)) Map.empty por_alumnos
+            ()
+        | None -> ()
+    
+
+(*         let modelos = 
+             rutas |> List.map (fun (ruta, atributos) -> matriculas |> List.choose (verifica_ruta ruta por_matricula_mapa)
+                                                                    |> (fun s -> (ruta, atributos, s)))
+                   |> List.choose (fun (ruta, atributos, s) -> 
+                            if List.length s > 20
+                            then Some (ruta, atributos, s)
+                            else None)
+                   |> List.choose (fun (ruta, atributos, data) -> 
+                            to_weka clase comando_filtro comando_construccion codigo periodoInicial periodoFinal (ruta, atributos, data))
+         if List.isEmpty modelos
+         then None
+         else modelos |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)
+                      |> Some*)
+
 
 let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial clase continuo rutaMaterias atributos matrizConfusion numeroInstancias correctas modelo instancias =
     let result = query { for registro in ctx.Intranet.ModelosNominales do

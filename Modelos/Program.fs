@@ -40,7 +40,7 @@ let verifica_periodo periodo =
 let main argv =
     printfn "%A" argv
 
-    let porcentajeAlumnos = 0.8
+    (*let porcentajeAlumnos = 0.8
 
     if Array.length argv < 2
     then printfn "Entrada incompleta: %A" argv
@@ -78,27 +78,12 @@ let main argv =
                                                                                                (tra k.rutaMaterias) (tra k.atributos) matriz (uint32 k.numInstancias)
                                                                                                (uint32 k.correctas) k.modelo k.instancias
                                                 | None -> printfn "No se encontró modelo para: %s" materia)))
-         0
+         0*)
 
 
-(*    printfn "Calculo pesado empezando..."
-    let modelo = BaseDatos.modelo 0.8
-                                  "weka.classifiers.trees.J48" 
-                                  "-E \"weka.attributeSelection.CfsSubsetEval -P 1 -E 1\" -S \"weka.attributeSelection.BestFirst -D 1 -N 5\"" 
-                                  "-C 0.25 -M 2"
-                                  "20131S" "20161S" "910O1"
+    printfn "Calculo pesado empezando..."
+    let modelo = BaseDatos.prediccion "20131S" "20161S" (uint32 0) "510F"
     printfn "%A" modelo
-    match modelo with
-        | Some k -> 
-                    // serializar matriz
-                    let matriz = BaseDatos.serializar k.matrizConfusion
-                    let parcial = uint32 0
-                    let continuo = sbyte 0
-                    let tra ss = String.concat "," ss
-                    BaseDatos.actualiza_modelo_nominal k.materia k.periodoInicial k.periodoFinal parcial k.clase continuo 
-                                                       (tra k.rutaMaterias) (tra k.atributos) matriz (uint32 k.numInstancias)
-                                                       (uint32 k.correctas) k.modelo k.instancias
-        | None -> ()
 
-    0 // return an integer exit code*)
+    0 // return an integer exit code
 
