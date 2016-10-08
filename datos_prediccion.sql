@@ -1,5 +1,5 @@
 DELIMITER //
-CREATE PROCEDURE datos_entrenamiento (IN periodoInicial CHAR(6)) (IN periodoFinal CHAR(6)) (IN codigo CHAR(6))
+CREATE PROCEDURE datos_prediccion (IN periodoInicial CHAR(6)) (IN periodoFinal CHAR(6)) (IN codigo CHAR(6))
 BEGIN
   SELECT * FROM kardex A
     WHERE ((A.periodo >= periodoInicial AND A.periodo <= periodoFinal) AND
