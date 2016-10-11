@@ -81,6 +81,7 @@ let obtener_grupos cookie periodo =
                                 Some s -> yield s
                                 | _ -> yield "" |]
         let grupo = valores.[0]
+//        let materia = valores.[1]
         let materia = valores.[1]
         let aula = valores.[2]
         let lunes = valores.[3]

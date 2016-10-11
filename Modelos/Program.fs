@@ -28,6 +28,13 @@ let materias_por_carrera carrera =
            select A.Clave}
            |> Seq.toList
 
+let verifica_modo modo =
+    match modo with
+        | "entrenamiento" -> false
+        | "prediccion" -> false
+        | _ -> printfn "El primer argumento es 'entrenamiento' o 'prediccion'"
+               true
+
 let verifica_periodo periodo =
     let vperiodo () = 
         if not (List.exists (fun s -> s = periodo) (periodos ()))
@@ -36,23 +43,29 @@ let verifica_periodo periodo =
         else false
     List.exists (fun f -> f ()) [vperiodo]
 
-[<EntryPoint>]
-let main argv =
-    printfn "%A" argv
+let verifica_parcial parcial =
+    try let p = int parcial
+        not (p >= 0 && p <= 3)
+    with | :? System.FormatException -> 
+                printfn "Las entradas válidas para parcial son: 0, 1, 2 o 3"
+                true
 
-    (*let porcentajeAlumnos = 0.8
+let verifica_carrera carrera =
+    let vcarrera () = 
+        if not (List.exists (fun s -> s = carrera) ("*" :: carreras))
+        then printfn "El valor de carrera debe ser uno de los siguientes valores: %A" ("*" :: carreras)
+             true
+        else false
+    List.exists (fun f -> f ()) [vcarrera]
 
-    if Array.length argv < 2
-    then printfn "Entrada incompleta: %A" argv
-         printfn "introducir periodoInicial y periodoFinal"
-         1
-    else let periodoInicial = argv.[0]
-         let periodoFinal = argv.[1]
-         let algoritmos = algoritmos_clasificadores ()
-         let materias = List.map (fun carrera -> (carrera, materias_por_carrera carrera)) carreras
-         let algoritmos = algoritmos_clasificadores ()
-         materias
-             |> List.iter (fun (carrera, materias) ->
+
+let ejecutaEntrenamiento periodoInicial periodoFinal parcial carreras =
+    let porcentajeAlumnos = 0.8
+    let algoritmos = algoritmos_clasificadores ()
+    let materias = List.map (fun carrera -> (carrera, materias_por_carrera carrera)) carreras
+    let algoritmos = algoritmos_clasificadores ()
+    materias
+        |> List.iter (fun (carrera, materias) ->
                  printfn "Calculando modelos para la Carrera %s" carrera
 
                  materias |> List.iter (fun materia ->
@@ -71,19 +84,47 @@ let main argv =
                                             match modelo with
                                                 | Some k -> // serializar matriz
                                                             let matriz = BaseDatos.serializar k.matrizConfusion
-                                                            let parcial = uint32 0
                                                             let continuo = sbyte 0
                                                             let tra ss = String.concat "," ss
                                                             BaseDatos.actualiza_modelo_nominal k.materia k.periodoInicial k.periodoFinal parcial k.clase continuo 
-                                                                                               (tra k.rutaMaterias) (tra k.atributos) matriz (uint32 k.numInstancias)
+                                                                                               (tra k.rutaMaterias) (tra k.atributos) matriz (float32 k.precision) (uint32 k.numInstancias)
                                                                                                (uint32 k.correctas) k.modelo k.instancias
                                                 | None -> printfn "No se encontró modelo para: %s" materia)))
-         0*)
 
+let ejecutaPrediccion periodoInicial periodoFinal periodoPrediccion parcial carreras =
+    let materias = List.map (fun carrera -> (carrera, materias_por_carrera carrera)) carreras
+    materias |> List.iter (fun (carrera, materias) ->
+                    printfn "Calculando predicciones con modelos para la Carrera %s" carrera
+                    materias |> List.choose (fun materia ->
+                        printfn "Calculando predicciones para la materia %s de la carrera de %s" materia carrera
+                        BaseDatos.prediccion periodoInicial periodoFinal periodoPrediccion parcial materia)
+                             |> List.iter (fun (mId, L) -> List.iter (fun (matricula, estatus) -> ()) L))
+//                                    actualiza_prediccion_kardex mId matricula periodo estatus))
 
-    printfn "Calculo pesado empezando..."
-    let modelo = BaseDatos.prediccion "20131S" "20161S" (uint32 0) "510F"
-    printfn "%A" modelo
-
-    0 // return an integer exit code
-
+[<EntryPoint>]
+let main argv =
+    if Array.length argv < 5
+    then printfn "Entrada incompleta: %A" argv
+         printfn "introducir (entrenamiento, prediccion), periodoInicial, periodoFinal, parcial y carrera"
+         1
+    else if not(verifica_modo argv.[0] ||
+                verifica_periodo argv.[1] ||
+                verifica_periodo argv.[2] ||
+                verifica_parcial argv.[3] ||
+                verifica_carrera argv.[4])
+    then let modo = argv.[0]
+         let periodoInicial = argv.[1]
+         let periodoFinal = argv.[2]
+         let periodoPrediccion = let ps = periodos ()
+                                 ps |> List.item (List.findIndex (fun periodo -> periodo = periodoFinal) ps + 1)
+         let parcial = uint32 argv.[3]
+         let carreras = if argv.[4] = "*"
+                        then carreras
+                        else [argv.[4]]
+         match modo with
+            | "entrenamiento" -> ejecutaEntrenamiento periodoInicial periodoFinal parcial carreras
+                                 0
+            | _ -> ejecutaPrediccion periodoInicial periodoFinal periodoPrediccion parcial carreras
+                   0
+    else printfn "Algun error en la entrada: %A" argv
+         1

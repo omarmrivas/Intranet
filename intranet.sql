@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `extracurriculares` (
 CREATE TABLE IF NOT EXISTS `grupos` (
   `grupo` varchar(7) NOT NULL,
   `periodo` char(6) NOT NULL,
-  `materia` varchar(200) NOT NULL,
+  `materia` varchar(300) NOT NULL,
   `aula` varchar(10) NOT NULL,
   `lunes` varchar(15) NOT NULL,
   `martes` varchar(15) NOT NULL,
@@ -190,6 +190,21 @@ CREATE TABLE IF NOT EXISTS `kardex` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `prediccion_kardex`
+--
+
+CREATE TABLE IF NOT EXISTS `prediccion_kardex` (
+  `mId` int(11) NOT NULL,
+  `matricula` char(6) NOT NULL,
+  `periodo` char(6) NOT NULL,
+  `estatus` varchar(20) NOT NULL,
+  `fecha` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`mId`,`matricula`,`periodo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `modelos_nominales`
 --
 
@@ -202,13 +217,16 @@ CREATE TABLE IF NOT EXISTS `modelos_nominales` (
   `continuo_discreto` tinyint(1) NOT NULL,
   `ruta_materias` varchar(500) NOT NULL,
   `atributos` varchar(500) NOT NULL,
-  `matriz_confusion` mediumblob NOT NULL,
+  `matriz_confusion` blob NOT NULL,
   `numero_instancias` int(11) NOT NULL,
+  `precision` FLOAT NOT NULL,
   `correctas` int(11) NOT NULL,
   `modelo` mediumblob NOT NULL,
   `instancias` mediumblob NOT NULL,
   `fecha` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`materia`,`periodo_inicial`,`periodo_final`,`parcial`)
+  `mId` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`materia`,`periodo_inicial`,`periodo_final`,`parcial`),
+  KEY `mId` (`mId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------

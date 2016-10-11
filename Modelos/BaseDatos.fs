@@ -39,6 +39,7 @@ type NominalModel =
      matrizConfusion          : double [][]
      numInstancias            : double
      correctas                : double
+     precision                : double
      modelo                   : byte []
      instancias               : byte []}
 
@@ -53,7 +54,7 @@ type PersonalInfo =
 let db_timeout = 60000
 
 [<Literal>]
-let connectionString = @"Server=127.0.0.1; Port=3306; User ID=intranet; Password=intranet; Database=intranet"
+let connectionString = @"Server=127.0.0.1; Port=3306; User ID=intranet; Password=intranet; Database=intranet; Default Command Timeout=0"
 
 [<Literal>]
 let resolutionFolder = @"packages/MySql.Data.6.9.9/lib/net45"
@@ -66,7 +67,8 @@ type Sql =
         ConnectionString = connectionString,
         DatabaseVendor = dbVendor,
         ResolutionPath = resolutionFolder,
-        UseOptionTypes = true >
+        UseOptionTypes = true
+         >
 
 let ctx = Sql.GetDataContext()
 
@@ -76,8 +78,8 @@ let obtener_datos periodoInicial periodoFinal codigo =
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
 
-let obtener_datos_prediccion periodoInicial periodoFinal codigo =
-    ctx.Procedures.DatosPrediccion.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
+let obtener_datos_prediccion periodoInicial periodoFinal periodoPrediccion codigo =
+    ctx.Procedures.DatosPrediccion.Invoke(periodoInicial, periodoFinal, periodoPrediccion, codigo).ResultSet
         |> Seq.map (fun r -> r.MapTo<Kardex>())
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
@@ -89,6 +91,50 @@ let obtener_clave_profesor (grupo : string) =
                 |> Seq.toList with
         [profesor] -> profesor
        | _ -> None
+
+let serializar obj =
+    // serialize 
+    let bos = new java.io.ByteArrayOutputStream()
+    let out = new java.io.ObjectOutputStream(bos)
+    out.writeObject( obj )
+    out.flush()
+    let bytes = bos.toByteArray()
+    bos.close()
+    bytes
+
+let deserializar<'T> bytes =
+    // deserialize
+    let bis = new java.io.ByteArrayInputStream( bytes )
+    let inn = new java.io.ObjectInputStream( bis )
+    let obj = downcast inn.readObject() : 'T
+    inn.close()
+    obj
+
+let obtenerModeloNominal periodoInicial periodoFinal parcial clave =
+    query {for A in ctx.Intranet.ModelosNominales do
+           where (A.Materia = clave && A.PeriodoInicial = periodoInicial &&
+                  A.PeriodoFinal = periodoFinal && A.Parcial = parcial)
+           select (A)}
+           |> Seq.toList
+           |> List.map (fun A -> let matrizConfusion =
+                                        A.MatrizConfusion
+                                            |> deserializar<double [][]>
+                                 ({materia = A.Materia
+                                   periodoInicial = periodoInicial
+                                   periodoFinal = periodoFinal
+                                   clase = A.Clase
+                                   rutaMaterias = A.RutaMaterias.Split [|','|] |> Array.toList
+                                   atributos = A.Atributos.Split [|','|] |> Array.toList
+                                   matrizConfusion = matrizConfusion
+                                   numInstancias = double A.NumeroInstancias
+                                   correctas = double A.Correctas
+                                   precision = double A.Precision
+                                   modelo = A.Modelo
+                                   instancias = A.Instancias}, A.MId))
+            |> (fun L -> match L with
+                            | [m] -> Some m
+                            | _ -> None)
+
 
 (* FIXME: Asume que la información personal de los alumnos que usarán los modelos
           coincide con la de LocalDataStoreSlot alumnos de entrenamiento. 
@@ -244,6 +290,12 @@ let rec getAttributes L (en : java.util.Enumeration) =
     else L |> List.rev
            |> List.map (fun obj -> downcast obj : weka.core.Attribute)
 
+let rec getInstances L (en : java.util.Enumeration) =
+    if en.hasMoreElements()
+    then getInstances (en.nextElement() :: L) en
+    else L |> List.rev
+           |> List.map (fun obj -> downcast obj : weka.core.Instance)
+
 let quitar_p3 prefijo =
     [prefijo + "_efinal"
      prefijo + "_final"
@@ -336,24 +388,6 @@ let writeFile filename (str : string) =
     use streamWriter = new System.IO.StreamWriter(filename, false)
     streamWriter.Write str
 
-let serializar obj =
-    // serialize 
-    let bos = new java.io.ByteArrayOutputStream()
-    let out = new java.io.ObjectOutputStream(bos)
-    out.writeObject( obj )
-    out.flush()
-    let bytes = bos.toByteArray()
-    bos.close()
-    bytes
-
-let deserializar<'T> bytes =
-    // deserialize
-    let bis = new java.io.ByteArrayInputStream( bytes )
-    let inn = new java.io.ObjectInputStream( bis )
-    let obj = downcast inn.readObject() : 'T
-    inn.close()
-    obj
-
 let to_weka clase comando_filtro comando_construccion codigo periodoInicial periodoFinal (ruta, atributos, data) =
 //    printfn "Procesando ruta: %A" ruta
 //    printfn "Alumnos: %A" (List.length data)
@@ -412,6 +446,7 @@ let to_weka clase comando_filtro comando_construccion codigo periodoInicial peri
 
             {numInstancias            = evaluation.numInstances()
              correctas                = evaluation.correct()
+             precision                = evaluation.pctCorrect()
              matrizConfusion          = evaluation.confusionMatrix()
              modelo                   = bytes
              instancias               = data_bytes
@@ -423,6 +458,52 @@ let to_weka clase comando_filtro comando_construccion codigo periodoInicial peri
              clase                    = clase} |> Some
         | None -> None
 
+let to_weka_predict codigo (ruta, atributos, data) =
+//    printfn "Procesando ruta: %A" ruta
+//    printfn "Alumnos: %A" (List.length data)
+    let (attrs, m) = List.fold2 (cabeceraNumerica data) (java.util.ArrayList(), Map.empty) ruta [0 .. List.length ruta - 1]
+    let instancias = List.mapi (instanciaNumerica data (attrs, m)) ruta
+    let valores = [0 .. (List.length << List.head) instancias - 1]
+                    |> List.map (fun i -> instancias |> List.map (List.item i)
+                                                     |> Array.concat)
+    let weka_data = weka.core.Instances(codigo + "_relation", attrs, 0)
+    let target = getAttributes [] (weka_data.enumerateAttributes())
+                    |> List.rev
+                    |> List.tryFind (fun att -> let name = att.name()
+                                                name.StartsWith codigo && name.EndsWith "_estatus")
+    match target with
+        | Some target -> 
+            weka_data.setClass( target )
+            valores |> List.iter (fun values -> weka_data.add( weka.core.DenseInstance(1.0, values) ) |> ignore)
+
+            // Filtering
+            let filter_options =
+                getAttributes [] (weka_data.enumerateAttributes())
+                    |> List.mapi (fun i attr -> let attr_name = attr.name()
+                                                if List.exists (fun name -> name = attr_name) atributos
+                                                then None
+                                                else Some (i+1))
+                    |> List.choose (fun x -> x)
+                    |> List.map (fun i -> string i)
+                    |> String.concat ","
+                    |> (fun str -> "-R " + str)
+            let remove = weka.filters.unsupervised.attribute.Remove()
+            remove.setOptions( weka.core.Utils.splitOptions( filter_options ) )
+            remove.setInputFormat( weka_data ) |> ignore
+            let weka_data = weka.filters.Filter.useFilter( weka_data, remove )
+
+            let instances = 
+                weka_data.enumerateInstances()
+                 |> getInstances []
+
+            List.iter (fun (instance : weka.core.Instance) -> instance.setMissing( instance.classAttribute() )) instances
+
+(*            if List.length ruta = 2
+            then writeFile (codigo + ".arff") (weka_data.toString())
+            else ()*)
+
+            Some weka_data
+        | None -> None
 
 let modelo percent clase comando_filtro comando_construccion periodoInicial periodoFinal codigo =
     printfn "Construyendo modelo usando: %s" clase
@@ -494,7 +575,7 @@ let modelo percent clase comando_filtro comando_construccion periodoInicial peri
          else modelos |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)
                       |> Some
 
-let prediccion periodoInicial periodoFinal parcial codigo =
+let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
     let modelo = query {for A in ctx.Intranet.ModelosNominales do
                         where (A.Materia = codigo && A.PeriodoInicial = periodoInicial &&
                                A.PeriodoFinal = periodoFinal && A.Parcial = parcial)
@@ -514,22 +595,42 @@ let prediccion periodoInicial periodoFinal parcial codigo =
 
             printfn "%A" target
 
-            let datos = obtener_datos_prediccion periodoInicial periodoFinal codigo
+            let datos = obtener_datos_prediccion periodoInicial periodoFinal periodoPrediccion codigo
             if List.isEmpty datos
-            then ()
+            then None
             else 
-            let por_alumnos = 
-                 datos |> List.groupBy (fun registro -> registro.Matricula)
-                       |> List.map (fun (matricula, registros) -> (matricula, registros |> List.sortBy (fun r -> (r.Materia, r.Periodo))))
-            let matriculas = List.map fst por_alumnos
-            let por_matricula_mapa = 
-                List.fold (fun m (matricula, registros) -> registros |> List.map (fun k -> k.Materia)
-                                                                     |> agrega_indice
-                                                                     |> List.map2 (fun registro key -> (key, registro)) registros
-                                                                     |> List.fold (fun m (key, registro) -> Map.add key registro m) Map.empty
-                                                                     |> (fun m' -> Map.add matricula m' m)) Map.empty por_alumnos
-            ()
-        | None -> ()
+                match obtenerModeloNominal periodoInicial periodoFinal parcial codigo with
+                 | Some (m, mId) -> 
+                    let por_alumnos = 
+                         datos |> List.groupBy (fun registro -> registro.Matricula)
+                               |> List.map (fun (matricula, registros) -> (matricula, registros |> List.sortBy (fun r -> (r.Materia, r.Periodo))))
+                    let matriculas = List.map fst por_alumnos
+
+                    let por_matricula_mapa = 
+                        List.fold (fun m (matricula, registros) -> registros |> List.map (fun k -> k.Materia)
+                                                                             |> agrega_indice
+                                                                             |> List.map2 (fun registro key -> (key, registro)) registros
+                                                                             |> List.fold (fun m (key, registro) -> Map.add key registro m) Map.empty
+                                                                             |> (fun m' -> Map.add matricula m' m)) Map.empty por_alumnos
+    
+                    let data = List.choose (verifica_ruta m.rutaMaterias por_matricula_mapa) matriculas
+                    match to_weka_predict codigo (m.rutaMaterias, m.atributos, data) with
+                        | Some instancias -> let clasificador = deserializar<weka.classifiers.AbstractClassifier> m.modelo
+                                             let matriculas = List.map fst data
+                                             instancias.enumerateInstances()
+                                                |> getInstances []
+                                                |> List.iter (fun instancia -> let result = clasificador.classifyInstance( instancia )
+                                                                               instancia.setClassValue( result ))
+                                             instancias.enumerateInstances()
+                                                |> getInstances []
+                                                |> List.map2 (fun matricula instancia -> 
+                                                        let attribute = instancia.classAttribute()
+                                                        (matricula, attribute.value( (int) (instancia.value( attribute )) ))) matriculas
+                                                |> (fun v -> Some (mId, v))
+//                                             writeFile (codigo + ".arff") (instancias.toString())
+                        | None -> None
+                 | None -> None
+        | None -> None
     
 
 (*         let modelos = 
@@ -547,7 +648,7 @@ let prediccion periodoInicial periodoFinal parcial codigo =
                       |> Some*)
 
 
-let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial clase continuo rutaMaterias atributos matrizConfusion numeroInstancias correctas modelo instancias =
+let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias =
     let result = query { for registro in ctx.Intranet.ModelosNominales do
                          where (registro.Materia = materia && registro.PeriodoInicial = periodoInicial &&
                                 registro.PeriodoFinal = periodoFinal && registro.Parcial = parcial)
@@ -556,7 +657,7 @@ let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial cla
     match result with
         [registro] -> registro.Delete()
                       ctx.SubmitUpdates()
-                      actualiza_modelo_nominal materia periodoInicial periodoFinal parcial clase continuo rutaMaterias atributos matrizConfusion numeroInstancias correctas modelo instancias
+                      actualiza_modelo_nominal materia periodoInicial periodoFinal parcial clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias
        | _ -> printfn "Guardando modelo construido por: %s" clase
               let registro = ctx.Intranet.ModelosNominales.Create()
               registro.Materia <- materia
@@ -570,6 +671,25 @@ let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial cla
               registro.MatrizConfusion <- matrizConfusion
               registro.NumeroInstancias <- numeroInstancias
               registro.Correctas <- correctas
+              registro.Precision <- precision
               registro.Modelo <- modelo
               registro.Instancias <- instancias
+              ctx.SubmitUpdates()
+
+let rec actualiza_prediccion_kardex mId matricula periodo estatus =
+    let result = query { for registro in ctx.Intranet.PrediccionKardex do
+                         where (registro.MId = mId && registro.Matricula = matricula &&
+                                registro.Periodo = periodo)
+                         select registro}
+                            |> Seq.toList
+    match result with
+        [registro] -> registro.Delete()
+                      ctx.SubmitUpdates()
+                      actualiza_prediccion_kardex mId matricula periodo estatus
+       | _ -> //printfn "Guardando prediccion construido por: %s" clase
+              let registro = ctx.Intranet.PrediccionKardex.Create()
+              registro.MId <- mId
+              registro.Matricula <- matricula
+              registro.Periodo <- periodo
+              registro.Estatus <- estatus
               ctx.SubmitUpdates()
