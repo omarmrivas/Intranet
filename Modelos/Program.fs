@@ -104,7 +104,10 @@ let ejecutaPrediccion periodoInicial periodoFinal periodoPrediccion parcial carr
 
 [<EntryPoint>]
 let main argv =
-    if Array.length argv < 5
+    // prediccion 20131S 20162S 0 "*"
+    ignore (BaseDatos.prediccion "20131S" "20162S" "20163S" (uint32 0) "340O1")
+    0
+(*    if Array.length argv < 5
     then printfn "Entrada incompleta: %A" argv
          printfn "introducir (entrenamiento, prediccion), periodoInicial, periodoFinal, parcial y carrera"
          1
@@ -128,4 +131,4 @@ let main argv =
             | _ -> ejecutaPrediccion periodoInicial periodoFinal periodoPrediccion parcial carreras
                    0
     else printfn "Algun error en la entrada: %A" argv
-         1
+         1*)

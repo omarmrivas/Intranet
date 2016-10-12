@@ -195,8 +195,6 @@ let cabeceraPersonal data (atts :java.util.ArrayList, mapa) materia i =
 
     personalInfo
 
-
-
 let cabeceraNumerica data (atts :java.util.ArrayList, mapa) materia i =
     // Clave Profesor
     let profesoresVals = java.util.ArrayList()
@@ -284,6 +282,12 @@ let verifica_ruta ruta mapa matricula =
     if ruta |> List.forall (fun materia -> Map.containsKey materia m)
     then Some (matricula, List.map (fun materia -> Map.find materia m) ruta)
     else None
+
+let rec getEnumeration<'T> L (en : java.util.Enumeration) =
+    if en.hasMoreElements()
+    then getEnumeration<'T> (en.nextElement() :: L) en
+    else L |> List.rev
+           |> List.map (fun obj -> downcast obj : 'T)
 
 let rec getAttributes L (en : java.util.Enumeration) =
     if en.hasMoreElements()
@@ -459,9 +463,10 @@ let to_weka clase comando_filtro comando_construccion codigo periodoInicial peri
              clase                    = clase} |> Some
         | None -> None
 
-let to_weka_predict codigo (ruta, atributos, data) =
+let to_weka_predict instancias_entrenamiento codigo (ruta, atributos, data) =
 //    printfn "Procesando ruta: %A" ruta
 //    printfn "Alumnos: %A" (List.length data)
+    let matriculas = List.map fst data
     let (attrs, m) = List.fold2 (cabeceraNumerica data) (java.util.ArrayList(), Map.empty) ruta [0 .. List.length ruta - 1]
     let instancias = List.mapi (instanciaNumerica data (attrs, m)) ruta
     let valores = [0 .. (List.length << List.head) instancias - 1]
@@ -499,11 +504,36 @@ let to_weka_predict codigo (ruta, atributos, data) =
 
             List.iter (fun (instance : weka.core.Instance) -> instance.setMissing( instance.classAttribute() )) instances
 
-(*            if List.length ruta = 2
-            then writeFile (codigo + ".arff") (weka_data.toString())
-            else ()*)
-
-            Some weka_data
+            // unificar cabeceras
+            if weka_data.equalHeaders( instancias_entrenamiento )
+            then Some (matriculas, weka_data)
+            else let atributos_entrenamiento = getAttributes [] (instancias_entrenamiento.enumerateAttributes())
+                 let atributos = getAttributes [] (weka_data.enumerateAttributes())
+                 let atributos_diferentes = List.mapi2 (fun i (a1 : weka.core.Attribute) (a2 : weka.core.Attribute) -> 
+                                                                if a1.equals( a2 )
+                                                                then None
+                                                                else Some (i, a1, a2) ) atributos_entrenamiento atributos
+                                                                |> List.choose (fun x -> x)
+                 let instances =
+                     instances |> List.map2 (fun matricula instancia -> (matricula, instancia)) matriculas
+                               |> List.choose (fun (matricula, (instancia : weka.core.Instance)) -> 
+                         let ok = List.forall (fun (_, (a1 : weka.core.Attribute), (a2 : weka.core.Attribute)) -> 
+                                    let valor = instancia.stringValue( a2 )
+                                    let valores = getEnumeration<string> [] (a1.enumerateValues())
+                                    List.exists (fun v -> v = valor) valores) atributos_diferentes
+                         if ok
+                         then //let nueva_instancia = DenseInstance( instancia )
+                              let mutable values = instancia.toDoubleArray()
+                              List.iter (fun (i, (a1 : weka.core.Attribute), (a2 : weka.core.Attribute)) -> 
+                                  let valor = instancia.stringValue( a2 )
+                                  values.[ i ] <- (double)(a1.indexOfValue( valor ))) atributos_diferentes
+                              Some (matricula, weka.core.DenseInstance(1.0, values))
+                         else None)
+                 instancias_entrenamiento.delete()
+                 List.iter (fun (_, instancia) -> instancias_entrenamiento.add( instancia ) |> ignore ) instances
+                 let matriculas = List.map fst instances
+//                 writeFile (codigo + ".arff") (instancias_entrenamiento.toString())
+                 Some (matriculas, instancias_entrenamiento)
         | None -> None
 
 let modelo percent clase comando_filtro comando_construccion periodoInicial periodoFinal codigo =
@@ -615,9 +645,11 @@ let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
                                                                              |> (fun m' -> Map.add matricula m' m)) Map.empty por_alumnos
     
                     let data = List.choose (verifica_ruta m.rutaMaterias por_matricula_mapa) matriculas
-                    match to_weka_predict codigo (m.rutaMaterias, m.atributos, data) with
-                        | Some instancias -> let clasificador = deserializar<weka.classifiers.AbstractClassifier> m.modelo
-                                             let matriculas = List.map fst data
+                    match to_weka_predict instancias codigo (m.rutaMaterias, m.atributos, data) with
+                        | Some (matriculas, instancias) -> 
+                                             let clasificador = deserializar<weka.classifiers.AbstractClassifier> m.modelo
+//                                             let matriculas = List.map fst data
+
                                              instancias.enumerateInstances()
                                                 |> getInstances []
                                                 |> List.iter (fun instancia -> let result = clasificador.classifyInstance( instancia )
