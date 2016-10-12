@@ -95,11 +95,12 @@ let ejecutaPrediccion periodoInicial periodoFinal periodoPrediccion parcial carr
     let materias = List.map (fun carrera -> (carrera, materias_por_carrera carrera)) carreras
     materias |> List.iter (fun (carrera, materias) ->
                     printfn "Calculando predicciones con modelos para la Carrera %s" carrera
-                    materias |> List.choose (fun materia ->
+                    materias |> List.iter (fun materia ->
                         printfn "Calculando predicciones para la materia %s de la carrera de %s" materia carrera
-                        BaseDatos.prediccion periodoInicial periodoFinal periodoPrediccion parcial materia)
-                             |> List.iter (fun (mId, L) -> List.iter (fun (matricula, estatus) -> ()) L))
-//                                    actualiza_prediccion_kardex mId matricula periodo estatus))
+                        match BaseDatos.prediccion periodoInicial periodoFinal periodoPrediccion parcial materia with
+                            | Some (mId, L) -> List.iter (fun (matricula, estatus) -> 
+                                                                BaseDatos.actualiza_prediccion_kardex mId matricula periodoPrediccion estatus) L
+                            | None -> ()))
 
 [<EntryPoint>]
 let main argv =

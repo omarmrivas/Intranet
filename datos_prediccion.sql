@@ -10,7 +10,8 @@ BEGIN
            (EXISTS (SELECT * FROM Planes P WHERE (A.materia = P.clave))) AND
            (EXISTS (SELECT * FROM Kardex B WHERE (A.matricula = B.matricula AND B.materia = codigo AND
                                                   B.periodo = periodoPrediccion)))) OR
-           (A.materia = codigo AND A.periodo = periodoPrediccion))
+           (A.materia = codigo AND A.periodo = periodoPrediccion AND
+            A.final IS NULL))
 ORDER BY matricula, materia, periodo;
 END //
 DELIMITER ;

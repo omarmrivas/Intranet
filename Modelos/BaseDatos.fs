@@ -259,6 +259,7 @@ let instanciaNumerica data (atts :java.util.ArrayList, mapa : Map<string,java.ut
          |> List.map (fun k -> let profesoresVals = Map.find (materia + "_profesor") mapa
                                let estatusVals = Map.find (materia + "_estatus") mapa
                                let calFinal = toDouble k.Final
+//                               printfn "Grupo: %A" k.Grupo
                                [| (float)(profesoresVals.indexOf( (string << Option.get) (obtener_clave_profesor k.Grupo)))
                                   toDouble k.C1
                                   double k.I1
@@ -593,8 +594,8 @@ let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
                                 |> deserializar<weka.core.Instances>
             let target = instancias.classAttribute()
 
-            printfn "%A" target
-
+//            printfn "%A" target
+//            printfn "obtener_datos_prediccion %s %s %s %s" periodoInicial periodoFinal periodoPrediccion codigo
             let datos = obtener_datos_prediccion periodoInicial periodoFinal periodoPrediccion codigo
             if List.isEmpty datos
             then None
