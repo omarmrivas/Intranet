@@ -75,7 +75,7 @@ let ejecutaEntrenamiento periodoInicial periodoFinal parcial carreras =
                                           algoritmo.Clase
                                           algoritmo.ComandoSeleccion
                                           algoritmo.ComandoConstruccion
-                                          periodoInicial periodoFinal materia)
+                                          periodoInicial periodoFinal parcial materia)
                                 |> (fun modelos -> if List.isEmpty modelos
                                                    then None
                                                    else modelos |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)

@@ -334,7 +334,7 @@ let quitar_todo prefijo =
      prefijo + "_inasistencias"]
 
 
-let nueva_ruta comando_filtro codigo (ruta, data) =
+let nueva_ruta (parcial : uint32) comando_filtro codigo (ruta, data) =
     let (attrs, m) = List.fold2 (cabeceraNumerica data) (java.util.ArrayList(), Map.empty) ruta [0 .. List.length ruta - 1]
     let instancias = List.mapi (instanciaNumerica data (attrs, m)) ruta
     let valores = [0 .. (List.length << List.head) instancias - 1]
@@ -353,7 +353,12 @@ let nueva_ruta comando_filtro codigo (ruta, data) =
             // Quitar atributos de calificaciones de parciales y final
             let target_name = target.name()
             let prefijo = target_name.Remove (target_name.IndexOf "_estatus")
-            let quitar = quitar_todo prefijo
+            let quitar = match parcial with
+                            | 0u -> quitar_todo prefijo
+                            | 1u -> quitar_p1 prefijo
+                            | 2u -> quitar_p2 prefijo
+                            | 3u -> quitar_p3 prefijo
+                            | _ -> quitar_todo prefijo
             let filter_options =
                 getAttributes [] (weka_data.enumerateAttributes())
                     |> List.mapi (fun i attr -> let attr_name = attr.name()
@@ -536,7 +541,7 @@ let to_weka_predict instancias_entrenamiento codigo (ruta, atributos, data) =
                  Some (matriculas, instancias_entrenamiento)
         | None -> None
 
-let modelo percent clase comando_filtro comando_construccion periodoInicial periodoFinal codigo =
+let modelo percent clase comando_filtro comando_construccion periodoInicial periodoFinal parcial codigo =
     printfn "Construyendo modelo usando: %s" clase
     let datos = codigo |> obtener_datos periodoInicial periodoFinal
                        |> Seq.toList
@@ -574,7 +579,7 @@ let modelo percent clase comando_filtro comando_construccion periodoInicial peri
                                     match Map.tryFind ruta mapa with
                                         | Some (Some ruta) -> (mapa, Some ruta :: rutas)
                                         | Some None -> (mapa, rutas)
-                                        | None -> nueva_ruta comando_filtro codigo (ruta, data)
+                                        | None -> nueva_ruta parcial comando_filtro codigo (ruta, data)
                                                     |> (fun nruta -> (Map.add ruta nruta mapa, nruta :: rutas))) (mapa_rutas, [])
                              |> (fun (mapa, rutas) -> (mapa, rutas |> List.choose (fun x -> x)
                                                                    |> (Set.toList << set)

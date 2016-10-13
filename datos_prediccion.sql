@@ -8,7 +8,7 @@ BEGIN
            NOT (A.final IN('RV.','RV','REV','RE','Q','EQ.','EQ','E')) AND
            (EXISTS (SELECT * FROM grupos G WHERE (G.grupo = A.grupo))) AND
            (EXISTS (SELECT * FROM planes P WHERE (A.materia = P.clave))) AND
-           (EXISTS (SELECT * FROM Kardex B WHERE (A.matricula = B.matricula AND B.materia = codigo AND
+           (EXISTS (SELECT * FROM kardex B WHERE (A.matricula = B.matricula AND B.materia = codigo AND
                                                   B.periodo = periodoPrediccion)))) OR
            (A.materia = codigo AND A.periodo = periodoPrediccion AND
             A.final IS NULL))
