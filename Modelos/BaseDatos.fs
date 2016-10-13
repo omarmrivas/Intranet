@@ -51,6 +51,13 @@ type PersonalInfo =
      Municipio   : string
      Procedencia : string}
 
+type AlgoritmoClasificador =
+    {Clase               : string
+     ComandoSeleccion    : string
+     ComandoConstruccion : string
+     ComandoPredecir     : string
+     Descripcion         : string}
+
 let db_timeout = 60000
 
 [<Literal>]
@@ -109,6 +116,12 @@ let deserializar<'T> bytes =
     let obj = downcast inn.readObject() : 'T
     inn.close()
     obj
+
+let algoritmos_clasificadores () =
+    query {for A in ctx.Intranet.AlgoritmosClasificadores do
+           select A}
+           |> Seq.toList
+           |> List.map (fun A -> A.MapTo<AlgoritmoClasificador>())
 
 let obtenerModeloNominal periodoInicial periodoFinal parcial clave =
     query {for A in ctx.Intranet.ModelosNominales do
@@ -333,6 +346,9 @@ let quitar_todo prefijo =
      prefijo + "_final"
      prefijo + "_inasistencias"]
 
+let writeFile filename (str : string) =
+    use streamWriter = new System.IO.StreamWriter(filename, false)
+    streamWriter.Write str
 
 let nueva_ruta (parcial : uint32) comando_filtro codigo (ruta, data) =
     let (attrs, m) = List.fold2 (cabeceraNumerica data) (java.util.ArrayList(), Map.empty) ruta [0 .. List.length ruta - 1]
@@ -374,6 +390,8 @@ let nueva_ruta (parcial : uint32) comando_filtro codigo (ruta, data) =
             remove.setInputFormat( weka_data ) |> ignore
             let weka_data = weka.filters.Filter.useFilter( weka_data, remove )
 
+//            writeFile (codigo + ".arff") (weka_data.toString())
+
             // Filtering
             let filter = new weka.filters.supervised.attribute.AttributeSelection()
             filter.setOptions( weka.core.Utils.splitOptions( comando_filtro ) )
@@ -394,9 +412,6 @@ let nueva_ruta (parcial : uint32) comando_filtro codigo (ruta, data) =
                        |> Some
        | None -> None
 
-let writeFile filename (str : string) =
-    use streamWriter = new System.IO.StreamWriter(filename, false)
-    streamWriter.Write str
 
 let to_weka clase comando_filtro comando_construccion codigo periodoInicial periodoFinal (ruta, atributos, data) =
 //    printfn "Procesando ruta: %A" ruta
@@ -541,8 +556,8 @@ let to_weka_predict instancias_entrenamiento codigo (ruta, atributos, data) =
                  Some (matriculas, instancias_entrenamiento)
         | None -> None
 
-let modelo percent clase comando_filtro comando_construccion periodoInicial periodoFinal parcial codigo =
-    printfn "Construyendo modelo usando: %s" clase
+let modelo percent periodoInicial periodoFinal parcial codigo =
+//    printfn "Construyendo modelo usando: %s" clase
     let datos = codigo |> obtener_datos periodoInicial periodoFinal
                        |> Seq.toList
     if List.isEmpty datos
@@ -561,7 +576,10 @@ let modelo percent clase comando_filtro comando_construccion periodoInicial peri
                                                                      |> List.map2 (fun registro key -> (key, registro)) registros
                                                                      |> List.fold (fun m (key, registro) -> Map.add key registro m) Map.empty
                                                                      |> (fun m' -> Map.add matricula m' m)) Map.empty por_alumnos
-         let rec actualiza_rutas mapa_datos mapa_rutas rutas =
+         let algoritmos = algoritmos_clasificadores ()
+         let evalua_algoritmo clase comando_filtro comando_construccion =
+            printfn "Construyendo modelo usando: %s" clase
+            let rec actualiza_rutas mapa_datos mapa_rutas rutas =
              let (mapa_datos, rutas_datos) =
                 rutas |> List.fold (fun (mapa, rutas) ruta -> 
                             match Map.tryFind ruta mapa with
@@ -590,14 +608,14 @@ let modelo percent clase comando_filtro comando_construccion periodoInicial peri
              else actualiza_rutas mapa_datos mapa_rutas rutas_
 
 //         printfn "Mapa calculado"
-         let rutas = 
+            let rutas = 
              por_alumnos
                 |> List.groupBy (fun (matricula, registros) -> List.map (fun r -> r.Materia) registros)
                 |> List.map fst
                 |> List.map agrega_indice
                 |> actualiza_rutas Map.empty Map.empty
 
-         let modelos = 
+            let modelos = 
              rutas |> List.map (fun (ruta, atributos) -> matriculas |> List.choose (verifica_ruta ruta por_matricula_mapa)
                                                                     |> (fun s -> (ruta, atributos, s)))
                    |> List.choose (fun (ruta, atributos, s) -> 
@@ -606,10 +624,14 @@ let modelo percent clase comando_filtro comando_construccion periodoInicial peri
                             else None)
                    |> List.choose (fun (ruta, atributos, data) -> 
                             to_weka clase comando_filtro comando_construccion codigo periodoInicial periodoFinal (ruta, atributos, data))
-         if List.isEmpty modelos
-         then None
-         else modelos |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)
-                      |> Some
+            if List.isEmpty modelos
+            then None
+            else modelos |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)
+                         |> Some
+         match List.choose (fun a -> evalua_algoritmo a.Clase a.ComandoSeleccion a.ComandoConstruccion) algoritmos with
+            | [] -> None
+            | L -> L |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)
+                     |> Some
 
 let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
     let modelo = query {for A in ctx.Intranet.ModelosNominales do
