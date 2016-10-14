@@ -52,7 +52,7 @@ module Templating =
             li ["About" => EndPoint.About]
         ]
 
-    let MainGeneral ctx action title body usertype =
+    let MainGeneral ctx action title usertype body =
         Content.Page(
             MainTemplate.Doc(
                 title = title,
@@ -108,7 +108,7 @@ module Site =
                         div [
                             div [client <@ Client.AnonymousUser() @>]
                         ]
-            return! Templating.MainGeneral ctx EndPoint.Home "Home" [content] usertype
+            return! Templating.MainGeneral ctx EndPoint.Home "Home" usertype [content]
         }
 
     let AboutPage ctx =
@@ -120,12 +120,11 @@ module Site =
             let! usertype = match loggedIn with
                                 Some username -> Server.UserType username
                               | None -> async.Return ""
-            return! Templating.MainGeneral ctx EndPoint.About "About" 
+            return! Templating.MainGeneral ctx EndPoint.About "About" usertype
                         [
                             h1 [text "Bienvenido!"]
                             h1 [text fullname]
                         ]
-                        usertype
         }
 
     let HomePage ctx =
@@ -145,9 +144,7 @@ module Site =
                             h1 [text fullname]
                         ] : list<Doc>
                     | None -> [client <@ Client.AnonymousUser() @>]
-            return! Templating.MainGeneral ctx EndPoint.About "About" 
-                        content
-                        usertype
+            return! Templating.MainGeneral ctx EndPoint.About "About" usertype content
         }
 
 
