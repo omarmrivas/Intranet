@@ -8,11 +8,38 @@ open WebSharper.UI.Next.Server
 type EndPoint =
     | [<EndPoint "/">] Home
     | [<EndPoint "/about">] About
+    | [<EndPoint "/admin">] Admin
 
 module Templating =
     open WebSharper.UI.Next.Html
 
     type MainTemplate = Templating.Template<"Main.html">
+
+    let MenuBarGeneral (ctx: Context<EndPoint>) usertype endpoint : Doc list =
+        let ( => ) txt act =
+             liAttr [if endpoint = act then yield attr.``class`` "active"] [
+                aAttr [attr.href (ctx.Link act)] [text txt]
+             ]
+        match usertype with
+            | "Student" ->
+                [
+                    li ["Home" => EndPoint.Home]
+                    li ["About" => EndPoint.About]
+                ]
+            | "Professor" ->
+                [
+                    li ["Home" => EndPoint.Home]
+                    li ["About" => EndPoint.About]
+                ]
+            | "Staff" ->
+                [
+                    li ["Home" => EndPoint.Home]
+                    li ["About" => EndPoint.About]
+                ]
+            | _ ->
+                [
+                    li ["Home" => EndPoint.Home]
+                ]
 
     // Compute a menubar where the menu item for the given endpoint is active
     let MenuBar (ctx: Context<EndPoint>) endpoint : Doc list =
@@ -24,6 +51,15 @@ module Templating =
             li ["Home" => EndPoint.Home]
             li ["About" => EndPoint.About]
         ]
+
+    let MainGeneral ctx action title body usertype =
+        Content.Page(
+            MainTemplate.Doc(
+                title = title,
+                menubar = MenuBarGeneral ctx usertype action,
+                body = body
+            )
+        )
 
     let Main ctx action title body =
         Content.Page(
@@ -37,9 +73,12 @@ module Templating =
 module Site =
     open WebSharper.UI.Next.Html
 
-    let HomePage (ctx: Context<_>) =
+    let AdminPage (ctx: Context<_>) =
         async {
             let! loggedIn = ctx.UserSession.GetLoggedInUser()
+            let! usertype = match loggedIn with
+                                Some username -> Server.UserType username
+                              | None -> async.Return ""
             let content = 
                 match loggedIn with
                     Some username ->
@@ -67,10 +106,9 @@ module Site =
                          ]
                   | None -> 
                         div [
-                            h1 [text "Say Hi to the server!"]
                             div [client <@ Client.AnonymousUser() @>]
                         ]
-            return! Templating.Main ctx EndPoint.Home "Home" [content]
+            return! Templating.MainGeneral ctx EndPoint.Home "Home" [content] usertype
         }
 
     let AboutPage ctx =
@@ -79,18 +117,39 @@ module Site =
             let! fullname = match loggedIn with
                                 Some username -> Server.UserFullName username
                               | None -> async.Return ""
-            return! Templating.Main ctx EndPoint.About "About" 
+            let! usertype = match loggedIn with
+                                Some username -> Server.UserType username
+                              | None -> async.Return ""
+            return! Templating.MainGeneral ctx EndPoint.About "About" 
                         [
-                            h1 [text "About"]
+                            h1 [text "Bienvenido!"]
                             h1 [text fullname]
-                            p [text "This is a template WebSharper client-server application."]
                         ]
+                        usertype
         }
-(*        Templating.Main ctx EndPoint.About "About" [
-            h1 [text "About"]
-            h1 [text ("Hola")]
-            p [text "This is a template WebSharper client-server application."]
-        ]*)
+
+    let HomePage ctx =
+        async {
+            let! loggedIn = ctx.UserSession.GetLoggedInUser()
+            let! fullname = match loggedIn with
+                                Some username -> Server.UserFullName username
+                              | None -> async.Return ""
+            let! usertype = match loggedIn with
+                                Some username -> Server.UserType username
+                              | None -> async.Return ""
+            let content =
+                match loggedIn with
+                    | Some username ->
+                        [
+                            h1 [text "Bienvenido!"]
+                            h1 [text fullname]
+                        ] : list<Doc>
+                    | None -> [client <@ Client.AnonymousUser() @>]
+            return! Templating.MainGeneral ctx EndPoint.About "About" 
+                        content
+                        usertype
+        }
+
 
     [<Website>]
     let Main =
@@ -98,4 +157,5 @@ module Site =
             match endpoint with
             | EndPoint.Home -> HomePage ctx
             | EndPoint.About -> AboutPage ctx
+            | EndPoint.Admin -> AdminPage ctx
         )

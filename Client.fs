@@ -5,6 +5,7 @@ open WebSharper.JavaScript
 open WebSharper.UI.Next
 open WebSharper.UI.Next.Client
 open WebSharper.UI.Next.Html
+//open WebSharper.UI.Next.Formlets
 
 [<JavaScript>]
 module Client =
@@ -192,6 +193,37 @@ module Client =
             ] [text "Logout"]
         ]
 
+(*    let LoginForm (redirectUrl: string) : Formlet<unit> =
+        let uName =
+            Controls.Input ""
+            |> Validator.IsNotEmpty "Enter Username"
+            |> Enhance.WithValidationIcon
+            |> Enhance.WithTextLabel "Username"
+        let pw =
+            Controls.Password ""
+            |> Validator.IsNotEmpty "Enter Password"
+            |> Enhance.WithValidationIcon
+            |> Enhance.WithTextLabel "Password"
+        let loginF =
+            Formlet.Yield (fun n pw -> {Name=n; Password=pw})
+            <*> uName <*> pw
+ 
+        Formlet.Do {
+            let! uInfo = 
+                loginF
+                |> Enhance.WithCustomSubmitAndResetButtons
+                    {Enhance.FormButtonConfiguration.Default with Label = Some "Login"}
+                    {Enhance.FormButtonConfiguration.Default with Label = Some "Reset"}
+            return!
+                WithLoadingPane (Login uInfo) <| fun loggedIn ->
+                    if loggedIn then
+                        Redirect redirectUrl
+                        C.Formlet.Return ()
+                    else
+                        WarningPanel "Login failed"
+        }
+        |> Enhance.WithFormContainer*)
+
     let AnonymousUser () =
         Form.Return (fun user pass -> ({User = user; Password = pass} : Server.UserPassword))
         <*> (Form.Yield ""
@@ -207,8 +239,8 @@ module Client =
         )
         |> Form.Render (fun user pass submit ->
             form [
-                B.Simple.InputWithError "Username" user submit.View
-                B.Simple.InputPasswordWithError "Password" pass submit.View
+                B.Simple.InputWithError "Usuario" user submit.View
+                B.Simple.InputPasswordWithError "Contraseña" pass submit.View
                 B.Button "Log in" [attr.``class`` "btn btn-primary"] submit.Trigger
                 B.ShowErrors [attr.style "margin-top:1em"] submit.View
             ]
