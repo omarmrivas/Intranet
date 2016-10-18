@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `algoritmos_clasificadores` (
 --
 
 CREATE TABLE IF NOT EXISTS `usuarios` (
-  `usuario` char(6) NOT NULL COMMENT 'Nombre de usuario.',
+  `usuario` varchar(255) NOT NULL COMMENT 'Nombre de usuario.',
   `contrasena` varchar(256) NOT NULL COMMENT 'contraseña.',
   PRIMARY KEY (`usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Almacena a todos los alumnos de la universidad sin importar la carrera.';

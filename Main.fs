@@ -9,6 +9,8 @@ type EndPoint =
     | [<EndPoint "/">] Home
     | [<EndPoint "/about">] About
     | [<EndPoint "/admin">] Admin
+    | [<EndPoint "/prediction">] Prediction
+    | [<EndPoint "/logout">] LogOut
 
 module Templating =
     open WebSharper.UI.Next.Html
@@ -17,28 +19,38 @@ module Templating =
 
     let MenuBarGeneral (ctx: Context<EndPoint>) usertype endpoint : Doc list =
         let ( => ) txt act =
-             liAttr [if endpoint = act then yield attr.``class`` "active"] [
+            liAttr [if endpoint = act then yield attr.``class`` "active"] [
                 aAttr [attr.href (ctx.Link act)] [text txt]
-             ]
+            ]
+
         match usertype with
             | "Student" ->
                 [
-                    li ["Home" => EndPoint.Home]
-                    li ["About" => EndPoint.About]
+                    li ["Inicio" => EndPoint.Home]
+                    li ["Acerca de" => EndPoint.About]
                 ]
             | "Professor" ->
                 [
-                    li ["Home" => EndPoint.Home]
-                    li ["About" => EndPoint.About]
+                    li ["Inicio" => EndPoint.Home]
+                    li ["Predicción" => EndPoint.Prediction]
+                    li ["Acerca de" => EndPoint.About]
+                    li ["Salir" => EndPoint.LogOut]
                 ]
             | "Staff" ->
                 [
-                    li ["Home" => EndPoint.Home]
-                    li ["About" => EndPoint.About]
+                    li ["Inicio" => EndPoint.Home]
+                    li ["Acerca de" => EndPoint.About]
+                ]
+            | "Admin" ->
+                [
+                    li ["Inicio" => EndPoint.Home]
+                    li ["Administrar" => EndPoint.Admin]
+                    li ["Acerca de" => EndPoint.About]
+//                    li [client <@ Client.logOutButton "" @>]
                 ]
             | _ ->
                 [
-                    li ["Home" => EndPoint.Home]
+                    li ["Inicio" => EndPoint.Home]
                 ]
 
     // Compute a menubar where the menu item for the given endpoint is active
@@ -98,11 +110,11 @@ module Site =
                               divAttr [attr.``class`` "jumbotron"] adminGroups
                               divAttr [attr.``class`` "jumbotron"] adminProfessors
                               divAttr [attr.``class`` "jumbotron"] adminKardex
-                              divAttr [attr.``class`` "jumbotron"] [client <@ Client.userComponents username @>]
+                              divAttr [attr.``class`` "jumbotron"] [client <@ Client.logOut username @>]
                          ]
                         else 
                          div [
-                              div [client <@ Client.userComponents username @>]
+                              div [client <@ Client.logOut username @>]
                          ]
                   | None -> 
                         div [
@@ -127,6 +139,26 @@ module Site =
                         ]
         }
 
+    let PredictionPage ctx =
+        async {
+            let! loggedIn = ctx.UserSession.GetLoggedInUser()
+            let! usertype = match loggedIn with
+                                Some username -> Server.UserType username
+                              | None -> async.Return ""
+
+            let periodo = "20163S"
+            let parcial = 0u
+            let nombre = "Omar"
+            let apellidos = "Montaño Rivas"
+
+            let! predictions = BaseDatos.obtener_prediccion_profesor periodo parcial nombre apellidos
+            return! Templating.MainGeneral ctx EndPoint.Prediction "Prediction" usertype
+                        [
+                            div [client <@ PredictionProfessor.Main predictions @>]
+//                            div [client <@ Client.predictionStudent () @>]
+                        ]
+        }
+
     let HomePage ctx =
         async {
             let! loggedIn = ctx.UserSession.GetLoggedInUser()
@@ -136,17 +168,25 @@ module Site =
             let! usertype = match loggedIn with
                                 Some username -> Server.UserType username
                               | None -> async.Return ""
-            let content =
+            return!
                 match loggedIn with
                     | Some username ->
-                        [
+                       ([
                             h1 [text "Bienvenido!"]
                             h1 [text fullname]
-                        ] : list<Doc>
+                            div [client <@ Client.logOut username @>]
+                        ] : list<Doc>)
+                            |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
                     | None -> [client <@ Client.AnonymousUser() @>]
-            return! Templating.MainGeneral ctx EndPoint.About "About" usertype content
+                                |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
+//            return! Templating.MainGeneral ctx EndPoint.About "About" usertype content
         }
 
+    let LogOutPage ctx =
+        async {
+            do! ctx.UserSession.Logout()
+            return! HomePage ctx
+        }
 
     [<Website>]
     let Main =
@@ -155,4 +195,6 @@ module Site =
             | EndPoint.Home -> HomePage ctx
             | EndPoint.About -> AboutPage ctx
             | EndPoint.Admin -> AdminPage ctx
+            | EndPoint.Prediction -> PredictionPage ctx
+            | EndPoint.LogOut -> LogOutPage ctx
         )

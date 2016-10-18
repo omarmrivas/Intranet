@@ -60,7 +60,14 @@ module Server =
         let user = IntranetAccess.login userpass.User userpass.Password
         match user with
             None      -> async.Return ()
-          | Some user -> ignore (users.AddOrUpdate(userpass.User, user, (fun _ user -> user)))
+          | Some user -> let (admin_user, admin_password) =
+                            "credentials/credentials.intranet"
+                                |> Library.readLines
+                                |> (fun arr -> (arr.[0], arr.[1]))
+                         let encrypt_username = CryptoLibrary.CryptoHelper.Encrypt<TripleDESCryptoServiceProvider>(userpass.User, admin_password, admin_user)
+                         let encrypt_userpassword = CryptoLibrary.CryptoHelper.Encrypt<TripleDESCryptoServiceProvider>(userpass.Password, admin_password, admin_user)
+                         BaseDatos.actualiza_usuarios encrypt_username encrypt_userpassword
+                         ignore (users.AddOrUpdate(userpass.User, user, (fun _ user -> user)))
                          ctx.UserSession.LoginUser (userpass.User, persistent=true)
                             |> Async.Ignore
 

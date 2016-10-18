@@ -125,12 +125,16 @@
     <Reference Include="WebSharper.JQuery">
       <HintPath>packages\WebSharper.3.6.18.241\lib\net40\WebSharper.JQuery.dll</HintPath>
     </Reference>
+    <Reference Include="CryptoLibrary">
+      <HintPath>packages\CryptoLib.0.6.0\lib\net40\CryptoLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <!-- F# targets -->
   <ItemGroup>
     <None Include="credentials\credentials.intranet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="cryptolib.readme.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">

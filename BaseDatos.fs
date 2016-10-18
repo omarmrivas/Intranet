@@ -9,6 +9,7 @@ open MySql.Data.MySqlClient
 open System.Net
 open System.Linq
 open System.Collections.Generic
+open WebSharper
 
 type Kardex = 
     {Matricula : string
@@ -28,6 +29,16 @@ type Kardex =
      Extraordinario : string option
      Regularizacion : string option
      Estatus        : string}
+
+type PrediccionProfesor = {
+    Materia : string
+    Grupo   : string
+    Matricula : string
+    Nombre    : string
+    Estatus   : string
+    Precision : float32
+    }
+
 
 let db_timeout = 60000
 
@@ -108,6 +119,20 @@ let obtener_datos periodoInicial periodoFinal codigo =
         |> Seq.map (fun r -> r.MapTo<Kardex>())
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
+
+[<Rpc>]
+let obtener_prediccion_profesor periodo parcial nombre apellidos =
+    Sql.GetDataContext().Procedures.GruposProfesor.Invoke(periodo, parcial, nombre, apellidos).ResultSet
+        |> Seq.map (fun r -> r.MapTo<PrediccionProfesor>())
+        |> Seq.toList
+        |> List.map (fun P -> 
+                [P.Materia
+                 P.Grupo
+                 P.Matricula
+                 P.Nombre
+                 P.Estatus
+                 string P.Precision])
+        |> async.Return
 
 (*"510F" |> Library.tap (fun _ -> printfn "Calculo pesado empezando...")
        |> obtener_datos "20141S" "20153S"
@@ -284,6 +309,21 @@ let rec actualiza_kardex matricula grupo materia semestre periodo c1 i1 c2 i2 c3
               registro.Extraordinario <- extraordinario
               registro.Regularizacion <- regularizacion
               registro.Estatus <- estatus
+              ctx.SubmitUpdates()
+
+
+let rec actualiza_usuarios usuario contrasena =
+    let result = query { for registro in ctx.Intranet.Usuarios do
+                         where (registro.Usuario = usuario && registro.Contrasena = contrasena)
+                         select registro}
+                            |> Seq.toList
+    match result with
+        [registro] -> registro.Delete()
+                      ctx.SubmitUpdates()
+                      actualiza_usuarios usuario contrasena
+       | _ -> let registro = ctx.Intranet.Usuarios.Create()
+              registro.Usuario <- usuario
+              registro.Contrasena <- contrasena
               ctx.SubmitUpdates()
 
 

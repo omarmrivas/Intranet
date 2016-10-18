@@ -24,9 +24,9 @@ module Client =
             else false
 
 
-    let userComponents username =
+    let logOut username =
         div [
-            p [text "Click here to log out:"]
+            p [text "Oprimir para salir:"]
             buttonAttr [
                 on.click (fun _ _ ->
                     async {
@@ -34,7 +34,21 @@ module Client =
                         return JS.Window.Location.Reload()
                     } |> Async.Start
                 )
-            ] [text "Logout"]
+            ] [text "Salir"]
+        ]
+
+    let logOutButton username =
+        liAttr [attr.``class`` "passive"] [
+            buttonAttr [
+                on.click (fun _ _ ->
+                    async {
+                        do! Server.LogoutUser username
+                        return JS.Window.Location.Reload()
+                    } |> Async.Start
+                )
+                attr.width "100"
+                attr.height "100"
+                ] [text "Salir"] 
         ]
 
     let adminComponents username =
@@ -48,6 +62,116 @@ module Client =
                 )
             ] [text "Actualizar"]
         ]
+
+    let predictionStudent () =
+        let sty n v = Attr.Style n v
+        let cls n = Attr.Class n
+        let divc c docs = Doc.Element "div" [cls c] docs
+
+        // Create a reactive variable and view.
+        // Reactive *variables* are data *sources*.
+        let elems = ["bar"; "foo"]
+        let rvText = Var.Create ""
+//        let rvSelect = Var.Create ""
+        // Create the components backed by the variable: in this case, an input
+        // field and a label to display the contents of such a field.
+
+        // The inputField is created using RD.Input, which takes an RVar as its
+        // parameter. Whenever the input field is updated, the new value is
+        // automatically placed into the variable.
+        let inputField =
+            divAttr [cls "panel" ; cls "panel-default"] [
+                divAttr [cls "panel-heading"] [
+                    h3Attr [cls "panel-title"] [
+                        text "Selección por"
+                    ]
+                ]
+
+                divAttr [cls "panel-body"] [
+                    formAttr [cls "form-horizontal" ; Attr.Create "role" "form"] [
+                        divAttr [cls "form-group"] [
+                            labelAttr [cls "col-sm-2" ; cls "control-label" ; attr.``for`` "inputBox"] [
+                                Doc.TextNode "Write something: "
+                            ]
+
+                            divAttr [cls "col-sm-10"] [
+                                Doc.Select [Attr.Create "class" "form-control"//attr.``class`` "form-control"
+                                            attr.id "inputBox"
+                                            on.afterRender (fun el ->
+                                                let idx = List.findIndex ((=) rvText.Value) elems
+                                                el?selectedIndex <- idx)] id elems rvText
+//                                Doc.Input [attr.``class`` "form-control" ; attr.id "inputBox"] rvText
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+        // Now, we make views of the text, which we mutate using Map.
+        let view = View.FromVar rvText
+
+        let viewCaps =
+            view |> View.Map (fun s -> s.ToUpper () )
+
+        let viewReverse =
+            view |> View.Map (fun s -> new string ((s.ToCharArray ()) |> Array.rev))
+
+        let viewWordCount =
+            view |> View.Map (fun s -> s.Split([| ' ' |]).Length)
+
+        let viewWordCountStr =
+            View.Map string viewWordCount
+
+        let viewWordOddEven =
+            View.Map (fun i -> if i % 2 = 0 then "Even" else "Odd") viewWordCount
+
+        let views =
+            [
+                ("Entered Text", view)
+                ("Capitalised", viewCaps)
+                ("Reversed", viewReverse)
+                ("Word Count", viewWordCountStr)
+                ("Is the word count odd or even?", viewWordOddEven)
+            ]
+
+        let tableRow (lbl, view) =
+            tr [
+                td [
+                    text lbl
+                ]
+                tdAttr [sty "width" "70%"] [
+                    textView view
+                ]
+            ] :> Doc
+
+        let tbl =
+            divc "panel panel-default" [
+                divc "panel-heading" [
+                    h3Attr [cls "panel-title"] [
+                        text "Output"
+                    ]
+                ]
+
+                divc "panel-body" [
+                    tableAttr [cls "table"] [
+                        tbody [
+                            // We map the tableRow function onto the different
+                            // views of the source, and concatenate the resulting
+                            // documents.
+                            List.map tableRow views |> Doc.Concat
+                        ]
+                    ]
+                ]
+            ]
+        div [
+            inputField
+            tbl
+        ]
+
+(*        let v = Var.Create "bar"
+        let doc = Doc.Select [
+                        attr.``class`` "form-control"
+                        ] id ["bar"; "foo"] v
+        v.Value <- "foo"*)
 
     let getCareers (careers : Server.Career) =
             let result = if careers.ITI then ["ITI"] else []
@@ -261,3 +385,156 @@ module Client =
             h4Attr [attr.``class`` "text-muted"] [text "The server responded:"]
             divAttr [attr.``class`` "jumbotron"] [h1 [textView vReversed]]
         ]
+
+
+[<JavaScript>]
+module PredictionProfessor =
+
+    // First, we declare types for predictions and how to order them.
+
+    type PrediccionProfesor = {
+        Materia   : string
+        Grupo     : string
+        Matricula : string
+        Nombre    : string
+        Estatus   : string
+        Precision : string
+    }
+
+    type Order = Alfabetico | Matricula
+
+    type Order with
+
+        /// A textual representation of our orderings.
+        static member Show order =
+            match order with
+            | Alfabetico -> "Apellido"
+            | Matricula -> "Matrícula"
+
+    type PrediccionProfesor with
+
+        /// A comparison function, based on whether we're sorting by name or matriculation number.
+        static member Compare order p1 p2 =
+            match order with
+            | Alfabetico -> compare p1.Nombre p2.Nombre
+            | Matricula -> compare p1.Matricula p2.Matricula
+
+        /// A filtering function.
+        static member MatchesQuery q ph =
+            ph.Nombre.Contains(q)
+            || ph.Matricula.Contains(q)
+
+        /// A filtering function.
+        static member MatchesMateria q ph =
+            q = ph.Materia + " (" + ph.Grupo + ")"
+
+
+    let sty n v = Attr.Style n v
+    let cls n = Attr.Class n
+    let divc c docs = Doc.Element "div" [cls c] docs
+
+
+    // This is our prediction widget. We take a list of predictions, and return
+    // an document tree which can be rendered.
+    let widget (predicciones : PrediccionProfesor list) =
+        let materias = List.fold (fun l ph -> let materia = ph.Materia + " (" + ph.Grupo + ")"
+                                              if List.exists (fun m -> m = materia) l
+                                              then l
+                                              else materia :: l) [] predicciones
+                                              |> List.rev
+
+        // Búsqueda
+        let vquery = Var.Create ""
+
+        // Ordenamiento
+        let vorder = Var.Create Alfabetico
+
+        // Por materia
+        let vmaterias = match materias with
+                            | _ :: _ -> Var.Create (List.head materias)
+                            | [] -> Var.Create ""
+
+        // The above vars are our model. Everything else is computed from them.
+        // Now, compute visible predictions under the current selection:
+
+        let prediccionesVisibles =
+            (View.FromVar vorder)
+                |> View.Map2 (fun query order -> (query, order)) (View.FromVar vquery)
+                |> View.Map2 (fun materia (query, order) ->
+                    predicciones 
+                           |> List.filter (PrediccionProfesor.MatchesMateria materia)
+                           |> List.filter (PrediccionProfesor.MatchesQuery query)
+                           |> List.sortWith (PrediccionProfesor.Compare order)) (View.FromVar vmaterias)
+
+        // A simple function for displaying the details of a prediction:
+        let muestraPrediccion i ph =
+            trAttr [attr.``class`` ("d" + string (i % 2))] [
+                td [text ph.Materia]
+                td [text ph.Matricula]
+                td [text ph.Nombre]
+                td [text ph.Estatus]
+                td [text ph.Precision]
+            ] :> Doc
+
+        let muestraPredicciones predicciones =
+                (predicciones 
+                    |> List.mapi muestraPrediccion
+                    |> table) :> Doc
+                             
+        let putInPanel name comp = 
+            divc "panel panel-default" [
+                divc "panel-heading" [
+                    h3Attr [cls "panel-title"] [
+                        text name
+                    ]
+                ]
+
+                divc "panel-body" [
+                    comp
+                ]
+            ]
+
+        let queryPanel = 
+            divc "col-sm-6" [
+                text "Materia: "
+                Doc.Select [Attr.Create "class" "form-control"] id materias vmaterias
+                // We specify a label, and an input box linked to our query RVar.
+                text "Buscar: "
+                Doc.Input [Attr.Create "class" "form-control"] vquery
+
+                // We then have a select box, linked to our orders variable
+                text "Ordenar por: "
+                Doc.Select [Attr.Create "class" "form-control"] Order.Show [Alfabetico; Matricula] vorder
+            ] |> putInPanel "Consulta"
+
+        let resultsPanel =
+            tableAttr [cls "table"] [
+                        tbody [
+                            // We map the tableRow function onto the different
+                            // views of the source, and concatenate the resulting
+                            // documents.
+                            ul [ Doc.EmbedView (View.Map muestraPredicciones prediccionesVisibles) ]
+                        ]
+                    ]
+                    |> putInPanel "Resultados"
+        div [
+            queryPanel
+            resultsPanel
+        ]
+
+    let Main predicciones =
+        // Funcion que extrae las predicciones de una lista de strings
+        let prediccion P = 
+            match P with 
+                | [materia; grupo; matricula; nombre; estatus; precision] -> 
+                    {Materia   = materia
+                     Grupo     = grupo
+                     Matricula = matricula
+                     Nombre    = nombre
+                     Estatus   = estatus
+                     Precision = precision}
+                | _ -> printfn "Error"
+                       failwith "Error"
+
+        let predicciones = List.map prediccion predicciones
+        widget predicciones

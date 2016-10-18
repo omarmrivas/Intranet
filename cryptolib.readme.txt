@@ -1,0 +1,7 @@
+﻿This library was adapted from http://www.superstarcoders.com/blogs/posts/symmetric-encryption-in-c-sharp.aspx. 
+Usage:
+    var encrypted = CryptoHelper.Encrypt<T>(value, password, salt); // where T descends from SymmetricAlgorithm
+    var decrypted = CryptoHelper.Decrypt<T>(value, password, salt); // where T descends from SymmetricAlgorithm
+    var hashed = CryptoHelper.ComputeHash<T>(value);	// where T descends from HashAlgorithm
+
+WARNING: password and salt values should be kept as secret as possible; do not store them in *.config esp. app.config.
