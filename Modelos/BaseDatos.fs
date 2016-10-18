@@ -33,6 +33,7 @@ type NominalModel =
     {materia                  : string
      periodoInicial           : string
      periodoFinal             : string
+     aId                      : int32
      clase                    : string
      rutaMaterias             : string list
      atributos                : string list
@@ -52,7 +53,8 @@ type PersonalInfo =
      Procedencia : string}
 
 type AlgoritmoClasificador =
-    {Clase               : string
+    {AId                 : int32
+     Clase               : string
      ComandoSeleccion    : string
      ComandoConstruccion : string
      ComandoPredecir     : string
@@ -80,19 +82,19 @@ type Sql =
 let ctx = Sql.GetDataContext()
 
 let obtener_datos periodoInicial periodoFinal codigo =
-    ctx.Procedures.DatosEntrenamiento.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
+    Sql.GetDataContext().Procedures.DatosEntrenamiento.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
         |> Seq.map (fun r -> r.MapTo<Kardex>())
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
 
 let obtener_datos_prediccion periodoInicial periodoFinal periodoPrediccion codigo =
-    ctx.Procedures.DatosPrediccion.Invoke(periodoInicial, periodoFinal, periodoPrediccion, codigo).ResultSet
+    Sql.GetDataContext().Procedures.DatosPrediccion.Invoke(periodoInicial, periodoFinal, periodoPrediccion, codigo).ResultSet
         |> Seq.map (fun r -> r.MapTo<Kardex>())
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
 
 let obtener_clave_profesor (grupo : string) =
-    match query {for A in ctx.Intranet.Grupos do
+    match query {for A in Sql.GetDataContext().Intranet.Grupos do
                  where (A.Grupo = grupo)
                  select A.Profesor}
                 |> Seq.toList with
@@ -118,13 +120,13 @@ let deserializar<'T> bytes =
     obj
 
 let algoritmos_clasificadores () =
-    query {for A in ctx.Intranet.AlgoritmosClasificadores do
+    query {for A in Sql.GetDataContext().Intranet.AlgoritmosClasificadores do
            select A}
            |> Seq.toList
            |> List.map (fun A -> A.MapTo<AlgoritmoClasificador>())
 
 let obtenerModeloNominal periodoInicial periodoFinal parcial clave =
-    query {for A in ctx.Intranet.ModelosNominales do
+    query {for A in Sql.GetDataContext().Intranet.ModelosNominales do
            where (A.Materia = clave && A.PeriodoInicial = periodoInicial &&
                   A.PeriodoFinal = periodoFinal && A.Parcial = parcial)
            select (A)}
@@ -135,6 +137,7 @@ let obtenerModeloNominal periodoInicial periodoFinal parcial clave =
                                  ({materia = A.Materia
                                    periodoInicial = periodoInicial
                                    periodoFinal = periodoFinal
+                                   aId = int32 A.AId
                                    clase = A.Clase
                                    rutaMaterias = A.RutaMaterias.Split [|','|] |> Array.toList
                                    atributos = A.Atributos.Split [|','|] |> Array.toList
@@ -156,7 +159,7 @@ let cabeceraPersonal data (atts :java.util.ArrayList, mapa) materia i =
     let matriculas = List.map fst data
     let personalInfo =
         matriculas |> List.map (fun matricula ->
-            query {for A in ctx.Intranet.Alumnos do
+            query {for A in Sql.GetDataContext().Intranet.Alumnos do
                    where (A.Matricula = matricula)
                    select A})
                    |> Seq.concat
@@ -413,7 +416,7 @@ let nueva_ruta (parcial : uint32) comando_filtro codigo (ruta, data) =
        | None -> None
 
 
-let to_weka clase comando_filtro comando_construccion codigo periodoInicial periodoFinal (ruta, atributos, data) =
+let to_weka aid clase comando_filtro comando_construccion codigo periodoInicial periodoFinal (ruta, atributos, data) =
 //    printfn "Procesando ruta: %A" ruta
 //    printfn "Alumnos: %A" (List.length data)
     let (attrs, m) = List.fold2 (cabeceraNumerica data) (java.util.ArrayList(), Map.empty) ruta [0 .. List.length ruta - 1]
@@ -480,6 +483,7 @@ let to_weka clase comando_filtro comando_construccion codigo periodoInicial peri
              materia                  = codigo
              periodoInicial           = periodoInicial
              periodoFinal             = periodoFinal
+             aId                      = aid
              clase                    = clase} |> Some
         | None -> None
 
@@ -577,7 +581,7 @@ let modelo percent periodoInicial periodoFinal parcial codigo =
                                                                      |> List.fold (fun m (key, registro) -> Map.add key registro m) Map.empty
                                                                      |> (fun m' -> Map.add matricula m' m)) Map.empty por_alumnos
          let algoritmos = algoritmos_clasificadores ()
-         let evalua_algoritmo clase comando_filtro comando_construccion =
+         let evalua_algoritmo aid clase comando_filtro comando_construccion =
             printfn "Construyendo modelo usando: %s" clase
             let rec actualiza_rutas mapa_datos mapa_rutas rutas =
              let (mapa_datos, rutas_datos) =
@@ -623,18 +627,18 @@ let modelo percent periodoInicial periodoFinal parcial codigo =
                             then Some (ruta, atributos, s)
                             else None)
                    |> List.choose (fun (ruta, atributos, data) -> 
-                            to_weka clase comando_filtro comando_construccion codigo periodoInicial periodoFinal (ruta, atributos, data))
+                            to_weka aid clase comando_filtro comando_construccion codigo periodoInicial periodoFinal (ruta, atributos, data))
             if List.isEmpty modelos
             then None
             else modelos |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)
                          |> Some
-         match List.choose (fun a -> evalua_algoritmo a.Clase a.ComandoSeleccion a.ComandoConstruccion) algoritmos with
+         match List.choose (fun a -> evalua_algoritmo a.AId a.Clase a.ComandoSeleccion a.ComandoConstruccion) algoritmos with
             | [] -> None
             | L -> L |> List.maxBy (fun modelo -> modelo.correctas / modelo.numInstancias)
                      |> Some
 
 let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
-    let modelo = query {for A in ctx.Intranet.ModelosNominales do
+    let modelo = query {for A in Sql.GetDataContext().Intranet.ModelosNominales do
                         where (A.Materia = codigo && A.PeriodoInicial = periodoInicial &&
                                A.PeriodoFinal = periodoFinal && A.Parcial = parcial)
                         select (A)}
@@ -708,22 +712,23 @@ let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
                       |> Some*)
 
 
-let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias =
-    let result = query { for registro in ctx.Intranet.ModelosNominales do
+let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial aid clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias =
+    let result = query { for registro in Sql.GetDataContext().Intranet.ModelosNominales do
                          where (registro.Materia = materia && registro.PeriodoInicial = periodoInicial &&
                                 registro.PeriodoFinal = periodoFinal && registro.Parcial = parcial)
                          select registro}
                             |> Seq.toList
     match result with
         [registro] -> registro.Delete()
-                      ctx.SubmitUpdates()
-                      actualiza_modelo_nominal materia periodoInicial periodoFinal parcial clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias
+                      Sql.GetDataContext().SubmitUpdates()
+                      actualiza_modelo_nominal materia periodoInicial periodoFinal parcial aid clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias
        | _ -> printfn "Guardando modelo construido por: %s" clase
-              let registro = ctx.Intranet.ModelosNominales.Create()
+              let registro = Sql.GetDataContext().Intranet.ModelosNominales.Create()
               registro.Materia <- materia
               registro.PeriodoInicial <- periodoInicial
               registro.PeriodoFinal <- periodoFinal
               registro.Parcial <- parcial
+              registro.AId <- aid
               registro.Clase <- clase
               registro.ContinuoDiscreto <- continuo
               registro.RutaMaterias <- rutaMaterias
@@ -734,22 +739,22 @@ let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial cla
               registro.Precision <- precision
               registro.Modelo <- modelo
               registro.Instancias <- instancias
-              ctx.SubmitUpdates()
+              Sql.GetDataContext().SubmitUpdates()
 
 let rec actualiza_prediccion_kardex mId matricula periodo estatus =
-    let result = query { for registro in ctx.Intranet.PrediccionKardex do
+    let result = query { for registro in Sql.GetDataContext().Intranet.PrediccionKardex do
                          where (registro.MId = mId && registro.Matricula = matricula &&
                                 registro.Periodo = periodo)
                          select registro}
                             |> Seq.toList
     match result with
         [registro] -> registro.Delete()
-                      ctx.SubmitUpdates()
+                      Sql.GetDataContext().SubmitUpdates()
                       actualiza_prediccion_kardex mId matricula periodo estatus
        | _ -> //printfn "Guardando prediccion construido por: %s" clase
-              let registro = ctx.Intranet.PrediccionKardex.Create()
+              let registro = Sql.GetDataContext().Intranet.PrediccionKardex.Create()
               registro.MId <- mId
               registro.Matricula <- matricula
               registro.Periodo <- periodo
               registro.Estatus <- estatus
-              ctx.SubmitUpdates()
+              Sql.GetDataContext().SubmitUpdates()

@@ -35,12 +35,13 @@ DELIMITER ;
 --
 
 CREATE TABLE IF NOT EXISTS `algoritmos_clasificadores` (
+  `aId` int(11) NOT NULL AUTO_INCREMENT,
   `clase` varchar(100) NOT NULL,
   `comando_seleccion` varchar(1000) NOT NULL,
   `comando_construccion` varchar(1000) NOT NULL,
   `comando_predecir` varchar(1000) NOT NULL,
   `descripcion` varchar(2000) NOT NULL,
-  PRIMARY KEY (`clase`)
+  PRIMARY KEY (`aId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -213,6 +214,7 @@ CREATE TABLE IF NOT EXISTS `modelos_nominales` (
   `periodo_inicial` char(6) NOT NULL,
   `periodo_final` char(6) NOT NULL,
   `parcial` int(11) NOT NULL,
+  `aId` int(11) NOT NULL,
   `clase` varchar(100) NOT NULL,
   `continuo_discreto` tinyint(1) NOT NULL,
   `ruta_materias` varchar(500) NOT NULL,

@@ -31,14 +31,16 @@ type Kardex =
      Estatus        : string}
 
 type PrediccionProfesor = {
-    Materia : string
-    Grupo   : string
-    Matricula : string
-    Nombre    : string
-    Estatus   : string
-    Precision : float32
+    materia : string
+    grupo   : string
+    matricula : string
+    nombre    : string
+    estatus   : string
+    precision : float32
+    numero_instancias : int
+    atributos : string
+    descripcion : string
     }
-
 
 let db_timeout = 60000
 
@@ -123,16 +125,30 @@ let obtener_datos periodoInicial periodoFinal codigo =
 [<Rpc>]
 let obtener_prediccion_profesor periodo parcial nombre apellidos =
     Sql.GetDataContext().Procedures.GruposProfesor.Invoke(periodo, parcial, nombre, apellidos).ResultSet
-        |> Seq.map (fun r -> r.MapTo<PrediccionProfesor>())
         |> Seq.toList
+        |> List.map (fun r -> (*r.ColumnValues |> Seq.map fst
+                                             |> Seq.iter (printfn "%A")*)
+                              r.MapTo<PrediccionProfesor>())
         |> List.map (fun P -> 
-                [P.Materia
-                 P.Grupo
-                 P.Matricula
-                 P.Nombre
-                 P.Estatus
-                 string P.Precision])
+                [P.materia
+                 P.grupo
+                 P.matricula
+                 P.nombre
+                 P.estatus
+                 string P.precision
+                 string P.numero_instancias
+                 P.atributos
+                 P.descripcion])
         |> async.Return
+
+[<Rpc>]
+let obtener_planes () =
+    query {for A in Sql.GetDataContext().Intranet.Planes do
+           select A}
+           |> Seq.toList
+           |> List.map (fun A -> [A.Clave; A.Materia])
+           |> async.Return
+
 
 (*"510F" |> Library.tap (fun _ -> printfn "Calculo pesado empezando...")
        |> obtener_datos "20141S" "20153S"

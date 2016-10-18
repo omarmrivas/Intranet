@@ -85,6 +85,15 @@ module Templating =
 module Site =
     open WebSharper.UI.Next.Html
 
+    let periodo () = 
+        match System.DateTime.Now.Month with
+            | 1 | 2 | 3 | 4 | 5 -> string System.DateTime.Now.Year + "1S"
+            | 6 | 7 -> string System.DateTime.Now.Year + "2S"
+            | 8 | 9 | 10 | 11 | 12 -> string System.DateTime.Now.Year + "3S"
+            | _ -> printfn "Error en la lectura delse mes, retornando semestre primavera"
+                   string System.DateTime.Now.Year + "1S"
+
+
     let AdminPage (ctx: Context<_>) =
         async {
             let! loggedIn = ctx.UserSession.GetLoggedInUser()
@@ -140,21 +149,29 @@ module Site =
         }
 
     let PredictionPage ctx =
+        let extraerNombre (info : string) =
+            match info.Split [|'/'|] |> Array.toList with
+                | apellidos :: nombre :: _ -> (apellidos.Trim(), nombre.Trim())
+                | _ -> printfn "Información de profesor inválida: %s" info
+                       ("", "")
         async {
             let! loggedIn = ctx.UserSession.GetLoggedInUser()
             let! usertype = match loggedIn with
                                 Some username -> Server.UserType username
                               | None -> async.Return ""
+            let! fullname = match loggedIn with
+                                | Some username -> Server.UserFullName username
+                                | None -> async.Return ""
+            let (apellidos, nombre) = extraerNombre fullname
 
-            let periodo = "20163S"
+            let periodo = periodo ()
             let parcial = 0u
-            let nombre = "Omar"
-            let apellidos = "Montaño Rivas"
 
             let! predictions = BaseDatos.obtener_prediccion_profesor periodo parcial nombre apellidos
+            let! planes = BaseDatos.obtener_planes ()
             return! Templating.MainGeneral ctx EndPoint.Prediction "Prediction" usertype
                         [
-                            div [client <@ PredictionProfessor.Main predictions @>]
+                            div [client <@ PredictionProfessor.Main predictions planes @>]
 //                            div [client <@ Client.predictionStudent () @>]
                         ]
         }
@@ -169,16 +186,17 @@ module Site =
                                 Some username -> Server.UserType username
                               | None -> async.Return ""
             return!
-                match loggedIn with
-                    | Some username ->
+                match (fullname, loggedIn) with
+                    | ("", Some username) -> [client <@ Client.AnonymousUser() @>]
+                                                |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
+                    | (_, Some username) ->
                        ([
                             h1 [text "Bienvenido!"]
                             h1 [text fullname]
-                            div [client <@ Client.logOut username @>]
                         ] : list<Doc>)
                             |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
-                    | None -> [client <@ Client.AnonymousUser() @>]
-                                |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
+                    | (_, None) -> [client <@ Client.AnonymousUser() @>]
+                                     |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
 //            return! Templating.MainGeneral ctx EndPoint.About "About" usertype content
         }
 

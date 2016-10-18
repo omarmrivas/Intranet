@@ -93,14 +93,6 @@ let request_string cookie base_url parameters =
 let request_string' (base_url, parameters, cookie) =
     request_string cookie base_url parameters
 
-let login' user password =
-    match (user, password) with
-        ("omar.montano", "Alzheimer1203") -> Some (Professor {FullName = "Omar Montaño Rivas"
-                                                              UserName = user
-                                                              Password = password
-                                                              Cookie = new CookieContainer()})
-      | _ -> None
-
 let login user password =
     let encrypt str =
         String.collect (fun c -> let c' = (string << int) c

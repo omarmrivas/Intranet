@@ -10,7 +10,7 @@ let periodos () =
 let carreras = ["ITI"; "ITEM"; "ISTI"; "ITMA"; "LAG"; "LMKT"]
 
 let materias_por_carrera carrera =
-    query {for A in BaseDatos.ctx.Intranet.Planes do
+    query {for A in BaseDatos.Sql.GetDataContext().Intranet.Planes do
            where (A.Carrera = carrera)
            select A.Clave}
            |> Seq.toList
@@ -63,7 +63,7 @@ let ejecutaEntrenamiento periodoInicial periodoFinal parcial carreras =
                                                             let matriz = BaseDatos.serializar k.matrizConfusion
                                                             let continuo = sbyte 0
                                                             let tra ss = String.concat "," ss
-                                                            BaseDatos.actualiza_modelo_nominal k.materia k.periodoInicial k.periodoFinal parcial k.clase continuo 
+                                                            BaseDatos.actualiza_modelo_nominal k.materia k.periodoInicial k.periodoFinal parcial (uint32 k.aId) k.clase continuo 
                                                                                                (tra k.rutaMaterias) (tra k.atributos) matriz (float32 k.precision) (uint32 k.numInstancias)
                                                                                                (uint32 k.correctas) k.modelo k.instancias
                                                 | None -> printfn "No se encontró modelo para: %s" materia)))

@@ -399,6 +399,9 @@ module PredictionProfessor =
         Nombre    : string
         Estatus   : string
         Precision : string
+        NumeroInstancias : string
+        Atributos : string
+        Descripcion : string
     }
 
     type Order = Alfabetico | Matricula
@@ -436,7 +439,7 @@ module PredictionProfessor =
 
     // This is our prediction widget. We take a list of predictions, and return
     // an document tree which can be rendered.
-    let widget (predicciones : PrediccionProfesor list) =
+    let widget (predicciones : PrediccionProfesor list) (planes : Map<string, string>) =
         let materias = List.fold (fun l ph -> let materia = ph.Materia + " (" + ph.Grupo + ")"
                                               if List.exists (fun m -> m = materia) l
                                               then l
@@ -469,18 +472,14 @@ module PredictionProfessor =
         // A simple function for displaying the details of a prediction:
         let muestraPrediccion i ph =
             trAttr [attr.``class`` ("d" + string (i % 2))] [
-                td [text ph.Materia]
+//                td [text ph.Materia]
+                td [text (string (i + 1))]
                 td [text ph.Matricula]
                 td [text ph.Nombre]
                 td [text ph.Estatus]
-                td [text ph.Precision]
+//                td [text ph.Precision]
             ] :> Doc
 
-        let muestraPredicciones predicciones =
-                (predicciones 
-                    |> List.mapi muestraPrediccion
-                    |> table) :> Doc
-                             
         let putInPanel name comp = 
             divc "panel panel-default" [
                 divc "panel-heading" [
@@ -493,6 +492,73 @@ module PredictionProfessor =
                     comp
                 ]
             ]
+
+        let muestraPredicciones predicciones =
+                match predicciones with
+                    | _ :: _ -> let info = List.head predicciones
+                                let descripcion (txt : string) =
+                                    txt.Split [|'\n'|]
+                                        |> Array.toList
+                                        |> List.filter (fun txt -> txt.Trim() <> "")
+                                        |> (fun l -> List.iteri (fun i txt -> printfn "%i, %s" i txt) l
+                                                     l)
+                                        |> List.map text
+                                        |> (fun l -> let pairs = List.pairwise l
+                                                     let all = pairs |> List.map (fun (_, t) -> [br[] :> Doc; t])
+                                                                     |> List.concat
+                                                     ((fst << List.head) pairs) :: all)
+                                let attrName attr =
+                                    match attr with
+                                        | "profesor" -> "profesor"
+                                        | "c1" -> "calificación del parcial 1"
+                                        | "i1" -> "inasistencias del parcial 1"
+                                        | "c2" -> "calificación del parcial 2"
+                                        | "i2" -> "inasistencias del parcial 2"
+                                        | "c3" -> "calificación del parcial 3"
+                                        | "i3" -> "inasistencias del parcial 3"
+                                        | "efinal" -> "calificación del exámen final"
+                                        | "final" -> "calificación final"
+                                        | "inasistencias" -> "inasistencias"
+                                        | "estatus" -> "estatus"
+                                        | _ -> "desconocido"
+                                let atributos (txt : string) =
+                                    let extraer (atributo : string) = 
+                                        match atributo.Split [|'_'|] |> Array.toList with
+                                            | (codigo :: num :: atributo :: _) -> 
+                                                       match Map.tryFind codigo planes with
+                                                         | Some materia -> (codigo, num, materia, attrName atributo)
+                                                         | None -> ("", "", "", "")
+                                            | _ -> ("", "", "", "")
+                                    txt.Split [|','|] 
+                                        |> Array.toList
+                                        |> List.map extraer
+                                        |> List.fold (fun m (codigo, num, materia, atributo) ->
+                                                        let key = materia + " (" + codigo + "-" + num + ")"
+                                                        match Map.tryFind key m with
+                                                            | Some l -> Map.add key (l @ [atributo]) m
+                                                            | None -> Map.add key [atributo] m) Map.empty
+                                        |> Map.toList
+                                        |> List.map (fun (materia, l) -> l |> String.concat ", "
+                                                                           |> (fun atributos -> materia + " (" + atributos + ")"))
+                                        |> String.concat ", "
+
+                                let modelInfo = ul [
+                                                  li [text ("Se consideraron " + string info.NumeroInstancias + " alumnos en la construcción del modelo predictivo.")]
+                                                  li [text ("La precisión del modelo fue de " + info.Precision + "% instancias clasificadas correctamente usando validación cruzada.")]
+                                                  li [text "El modelo predictivo uso la siguiente información por materia:"
+                                                      br []
+                                                      text (atributos info.Atributos)]
+                                                  li [text "Información técnica del algoritmo es la siguiente:"]
+                                                  p (descripcion info.Descripcion)
+                                                  ]
+                                (predicciones 
+                                    |> List.mapi muestraPrediccion
+                                    |> table
+                                    |> (fun t -> div [t
+                                                      br []
+                                                      p [putInPanel "Información de Modelo Predictivo" modelInfo]])) :> Doc
+                    | [] -> (div []) :> Doc
+                             
 
         let queryPanel = 
             divc "col-sm-6" [
@@ -522,19 +588,31 @@ module PredictionProfessor =
             resultsPanel
         ]
 
-    let Main predicciones =
+    let Main predicciones planes =
         // Funcion que extrae las predicciones de una lista de strings
         let prediccion P = 
             match P with 
-                | [materia; grupo; matricula; nombre; estatus; precision] -> 
+                | [materia; grupo; matricula; nombre; estatus; precision; instancias; atributos; descripcion] -> 
                     {Materia   = materia
                      Grupo     = grupo
                      Matricula = matricula
                      Nombre    = nombre
                      Estatus   = estatus
-                     Precision = precision}
+                     Precision = precision
+                     NumeroInstancias = instancias
+                     Atributos = atributos
+                     Descripcion = descripcion}
+                | _ -> printfn "Error"
+                       failwith "Error"
+
+        let plan (P : string list) = 
+            match P with
+                | [codigo; materia] -> (codigo, materia)
                 | _ -> printfn "Error"
                        failwith "Error"
 
         let predicciones = List.map prediccion predicciones
-        widget predicciones
+        let planes = planes
+                        |> List.map plan
+                        |> List.fold (fun m (codigo, materia) -> Map.add codigo materia m) Map.empty
+        widget predicciones planes
