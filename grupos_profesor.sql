@@ -25,3 +25,10 @@ INNER JOIN algoritmos_clasificadores AC
 ON (M.clase = AC.clase)
 ORDER BY G.grupo, A.nombre$$
 DELIMITER ;
+
+Release1/mono Modelos.exe entrenamiento 20131S 20162S 0 ITI > Release1/entrenamiento.txt &
+Release2/mono Modelos.exe entrenamiento 20131S 20162S 0 ITEM > Release2/entrenamiento.txt  &
+Release3/mono Modelos.exe entrenamiento 20131S 20162S 0 ISTI > Release3/entrenamiento.txt  &
+Release4/mono Modelos.exe entrenamiento 20131S 20162S 0 ITMA > Release4/entrenamiento.txt  &
+Release5/mono Modelos.exe entrenamiento 20131S 20162S 0 LAG > Release5/entrenamiento.txt  &
+Release6/mono Modelos.exe entrenamiento 20131S 20162S 0 LMKT > Release6/entrenamiento.txt  &

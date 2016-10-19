@@ -50,8 +50,7 @@ let ejecutaEntrenamiento periodoInicial periodoFinal parcial carreras =
     let porcentajeAlumnos = 0.8
     let materias = List.map (fun carrera -> (carrera, materias_por_carrera carrera)) carreras
     materias
-        |> List.toArray
-        |> Array.Parallel.iter (fun (carrera, materias) ->
+        |> List.iter (fun (carrera, materias) ->
                  printfn "Calculando modelos para la Carrera %s" carrera
 
                  materias |> List.iter (fun materia ->
