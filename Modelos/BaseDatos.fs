@@ -713,48 +713,55 @@ let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
 
 
 let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial aid clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias =
-    let result = query { for registro in Sql.GetDataContext().Intranet.ModelosNominales do
+    let ctx = Sql.GetDataContext()
+    let guarda () = 
+        printfn "Guardando modelo construido por: %s" clase
+        let registro = ctx.Intranet.ModelosNominales.Create()
+        registro.Materia <- materia
+        registro.PeriodoInicial <- periodoInicial
+        registro.PeriodoFinal <- periodoFinal
+        registro.Parcial <- parcial
+        registro.AId <- aid
+        registro.Clase <- clase
+        registro.ContinuoDiscreto <- continuo
+        registro.RutaMaterias <- rutaMaterias
+        registro.Atributos <- atributos
+        registro.MatrizConfusion <- matrizConfusion
+        registro.NumeroInstancias <- numeroInstancias
+        registro.Correctas <- correctas
+        registro.Precision <- precision
+        registro.Modelo <- modelo
+        registro.Instancias <- instancias
+        ctx.SubmitUpdates()
+    let result = query { for registro in ctx.Intranet.ModelosNominales do
                          where (registro.Materia = materia && registro.PeriodoInicial = periodoInicial &&
                                 registro.PeriodoFinal = periodoFinal && registro.Parcial = parcial)
                          select registro}
                             |> Seq.toList
     match result with
-        [registro] -> registro.Delete()
-                      Sql.GetDataContext().SubmitUpdates()
-                      actualiza_modelo_nominal materia periodoInicial periodoFinal parcial aid clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias
-       | _ -> printfn "Guardando modelo construido por: %s" clase
-              let registro = Sql.GetDataContext().Intranet.ModelosNominales.Create()
-              registro.Materia <- materia
-              registro.PeriodoInicial <- periodoInicial
-              registro.PeriodoFinal <- periodoFinal
-              registro.Parcial <- parcial
-              registro.AId <- aid
-              registro.Clase <- clase
-              registro.ContinuoDiscreto <- continuo
-              registro.RutaMaterias <- rutaMaterias
-              registro.Atributos <- atributos
-              registro.MatrizConfusion <- matrizConfusion
-              registro.NumeroInstancias <- numeroInstancias
-              registro.Correctas <- correctas
-              registro.Precision <- precision
-              registro.Modelo <- modelo
-              registro.Instancias <- instancias
-              Sql.GetDataContext().SubmitUpdates()
+        [registro] -> printfn "Borrando modelo anterior construido por: %s (%i)" clase aid
+                      registro.Delete()
+                      ctx.SubmitUpdates()
+                      guarda ()
+       | _ -> guarda ()
 
 let rec actualiza_prediccion_kardex mId matricula periodo estatus =
-    let result = query { for registro in Sql.GetDataContext().Intranet.PrediccionKardex do
+    let ctx = Sql.GetDataContext()
+    let guarda () =
+        //printfn "Guardando prediccion construido por: %s" clase
+        let registro = ctx.Intranet.PrediccionKardex.Create()
+        registro.MId <- mId
+        registro.Matricula <- matricula
+        registro.Periodo <- periodo
+        registro.Estatus <- estatus
+        ctx.SubmitUpdates()
+    let result = query { for registro in ctx.Intranet.PrediccionKardex do
                          where (registro.MId = mId && registro.Matricula = matricula &&
                                 registro.Periodo = periodo)
                          select registro}
                             |> Seq.toList
     match result with
         [registro] -> registro.Delete()
-                      Sql.GetDataContext().SubmitUpdates()
-                      actualiza_prediccion_kardex mId matricula periodo estatus
-       | _ -> //printfn "Guardando prediccion construido por: %s" clase
-              let registro = Sql.GetDataContext().Intranet.PrediccionKardex.Create()
-              registro.MId <- mId
-              registro.Matricula <- matricula
-              registro.Periodo <- periodo
-              registro.Estatus <- estatus
-              Sql.GetDataContext().SubmitUpdates()
+                      ctx.SubmitUpdates()
+                      guarda ()
+       | _ -> guarda ()
