@@ -62,115 +62,6 @@ module Client =
             ] [text "Actualizar"]
         ]
 
-    let predictionStudent () =
-        let sty n v = Attr.Style n v
-        let cls n = Attr.Class n
-        let divc c docs = Doc.Element "div" [cls c] docs
-
-        // Create a reactive variable and view.
-        // Reactive *variables* are data *sources*.
-        let elems = ["bar"; "foo"]
-        let rvText = Var.Create ""
-//        let rvSelect = Var.Create ""
-        // Create the components backed by the variable: in this case, an input
-        // field and a label to display the contents of such a field.
-
-        // The inputField is created using RD.Input, which takes an RVar as its
-        // parameter. Whenever the input field is updated, the new value is
-        // automatically placed into the variable.
-        let inputField =
-            divAttr [cls "panel" ; cls "panel-default"] [
-                divAttr [cls "panel-heading"] [
-                    h3Attr [cls "panel-title"] [
-                        text "Selección por"
-                    ]
-                ]
-
-                divAttr [cls "panel-body"] [
-                    formAttr [cls "form-horizontal" ; Attr.Create "role" "form"] [
-                        divAttr [cls "form-group"] [
-                            labelAttr [cls "col-sm-2" ; cls "control-label" ; attr.``for`` "inputBox"] [
-                                Doc.TextNode "Write something: "
-                            ]
-
-                            divAttr [cls "col-sm-10"] [
-                                Doc.Select [Attr.Create "class" "form-control"//attr.``class`` "form-control"
-                                            attr.id "inputBox"
-                                            on.afterRender (fun el ->
-                                                let idx = List.findIndex ((=) rvText.Value) elems
-                                                el?selectedIndex <- idx)] id elems rvText
-//                                Doc.Input [attr.``class`` "form-control" ; attr.id "inputBox"] rvText
-                            ]
-                        ]
-                    ]
-                ]
-        ]
-        // Now, we make views of the text, which we mutate using Map.
-        let view = View.FromVar rvText
-
-        let viewCaps =
-            view |> View.Map (fun s -> s.ToUpper () )
-
-        let viewReverse =
-            view |> View.Map (fun s -> new string ((s.ToCharArray ()) |> Array.rev))
-
-        let viewWordCount =
-            view |> View.Map (fun s -> s.Split([| ' ' |]).Length)
-
-        let viewWordCountStr =
-            View.Map string viewWordCount
-
-        let viewWordOddEven =
-            View.Map (fun i -> if i % 2 = 0 then "Even" else "Odd") viewWordCount
-
-        let views =
-            [
-                ("Entered Text", view)
-                ("Capitalised", viewCaps)
-                ("Reversed", viewReverse)
-                ("Word Count", viewWordCountStr)
-                ("Is the word count odd or even?", viewWordOddEven)
-            ]
-
-        let tableRow (lbl, view) =
-            tr [
-                td [
-                    text lbl
-                ]
-                tdAttr [sty "width" "70%"] [
-                    textView view
-                ]
-            ] :> Doc
-
-        let tbl =
-            divc "panel panel-default" [
-                divc "panel-heading" [
-                    h3Attr [cls "panel-title"] [
-                        text "Output"
-                    ]
-                ]
-
-                divc "panel-body" [
-                    tableAttr [cls "table"] [
-                        tbody [
-                            // We map the tableRow function onto the different
-                            // views of the source, and concatenate the resulting
-                            // documents.
-                            List.map tableRow views |> Doc.Concat
-                        ]
-                    ]
-                ]
-            ]
-        div [
-            inputField
-            tbl
-        ]
-
-(*        let v = Var.Create "bar"
-        let doc = Doc.Select [
-                        attr.``class`` "form-control"
-                        ] id ["bar"; "foo"] v
-        v.Value <- "foo"*)
 
     let getCareers (careers : Server.Career) =
             let result = if careers.ITI then ["ITI"] else []
@@ -401,9 +292,10 @@ module PredictionProfessor =
         NumeroInstancias : string
         Atributos : string
         Descripcion : string
+        DescripcionSeleccion : string
     }
 
-    type Order = Alfabetico | Matricula
+    type Order = Alfabetico | Matricula | Estatus
 
     type Order with
 
@@ -412,6 +304,7 @@ module PredictionProfessor =
             match order with
             | Alfabetico -> "Apellido"
             | Matricula -> "Matrícula"
+            | Estatus -> "Estatus"
 
     type PrediccionProfesor with
 
@@ -420,6 +313,7 @@ module PredictionProfessor =
             match order with
             | Alfabetico -> compare p1.Nombre p2.Nombre
             | Matricula -> compare p1.Matricula p2.Matricula
+            | Estatus -> compare p1.Estatus p2.Estatus
 
         /// A filtering function.
         static member MatchesQuery q ph =
@@ -502,7 +396,10 @@ module PredictionProfessor =
                                         |> (fun l -> List.iteri (fun i txt -> printfn "%i, %s" i txt) l
                                                      l)
                                         |> List.map text
-                                        |> (fun l -> let pairs = List.pairwise l
+                                        |> (fun l -> let pairs = match List.length l with
+                                                                    | 0 -> [text "", text ""]
+                                                                    | 1 -> [List.head l, text ""]
+                                                                    | _ -> List.pairwise l
                                                      let all = pairs |> List.map (fun (_, t) -> [br[] :> Doc; t])
                                                                      |> List.concat
                                                      ((fst << List.head) pairs) :: all)
@@ -547,8 +444,12 @@ module PredictionProfessor =
                                                   li [text "El modelo predictivo uso la siguiente información por materia:"
                                                       br []
                                                       text (atributos info.Atributos)]
-                                                  li [text "Información técnica del algoritmo es la siguiente:"]
-                                                  p (descripcion info.Descripcion)
+                                                  li [text "Información técnica del algoritmo de clasificación es la siguiente:"
+                                                      br []
+                                                      p (descripcion info.Descripcion)]
+                                                  li [text "Información técnica del algoritmo de selección de atributos es la siguiente:"
+                                                      br []
+                                                      p (descripcion info.DescripcionSeleccion)]
                                                   ]
                                 (predicciones 
                                     |> List.mapi muestraPrediccion
@@ -569,7 +470,7 @@ module PredictionProfessor =
 
                 // We then have a select box, linked to our orders variable
                 text "Ordenar por: "
-                Doc.Select [Attr.Create "class" "form-control"] Order.Show [Alfabetico; Matricula] vorder
+                Doc.Select [Attr.Create "class" "form-control"] Order.Show [Alfabetico; Matricula; Estatus] vorder
             ] |> putInPanel "Consulta"
 
         let resultsPanel =
@@ -591,7 +492,7 @@ module PredictionProfessor =
         // Funcion que extrae las predicciones de una lista de strings
         let prediccion P = 
             match P with 
-                | [materia; grupo; matricula; nombre; estatus; precision; instancias; atributos; descripcion] -> 
+                | [materia; grupo; matricula; nombre; estatus; precision; instancias; atributos; descripcion; descripcion_seleccion] -> 
                     {Materia   = materia
                      Grupo     = grupo
                      Matricula = matricula
@@ -600,7 +501,9 @@ module PredictionProfessor =
                      Precision = precision
                      NumeroInstancias = instancias
                      Atributos = atributos
-                     Descripcion = descripcion}
+                     Descripcion = descripcion
+                     DescripcionSeleccion = descripcion_seleccion
+                     }
                 | _ -> printfn "Error"
                        failwith "Error"
 

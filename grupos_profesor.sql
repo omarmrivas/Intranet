@@ -2,7 +2,7 @@ DELIMITER $$
 CREATE DEFINER=`intranet`@`%` PROCEDURE `grupos_profesor`(IN `periodo` CHAR(6), IN `parcial` INT(11), IN `nombre` VARCHAR(200), IN `apellidos` VARCHAR(200))
     READS SQL DATA
     DETERMINISTIC
-SELECT DISTINCT G.materia, G.grupo, K.matricula, A.nombre, Q.estatus, M.precision, M.numero_instancias, M.atributos, AC.descripcion from kardex K
+SELECT DISTINCT G.materia, G.grupo, K.matricula, A.nombre, Q.estatus, M.precision, M.numero_instancias, M.atributos, AC.descripcion, AC.descripcion_seleccion from kardex K
 INNER JOIN grupos G
 ON (K.grupo = G.grupo AND
     K.periodo = periodo AND

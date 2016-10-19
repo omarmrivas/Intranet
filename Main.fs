@@ -93,6 +93,14 @@ module Site =
             | _ -> printfn "Error en la lectura delse mes, retornando semestre primavera"
                    string System.DateTime.Now.Year + "1S"
 
+    let LogOutPage ctx =
+        async {
+            let! loggedIn = ctx.UserSession.GetLoggedInUser()
+            let username = match loggedIn with
+                                Some username -> username
+                              | None -> ""
+            return! Templating.MainGeneral ctx EndPoint.LogOut "About" "" [client <@ Client.logOutAction username @>]
+        }
 
     let AdminPage (ctx: Context<_>) =
         async {
@@ -168,6 +176,10 @@ module Site =
             let parcial = 0u
 
             let! predictions = BaseDatos.obtener_prediccion_profesor periodo parcial nombre apellidos
+            match predictions with
+                | x :: _ -> printfn "Length: %i" (List.length predictions)
+                            printfn "Length 2: %i" (List.length x)
+                | _ -> printfn "Length 0!"
             let! planes = BaseDatos.obtener_planes ()
             return! Templating.MainGeneral ctx EndPoint.Prediction "Prediction" usertype
                         [
@@ -187,10 +199,7 @@ module Site =
                               | None -> async.Return ""
             return!
                 match (fullname, loggedIn) with
-                    | ("", Some username) -> ctx.UserSession.Logout()
-                                                |> Async.RunSynchronously
-                                             [client <@ Client.AnonymousUser() @>]
-                                                |> Templating.MainGeneral ctx EndPoint.Home "Inicio" ""
+                    | ("", Some username) -> LogOutPage ctx
                     | (_, Some username) ->
                        ([
                             h1 [text "Bienvenido!"]
@@ -201,14 +210,6 @@ module Site =
                                      |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
         }
 
-    let LogOutPage ctx =
-        async {
-            let! loggedIn = ctx.UserSession.GetLoggedInUser()
-            let username = match loggedIn with
-                                Some username -> username
-                              | None -> ""
-            return! Templating.MainGeneral ctx EndPoint.LogOut "About" "" [client <@ Client.logOutAction username @>]
-        }
 
     [<Website>]
     let Main =

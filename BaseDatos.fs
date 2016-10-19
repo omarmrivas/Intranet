@@ -40,6 +40,7 @@ type PrediccionProfesor = {
     numero_instancias : int
     atributos : string
     descripcion : string
+    descripcion_seleccion : string
     }
 
 let db_timeout = 60000
@@ -138,7 +139,8 @@ let obtener_prediccion_profesor periodo parcial nombre apellidos =
                  string P.precision
                  string P.numero_instancias
                  P.atributos
-                 P.descripcion])
+                 P.descripcion
+                 P.descripcion_seleccion])
         |> async.Return
 
 [<Rpc>]
