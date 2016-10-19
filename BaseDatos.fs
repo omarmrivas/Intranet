@@ -82,13 +82,13 @@ let to_double_option = to_number_option float32
 let to_uint32_option = to_number_option uint32
 
 let select_matriculas carrera periodo =
-    query { for registro in ctx.Intranet.Inscripciones do
+    query { for registro in Sql.GetDataContext().Intranet.Inscripciones do
             where (registro.Plan = carrera && registro.Periodo = periodo)
             select (registro.Matricula)}
             |> Seq.toList
 
 let obtener_clave_profesor (grupo : string) =
-    match query {for A in ctx.Intranet.Grupos do
+    match query {for A in Sql.GetDataContext().Intranet.Grupos do
                  where (A.Grupo = grupo)
                  select A.Profesor}
                 |> Seq.toList with
@@ -96,7 +96,7 @@ let obtener_clave_profesor (grupo : string) =
        | _ -> None
 
 let obtener_kardex materia periodo =
-    query {for A in ctx.Intranet.Kardex do
+    query {for A in Sql.GetDataContext().Intranet.Kardex do
            where (A.Materia = Some materia && A.Periodo = periodo &&
                   A.C1 <> None && A.C2 <> None && A.C3 <> None && A.Efinal <> None && A.Final <> None)
            select (A.Grupo, A.C1, A.I1, A.C2, A.I2, A.C3, A.I3, A.Efinal, A.Final, A.Inasistencias)}
@@ -104,20 +104,20 @@ let obtener_kardex materia periodo =
                         (Option.get (obtener_clave_profesor grupo), Option.get c1, i1, Option.get c2, i2, Option.get c3, i3, Option.get efinal, Option.get final, inasistencias))
 
 let obtener_claves_profesores (materia : string) (periodo : string) =
-    query {for A in ctx.Intranet.Grupos do
+    query {for A in Sql.GetDataContext().Intranet.Grupos do
               where (A.Materia = materia && A.Periodo = periodo)
               select A.Profesor}
             |> Seq.choose (fun x -> x)
             |> Seq.toList
 
 let obtener_estatus (materia : string) (periodo : string) =
-    query {for A in ctx.Intranet.Kardex do
+    query {for A in Sql.GetDataContext().Intranet.Kardex do
               where (A.Materia = Some materia && A.Periodo = periodo)
               select A.Estatus}
             |> Seq.toList
 
 let obtener_datos periodoInicial periodoFinal codigo =
-    ctx.Procedures.DatosEntrenamiento.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
+    Sql.GetDataContext().Procedures.DatosEntrenamiento.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
         |> Seq.map (fun r -> r.MapTo<Kardex>())
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
@@ -156,6 +156,7 @@ let obtener_planes () =
 
 // matricula nombre genero fecha_nacimiento ingreso telefono direccion colonia cp municipio procedencia
 let rec actualiza_alumno (matricula : string) (nombre : string) (genero : string) (fecha_nacimiento : DateTime) ingreso telefono direccion colonia cp municipio procedencia =
+    let ctx = Sql.GetDataContext()
     let result = query { for registro in ctx.Intranet.Alumnos do
                          where (registro.Matricula = matricula)
                          select (registro)}
@@ -179,6 +180,7 @@ let rec actualiza_alumno (matricula : string) (nombre : string) (genero : string
               ctx.SubmitUpdates()
 
 let obtener_clave_materia carrera (materia : string) =
+    let ctx = Sql.GetDataContext()
     match query {for A in ctx.Intranet.Planes do
                  where (A.Materia = materia && A.Carrera = carrera)
                  select A.Clave}
@@ -197,6 +199,7 @@ let obtener_clave_materia carrera (materia : string) =
                None
 
 let rec actualiza_inscripciones (matricula : string) (periodo : string) (estado : string) (semestre : string) (plan : string) (fecha : DateTime) =
+    let ctx = Sql.GetDataContext()
     let result = query { for registro in ctx.Intranet.Inscripciones do
                          where (registro.Matricula = matricula && registro.Periodo = periodo)
                          select (registro)}
@@ -215,6 +218,7 @@ let rec actualiza_inscripciones (matricula : string) (periodo : string) (estado 
               ctx.SubmitUpdates()
 
 let rec actualiza_extra (clave : string) (programa : string) (materia : string) (teoria : string) (practica : string) (evaluacion : string) =
+    let ctx = Sql.GetDataContext()
     let result = query { for registro in ctx.Intranet.Extracurriculares do
                          where (registro.Clave = clave)
                          select (registro)}
@@ -234,6 +238,7 @@ let rec actualiza_extra (clave : string) (programa : string) (materia : string) 
 
 
 let rec actualiza_planes carrera clave semestre materia seriacion creditos horas teoria practica evaluacion =
+    let ctx = Sql.GetDataContext()
     let result = query { for registro in ctx.Intranet.Planes do
                          where (registro.Carrera = carrera && registro.Clave = clave && registro.Materia = materia)
                          select registro}
@@ -256,6 +261,7 @@ let rec actualiza_planes carrera clave semestre materia seriacion creditos horas
               ctx.SubmitUpdates()
 
 let rec actualiza_grupos grupo periodo materia aula lunes martes miercoles jueves viernes sabado profesor alumnos estado plan =
+    let ctx = Sql.GetDataContext()
     let result = query { for registro in ctx.Intranet.Grupos do
                          where (registro.Grupo = grupo)
                          select registro}
@@ -282,6 +288,7 @@ let rec actualiza_grupos grupo periodo materia aula lunes martes miercoles jueve
               ctx.SubmitUpdates()
 
 let rec actualiza_profesores profesor periodo nombre apellidos tipo =
+    let ctx = Sql.GetDataContext()
     let result = query { for registro in ctx.Intranet.Profesores do
                          where (registro.Profesor = to_uint32 profesor && registro.Periodo = periodo)
                          select registro}
@@ -299,6 +306,7 @@ let rec actualiza_profesores profesor periodo nombre apellidos tipo =
               ctx.SubmitUpdates()
 
 let rec actualiza_kardex matricula grupo materia semestre periodo c1 i1 c2 i2 c3 i3 efinal final inasistencias extraordinario regularizacion estatus =
+    let ctx = Sql.GetDataContext()
     let result = query { for registro in ctx.Intranet.Kardex do
                          where (registro.Matricula = matricula && registro.Grupo = grupo)
                          select (registro)}
@@ -329,6 +337,7 @@ let rec actualiza_kardex matricula grupo materia semestre periodo c1 i1 c2 i2 c3
 
 
 let rec actualiza_usuarios usuario contrasena =
+    let ctx = Sql.GetDataContext()
     let result = query { for registro in ctx.Intranet.Usuarios do
                          where (registro.Usuario = usuario && registro.Contrasena = contrasena)
                          select registro}
@@ -342,64 +351,3 @@ let rec actualiza_usuarios usuario contrasena =
               registro.Contrasena <- contrasena
               ctx.SubmitUpdates()
 
-
-(*
-
-let rec actualiza_kardex matricula semestre materia periodo final extraordinario regularizacion inasistencias estatus =
-    let result = query { for registro in ctx.``[curricula_upslp].[kardex]`` do
-                         where (registro.matricula = matricula && registro.periodo = periodo && registro.materia = materia)
-                         select (registro)}
-                            |> Seq.toList
-    match result with
-        [registro] -> registro.Delete()
-                      ctx.SubmitUpdates()
-                      actualiza_kardex matricula semestre materia periodo final extraordinario regularizacion inasistencias estatus
-(*                      registro.semestre <- to_sbyte semestre
-                      registro.final <- to_double final
-                      registro.extraordinario <- to_double extraordinario
-                      registro.regularizacion <- to_double regularizacion
-                      registro.inasistencias <- to_sbyte inasistencias
-                      registro.estatus <- estatus
-                      ctx.SubmitUpdates()*)
-       | _ -> let registro = ctx.``[curricula_upslp].[kardex]``.Create()
-              registro.matricula <- matricula
-              registro.periodo <- periodo
-              registro.materia <- materia
-              registro.semestre <- to_sbyte semestre
-              registro.final <- to_double final
-              registro.extraordinario <- to_double extraordinario
-              registro.regularizacion <- to_double regularizacion
-              registro.inasistencias <- to_sbyte inasistencias
-              registro.estatus <- estatus
-              ctx.SubmitUpdates()
-      
-let rec actualiza_modelo materia periodo clase continuo_discreto atributos
-                         aprobados_correctos reprobados_incorrectos
-                         aprobados_incorrectos reprobados_correctos =
-    let result = query { for registro in ctx.``[curricula_upslp].[modelos]`` do
-                         where (registro.materia = materia &&
-                                registro.periodo = periodo)
-                         select registro}
-                            |> Seq.toList
-    match result with
-        [registro] -> registro.Delete()
-                      ctx.SubmitUpdates()
-                      actualiza_modelo materia periodo clase continuo_discreto atributos
-                                       aprobados_correctos reprobados_incorrectos
-                                       aprobados_incorrectos reprobados_correctos
-(*                      registro.nombre <- nombre
-                      registro.genero <- genero
-                      registro.fecha_nacimiento <- fecha_nacimiento
-                      ctx.SubmitUpdates()*)
-       | _ -> let registro = ctx.``[curricula_upslp].[modelos]``.Create()
-              registro.materia <- materia
-              registro.periodo <- periodo
-              registro.clase <- clase
-              registro.continuo_discreto <- continuo_discreto
-              registro.atributos <- atributos
-              registro.aprobados_correctos <- aprobados_correctos
-              registro.reprobados_incorrectos <- reprobados_incorrectos
-              registro.aprobados_incorrectos <- aprobados_incorrectos
-              registro.reprobados_correctos <- reprobados_correctos
-              ctx.SubmitUpdates()
-                        *)

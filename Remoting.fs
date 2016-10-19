@@ -68,7 +68,7 @@ module Server =
                          let encrypt_userpassword = CryptoLibrary.CryptoHelper.Encrypt<TripleDESCryptoServiceProvider>(userpass.Password, admin_password, admin_user)
                          BaseDatos.actualiza_usuarios encrypt_username encrypt_userpassword
                          ignore (users.AddOrUpdate(userpass.User, user, (fun _ user -> user)))
-                         ctx.UserSession.LoginUser (userpass.User, persistent=true)
+                         ctx.UserSession.LoginUser (userpass.User, persistent=false)
                             |> Async.Ignore
 
     [<Rpc>]

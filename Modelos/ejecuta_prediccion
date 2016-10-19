@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+
+cd bin
+
+mkdir -p Release1
+cp Release/* Release1/
+cd Release1
+mono Modelos.exe prediccion 20131S 20162S 0 ITI > prediccion.txt &
+cd ..
+mkdir -p Release2
+cp Release/* Release2/
+cd Release2
+mono Modelos.exe prediccion 20131S 20162S 0 ITEM > prediccion.txt  &
+cd ..
+mkdir -p Release3
+cp Release/* Release3/
+cd Release3
+mono Modelos.exe prediccion 20131S 20162S 0 ISTI > prediccion.txt  &
+cd ..
+mkdir -p Release4
+cp Release/* Release4/
+cd Release4
+mono Modelos.exe prediccion 20131S 20162S 0 ITMA > prediccion.txt  &
+cd ..
+mkdir -p Release5
+cp Release/* Release5/
+cd Release5
+mono Modelos.exe prediccion 20131S 20162S 0 LAG > prediccion.txt  &
+cd ..
+mkdir -p Release6
+cp Release/* Release6/
+cd Release6
+mono Modelos.exe prediccion 20131S 20162S 0 LMKT > prediccion.txt  &

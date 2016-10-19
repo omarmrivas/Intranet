@@ -37,18 +37,17 @@ module Client =
             ] [text "Salir"]
         ]
 
-    let logOutButton username =
-        liAttr [attr.``class`` "passive"] [
+    let logOutAction username =
+        div [
+            p [text "Oprimir para salir:"]
             buttonAttr [
-                on.click (fun _ _ ->
+                on.afterRender (fun _ ->
                     async {
                         do! Server.LogoutUser username
-                        return JS.Window.Location.Reload()
+                        return JS.Window.Location.Assign "/"
                     } |> Async.Start
                 )
-                attr.width "100"
-                attr.height "100"
-                ] [text "Salir"] 
+            ] [text "Salir"]
         ]
 
     let adminComponents username =

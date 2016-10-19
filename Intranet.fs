@@ -108,8 +108,7 @@ let login user password =
              if welcome'.Contains "@ "
              then let welcome'' = welcome'.Substring (welcome'.IndexOf "@ " + 2)
                   if welcome''.Contains "!"
-                  then //Some (kind (welcome''.Remove (welcome'.IndexOf "@ "), cookie))
-                       Some (kind {FullName = welcome''.Remove (welcome''.IndexOf "!")
+                  then Some (kind {FullName = welcome''.Remove (welcome''.IndexOf "!")
                                    UserName = user
                                    Password = password
                                    Cookie = cookie})

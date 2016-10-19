@@ -60,6 +60,18 @@ type AlgoritmoClasificador =
      ComandoPredecir     : string
      Descripcion         : string}
 
+type PrediccionProfesor = {
+    materia : string
+    grupo   : string
+    matricula : string
+    nombre    : string
+    estatus   : string
+    precision : float32
+    numero_instancias : int
+    atributos : string
+    descripcion : string
+    }
+
 let db_timeout = 60000
 
 [<Literal>]
@@ -100,6 +112,24 @@ let obtener_clave_profesor (grupo : string) =
                 |> Seq.toList with
         [profesor] -> profesor
        | _ -> None
+
+let obtener_prediccion_profesor periodo parcial nombre apellidos =
+    Sql.GetDataContext().Procedures.GruposProfesor.Invoke(periodo, parcial, nombre, apellidos).ResultSet
+        |> Seq.toList
+        |> List.map (fun r -> (*r.ColumnValues |> Seq.map fst
+                                             |> Seq.iter (printfn "%A")*)
+                              r.MapTo<PrediccionProfesor>())
+        |> List.map (fun P -> 
+                [P.materia
+                 P.grupo
+                 P.matricula
+                 P.nombre
+                 P.estatus
+                 string P.precision
+                 string P.numero_instancias
+                 P.atributos
+                 P.descripcion])
+        |> async.Return
 
 let serializar obj =
     // serialize 

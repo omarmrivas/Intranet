@@ -187,8 +187,10 @@ module Site =
                               | None -> async.Return ""
             return!
                 match (fullname, loggedIn) with
-                    | ("", Some username) -> [client <@ Client.AnonymousUser() @>]
-                                                |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
+                    | ("", Some username) -> ctx.UserSession.Logout()
+                                                |> Async.RunSynchronously
+                                             [client <@ Client.AnonymousUser() @>]
+                                                |> Templating.MainGeneral ctx EndPoint.Home "Inicio" ""
                     | (_, Some username) ->
                        ([
                             h1 [text "Bienvenido!"]
@@ -197,13 +199,15 @@ module Site =
                             |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
                     | (_, None) -> [client <@ Client.AnonymousUser() @>]
                                      |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
-//            return! Templating.MainGeneral ctx EndPoint.About "About" usertype content
         }
 
     let LogOutPage ctx =
         async {
-            do! ctx.UserSession.Logout()
-            return! HomePage ctx
+            let! loggedIn = ctx.UserSession.GetLoggedInUser()
+            let username = match loggedIn with
+                                Some username -> username
+                              | None -> ""
+            return! Templating.MainGeneral ctx EndPoint.LogOut "About" "" [client <@ Client.logOutAction username @>]
         }
 
     [<Website>]

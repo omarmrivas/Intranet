@@ -83,6 +83,12 @@ let ejecutaPrediccion periodoInicial periodoFinal periodoPrediccion parcial carr
 let main argv =
 (*    ignore (BaseDatos.prediccion "20131S" "20162S" "20163S" (uint32 0) "340O1")
     0*)
+
+(*    let result = BaseDatos.obtener_prediccion_profesor "20163S" 0u "Omar" "Montaño Rivas"
+                    |> Async.RunSynchronously
+    printfn "%A" result
+    0*)
+
     if Array.length argv < 5
     then printfn "Entrada incompleta: %A" argv
          printfn "introducir (entrenamiento, prediccion), periodoInicial, periodoFinal, parcial y carrera"
