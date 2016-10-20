@@ -95,19 +95,19 @@ type Sql =
 let ctx = Sql.GetDataContext()
 
 let obtener_datos periodoInicial periodoFinal codigo =
-    Sql.GetDataContext().Procedures.DatosEntrenamiento.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
+    ctx.Procedures.DatosEntrenamiento.Invoke(periodoInicial, periodoFinal, codigo).ResultSet
         |> Seq.map (fun r -> r.MapTo<Kardex>())
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
 
 let obtener_datos_prediccion periodoInicial periodoFinal periodoPrediccion codigo =
-    Sql.GetDataContext().Procedures.DatosPrediccion.Invoke(periodoInicial, periodoFinal, periodoPrediccion, codigo).ResultSet
+    ctx.Procedures.DatosPrediccion.Invoke(periodoInicial, periodoFinal, periodoPrediccion, codigo).ResultSet
         |> Seq.map (fun r -> r.MapTo<Kardex>())
         |> Seq.distinctBy (fun k -> (k.Matricula, k.Materia))
         |> Seq.toList
 
 let obtener_clave_profesor (grupo : string) =
-    match query {for A in Sql.GetDataContext().Intranet.Grupos do
+    match query {for A in ctx.Intranet.Grupos do
                  where (A.Grupo = grupo)
                  select A.Profesor}
                 |> Seq.toList with
@@ -115,7 +115,7 @@ let obtener_clave_profesor (grupo : string) =
        | _ -> None
 
 let obtener_prediccion_profesor periodo parcial nombre apellidos =
-    Sql.GetDataContext().Procedures.GruposProfesor.Invoke(periodo, parcial, nombre, apellidos).ResultSet
+    ctx.Procedures.GruposProfesor.Invoke(periodo, parcial, nombre, apellidos).ResultSet
         |> Seq.toList
         |> List.map (fun r -> (*r.ColumnValues |> Seq.map fst
                                              |> Seq.iter (printfn "%A")*)
@@ -152,13 +152,13 @@ let deserializar<'T> bytes =
     obj
 
 let algoritmos_clasificadores () =
-    query {for A in Sql.GetDataContext().Intranet.AlgoritmosClasificadores do
+    query {for A in ctx.Intranet.AlgoritmosClasificadores do
            select A}
            |> Seq.toList
            |> List.map (fun A -> A.MapTo<AlgoritmoClasificador>())
 
 let obtenerModeloNominal periodoInicial periodoFinal parcial clave =
-    query {for A in Sql.GetDataContext().Intranet.ModelosNominales do
+    query {for A in ctx.Intranet.ModelosNominales do
            where (A.Materia = clave && A.PeriodoInicial = periodoInicial &&
                   A.PeriodoFinal = periodoFinal && A.Parcial = parcial)
            select (A)}
@@ -191,7 +191,7 @@ let cabeceraPersonal data (atts :java.util.ArrayList, mapa) materia i =
     let matriculas = List.map fst data
     let personalInfo =
         matriculas |> List.map (fun matricula ->
-            query {for A in Sql.GetDataContext().Intranet.Alumnos do
+            query {for A in ctx.Intranet.Alumnos do
                    where (A.Matricula = matricula)
                    select A})
                    |> Seq.concat
@@ -670,7 +670,7 @@ let modelo percent periodoInicial periodoFinal parcial codigo =
                      |> Some
 
 let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
-    let modelo = query {for A in Sql.GetDataContext().Intranet.ModelosNominales do
+    let modelo = query {for A in ctx.Intranet.ModelosNominales do
                         where (A.Materia = codigo && A.PeriodoInicial = periodoInicial &&
                                A.PeriodoFinal = periodoFinal && A.Parcial = parcial)
                         select (A)}
@@ -745,7 +745,6 @@ let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
 
 
 let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial aid clase continuo rutaMaterias atributos matrizConfusion precision numeroInstancias correctas modelo instancias =
-    let ctx = Sql.GetDataContext()
     let guarda () = 
         printfn "Guardando modelo construido por: %s" clase
         let registro = ctx.Intranet.ModelosNominales.Create()
@@ -778,7 +777,6 @@ let rec actualiza_modelo_nominal materia periodoInicial periodoFinal parcial aid
        | _ -> guarda ()
 
 let rec actualiza_prediccion_kardex mId matricula periodo estatus =
-    let ctx = Sql.GetDataContext()
     let guarda () =
         //printfn "Guardando prediccion construido por: %s" clase
         let registro = ctx.Intranet.PrediccionKardex.Create()
