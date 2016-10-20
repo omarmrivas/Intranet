@@ -93,6 +93,12 @@ module Site =
             | _ -> printfn "Error en la lectura delse mes, retornando semestre primavera"
                    string System.DateTime.Now.Year + "1S"
 
+    let extraerNombre (info : string) =
+            match info.Split [|'/'|] |> Array.toList with
+                | apellidos :: nombre :: _ -> (apellidos.Trim(), nombre.Trim())
+                | _ -> printfn "Información de profesor inválida: %s" info
+                       ("", "")
+
     let LogOutPage ctx =
         async {
             let! loggedIn = ctx.UserSession.GetLoggedInUser()
@@ -146,22 +152,25 @@ module Site =
             let! fullname = match loggedIn with
                                 Some username -> Server.UserFullName username
                               | None -> async.Return ""
+            let (apellidos, nombre) = extraerNombre fullname
             let! usertype = match loggedIn with
                                 Some username -> Server.UserType username
                               | None -> async.Return ""
             return! Templating.MainGeneral ctx EndPoint.About "About" usertype
                         [
-                            h1 [text "Bienvenido!"]
-                            h1 [text fullname]
+                            h2 [text ("Bienvenido(a) " + nombre + " al Sistema de \"Predicción del Desempeño Académico de Estudiantes\" de la Universidad !")]
+                            h4 [text ("El sistema tiene como objetivo el apoyar el trabajo de los profesores(as) y estudiantes, mediante la aplicación de la mineria de datos " +
+                                      " para predecir el aprovechamiento académico de los alumnos en cada una de las materias que conforman " +
+                                      " la retícula de las diferentes carreras que ofrece la UPSLP. ")
+                                br []
+                                text ("Nota: los modelo predictivos son un elemento importante para la toma de decisiones en el área educativa siguiendo " +
+                                      " el método científico. Para mejorar el aprovechamiento de dichos modelos, hemos de saber que ningún modelo es perfecto," + 
+                                      " y por tanto, son herramientas que no deben dejar de lado el conocimiento personal o la experiencia en un grupo de trabajo concreto.")
+                                ]
                         ]
         }
 
     let PredictionPage ctx =
-        let extraerNombre (info : string) =
-            match info.Split [|'/'|] |> Array.toList with
-                | apellidos :: nombre :: _ -> (apellidos.Trim(), nombre.Trim())
-                | _ -> printfn "Información de profesor inválida: %s" info
-                       ("", "")
         async {
             let! loggedIn = ctx.UserSession.GetLoggedInUser()
             let! usertype = match loggedIn with

@@ -253,9 +253,9 @@ module Client =
         )
         |> Form.Render (fun user pass submit ->
             form [
-                B.Simple.InputWithError "Usuario" user submit.View
-                B.Simple.InputPasswordWithError "Contraseña" pass submit.View
-                B.Button "Log in" [attr.``class`` "btn btn-primary"] submit.Trigger
+                B.Simple.InputWithError "Usuario (intranet)" user submit.View
+                B.Simple.InputPasswordWithError "Contraseña (intranet)" pass submit.View
+                B.Button "Iniciar" [attr.``class`` "btn btn-primary"] submit.Trigger
                 B.ShowErrors [attr.style "margin-top:1em"] submit.View
             ]
         )
@@ -444,10 +444,10 @@ module PredictionProfessor =
                                                   li [text "El modelo predictivo uso la siguiente información por materia:"
                                                       br []
                                                       text (atributos info.Atributos)]
-                                                  li [text "Información técnica del algoritmo de clasificación es la siguiente:"
+                                                  li [text "La información del algoritmo de clasificación es la siguiente:"
                                                       br []
                                                       p (descripcion info.Descripcion)]
-                                                  li [text "Información técnica del algoritmo de selección de atributos es la siguiente:"
+                                                  li [text "La información del algoritmo de selección de atributos es la siguiente:"
                                                       br []
                                                       p (descripcion info.DescripcionSeleccion)]
                                                   ]
@@ -464,13 +464,13 @@ module PredictionProfessor =
             divc "col-sm-6" [
                 text "Materia: "
                 Doc.Select [Attr.Create "class" "form-control"] id materias vmaterias
-                // We specify a label, and an input box linked to our query RVar.
-                text "Buscar: "
-                Doc.Input [Attr.Create "class" "form-control"] vquery
 
                 // We then have a select box, linked to our orders variable
                 text "Ordenar por: "
                 Doc.Select [Attr.Create "class" "form-control"] Order.Show [Alfabetico; Matricula; Estatus] vorder
+                // We specify a label, and an input box linked to our query RVar.
+                text "Buscar: "
+                Doc.Input [Attr.Create "class" "form-control"] vquery
             ] |> putInPanel "Consulta"
 
         let resultsPanel =

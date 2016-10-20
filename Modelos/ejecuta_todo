@@ -1,34 +1,38 @@
 #!/bin/bash
 #
 
+PERIODO_INICIAL=$1
+PERIODO_FINAL=$2
+PARCIAL=$3
+
 cd bin
 
 mkdir -p Release1
 cp Release/* Release1/
 cd Release1
-mono Modelos.exe entrenamiento 20131S 20162S 0 ITI > entrenamiento.txt && mono Modelos.exe prediccion 20131S 20162S 0 ITI > prediccion.txt &
+mono Modelos.exe entrenamiento $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL ITI > entrenamiento.txt && mono Modelos.exe prediccion $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL ITI > prediccion.txt &
 cd ..
 mkdir -p Release2
 cp Release/* Release2/
 cd Release2
-mono Modelos.exe entrenamiento 20131S 20162S 0 ITEM > entrenamiento.txt  && mono Modelos.exe prediccion 20131S 20162S 0 ITEM > prediccion.txt  &
+mono Modelos.exe entrenamiento $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL ITEM > entrenamiento.txt  && mono Modelos.exe prediccion $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL ITEM > prediccion.txt  &
 cd ..
 mkdir -p Release3
 cp Release/* Release3/
 cd Release3
-mono Modelos.exe entrenamiento 20131S 20162S 0 ISTI > entrenamiento.txt  && mono Modelos.exe prediccion 20131S 20162S 0 ISTI > prediccion.txt  &
+mono Modelos.exe entrenamiento $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL ISTI > entrenamiento.txt  && mono Modelos.exe prediccion $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL ISTI > prediccion.txt  &
 cd ..
 mkdir -p Release4
 cp Release/* Release4/
 cd Release4
-mono Modelos.exe entrenamiento 20131S 20162S 0 ITMA > entrenamiento.txt  && mono Modelos.exe prediccion 20131S 20162S 0 ITMA > prediccion.txt  &
+mono Modelos.exe entrenamiento $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL ITMA > entrenamiento.txt  && mono Modelos.exe prediccion $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL ITMA > prediccion.txt  &
 cd ..
 mkdir -p Release5
 cp Release/* Release5/
 cd Release5
-mono Modelos.exe entrenamiento 20131S 20162S 0 LAG > entrenamiento.txt  && mono Modelos.exe prediccion 20131S 20162S 0 LAG > prediccion.txt  &
+mono Modelos.exe entrenamiento $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL LAG > entrenamiento.txt  && mono Modelos.exe prediccion $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL LAG > prediccion.txt  &
 cd ..
 mkdir -p Release6
 cp Release/* Release6/
 cd Release6
-mono Modelos.exe entrenamiento 20131S 20162S 0 LMKT > entrenamiento.txt  && mono Modelos.exe prediccion 20131S 20162S 0 LMKT > prediccion.txt  &
+mono Modelos.exe entrenamiento $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL LMKT > entrenamiento.txt  && mono Modelos.exe prediccion $PERIODO_INICIAL $PERIODO_FINAL $PARCIAL LMKT > prediccion.txt  &
