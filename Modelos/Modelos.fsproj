@@ -91,13 +91,13 @@
     <Reference Include="MySql.Data">
       <HintPath>packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="FSharp.Data.SqlProvider">
-      <HintPath>packages\SQLProvider.1.0.34\lib\FSharp.Data.SqlProvider.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="IKVM.OpenJDK.Security">
       <HintPath>..\..\PicNetML\lib\IKVM.OpenJDK.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.SqlProvider">
+      <HintPath>packages\SQLProvider.1.0.35\lib\FSharp.Data.SqlProvider.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
