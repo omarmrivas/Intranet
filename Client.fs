@@ -375,6 +375,7 @@ module PredictionProfessor =
 
         let putInPanel name comp = 
             divc "panel panel-default" [
+//            divc "panel panel-inverse" [
                 divc "panel-heading" [
                     h3Attr [cls "panel-title"] [
                         text name

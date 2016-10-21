@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${title}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+<!--    <link rel="stylesheet" href="netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" /> -->
     <style>
         /* Sticky footer styles */
         html {
@@ -15,13 +16,31 @@
             /* Margin bottom by footer height */
             margin-bottom: 60px;
         }
+<!--		.panel-inverse {
+    		border-color: #080808;
+		}
+		.panel-inverse .panel-heading {
+    		background: #0F0F0F; 
+    		border-color: #0F0F0F;
+			color: #ffffff;
+		} -->
+		.panel-default {
+    		border-color: #080808 !important;
+		}
+		.panel-default .panel-heading {
+    		background: #181818 !important;
+			background-color: #181818 !important;
+			color: #ffffff !important;
+		} 
         .footer {
             position: absolute;
             bottom: 0;
             width: 100%;
             /* Set the fixed height of the footer here */
             height: 60px;
-            background-color: #f5f5f5;
+            background-color: #080808;
+<!--            background-color: #f5f5f5; -->
+<!--			background-color: #696969; -->
         }
         .container .text-muted {
             margin: 20px 0;
@@ -40,11 +59,84 @@
 			padding: 0 15px 0 15px;
 			border: 3px solid black;
 		}
+
+<!-- change navbar defaults 
+		.navbar-default {
+  			background-color: #351ea2;
+  			border-color: #c0772b;
+		}
+		.navbar-default .navbar-brand {
+  			color: #ffffff;
+		}
+		.navbar-default .navbar-brand:hover,
+		.navbar-default .navbar-brand:focus {
+  			color: #ffffff;
+		}
+		.navbar-default .navbar-text {
+  			color: #ffffff;
+		}
+		.navbar-default .navbar-nav > li > a {
+  			color: #ffffff;
+		}
+		.navbar-default .navbar-nav > li > a:hover,
+		.navbar-default .navbar-nav > li > a:focus {
+  			color: #ffffff;
+		}
+		.navbar-default .navbar-nav > .active > a,
+		.navbar-default .navbar-nav > .active > a:hover,
+		.navbar-default .navbar-nav > .active > a:focus {
+  			color: #ffffff;
+  			background-color: #c0772b;
+		}
+		.navbar-default .navbar-nav > .open > a,
+		.navbar-default .navbar-nav > .open > a:hover,
+		.navbar-default .navbar-nav > .open > a:focus {
+  			color: #ffffff;
+  			background-color: #c0772b;
+		}
+		.navbar-default .navbar-toggle {
+  			border-color: #c0772b;
+		}
+		.navbar-default .navbar-toggle:hover,
+		.navbar-default .navbar-toggle:focus {
+  			background-color: #c0772b;
+		}
+		.navbar-default .navbar-toggle .icon-bar {
+  			background-color: #ffffff;
+		}
+		.navbar-default .navbar-collapse,
+		.navbar-default .navbar-form {
+  			border-color: #ffffff;
+		}
+		.navbar-default .navbar-link {
+  			color: #ffffff;
+		}
+		.navbar-default .navbar-link:hover {
+  			color: #ffffff;
+		}
+
+		@media (max-width: 767px) {
+  			.navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    			color: #ffffff;
+  			}
+  			.navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+  			.navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+    			color: #ffffff;
+  			}
+  			.navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+  			.navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+  			.navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+    			color: #ffffff;
+    			background-color: #c0772b;
+  			}
+		} -->
+			
     </style>
 </head>
 <body>
     <!-- Static navbar -->
-    <nav class="navbar navbar-default navbar-static-top">
+<!--    <nav class="navbar navbar-default navbar-static-top"> -->
+    <nav class="navbar navbar-inverse navbar-static-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -75,5 +167,6 @@ Este sitio fue creado y es mantenido por <a href="http://atit.upslp.edu.mx/index
         </div>
     </footer>
     <script data-replace="scripts"></script>
+	<script src="netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </body>
 </html>
