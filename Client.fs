@@ -23,7 +23,6 @@ module Client =
                  true
             else false
 
-
     let logOut username =
         div [
             p [text "Oprimir para salir:"]
@@ -49,6 +48,73 @@ module Client =
                 )
             ] [text "Salir"]
         ]
+
+    let FormItem foo (name, act, placeholder, btn) =
+        let rvInput = Var.Create ""
+        liAttr [if foo then yield attr.``class`` "active"]
+               [formAttr [attr.``class`` "navbar-form navbar-left"
+                          Attr.Create "role" "search"
+//                          attr.name name
+                          attr.``method`` "post"
+                          attr.action act]
+                         [
+                          divAttr [attr.``class`` "form-group"] [Doc.Input [attr.``type`` "text"
+                                                                            attr.name name
+                                                                            attr.``class`` "form-control"
+                                                                            attr.placeholder placeholder] rvInput
+                                                                 buttonAttr [attr.``type`` "submit"
+                                                                             attr.``class`` "btn btn-default"] [text btn]
+                                                                ]
+                         ]] :> Doc
+
+    let FormItem2 foo (name, act, placeholder, btn) =
+        Form.Return (fun valor -> valor)
+        <*> (Form.Yield ""
+            |> Validation.IsNotEmpty "Must enter a username")
+        |> Form.WithSubmit
+        |> Form.Run (fun valor ->
+            async {
+                return JS.Window.Location.Assign ("/prediction_alumn" + "?" + name + "=" + valor)
+            } |> Async.Start
+        )
+        |> Form.Render (fun valor submit ->
+            form [
+                B.Simple.InputWithError "Usuario (intranet)" valor submit.View
+                B.Button btn [attr.``class`` "btn btn-primary"] submit.Trigger
+                B.ShowErrors [attr.style "margin-top:1em"] submit.View
+            ]
+        )
+
+
+
+(*    let algo enlace =
+        let matricula = Var.Create ""
+        Form.Return (fun matricula -> matricula)
+        <*> (Form.YieldVar user
+            |> Validation.IsNotEmpty "Introduce una matrícula"
+            |> Form.TransmitView)
+        |> Form.WithSubmit
+        |> Form.Run (fun matricula ->
+            JS.Window.Location.Assign (enlace + "?matricula=" + matricula)
+        )
+        |> Form.Render (fun user ss submit ->
+
+            div [
+                div [label [text "Username: "]; Doc.Input [] user]
+                div [label [text "Password: "];
+                     Doc.PasswordBox [Attr.DynamicProp "disabled" (userSuccess |> View.Map (function
+                        | Failure _ -> true
+                        | Success _ -> false))] pass]
+                Doc.Button "Log in" [] submit.Trigger
+                div [
+                    Doc.ShowErrors submit.View (fun errors ->
+                        errors
+                        |> Seq.map (fun m -> p [text m.Text])
+                        |> Seq.cast
+                        |> Doc.Concat)
+                ]
+            ]
+        )*)
 
     let adminComponents username =
         div [
@@ -333,11 +399,20 @@ module PredictionProfessor =
     // This is our prediction widget. We take a list of predictions, and return
     // an document tree which can be rendered.
     let widget (predicciones : PrediccionProfesor list) (planes : Map<string, string>) =
-        let materias = List.fold (fun l ph -> let materia = ph.Materia + " (" + ph.Grupo + ")"
+(*        let materias = List.fold (fun l ph -> let materia = ph.Materia + " (" + ph.Grupo + ")"
                                               if List.exists (fun m -> m = materia) l
                                               then l
                                               else materia :: l) [] predicciones
-                                              |> List.rev
+                                              |> List.rev*)
+
+        let materias_mapa = 
+                       List.fold (fun m ph -> let materia = ph.Materia + " (" + ph.Grupo + ")"
+                                              match Map.tryFind materia m with
+                                                | Some l -> Map.add materia (l @ [ph]) m
+                                                | None ->   Map.add materia [ph] m) Map.empty predicciones
+
+        let materias = materias_mapa |> Map.toList
+                                     |> List.map fst
 
         // Búsqueda
         let vquery = Var.Create ""
@@ -357,8 +432,10 @@ module PredictionProfessor =
             (View.FromVar vorder)
                 |> View.Map2 (fun query order -> (query, order)) (View.FromVar vquery)
                 |> View.Map2 (fun materia (query, order) ->
-                    predicciones 
-                           |> List.filter (PrediccionProfesor.MatchesMateria materia)
+(*                    predicciones 
+                           |> List.filter (PrediccionProfesor.MatchesMateria materia)*)
+                      materias_mapa
+                           |> Map.find materia
                            |> List.filter (PrediccionProfesor.MatchesQuery query)
                            |> List.sortWith (PrediccionProfesor.Compare order)) (View.FromVar vmaterias)
 

@@ -9,8 +9,24 @@ type EndPoint =
     | [<EndPoint "/">] Home
     | [<EndPoint "/about">] About
     | [<EndPoint "/admin">] Admin
-    | [<EndPoint "/prediction">] Prediction
+    | [<EndPoint "/prediction_group">] PredictionGroup
     | [<EndPoint "/logout">] LogOut
+    | [<EndPoint "POST /prediction_alumn">] PredictAlumn of args: PostedMatricula
+and PostedMatricula =
+    {
+        [<FormData>] matricula: string
+    }
+
+type EndPoint with
+    static member KindCompare p q =
+            match (p, q) with
+            | (PredictAlumn _, PredictAlumn _) -> true
+            | _ -> p = q
+
+
+type DropdownItem =
+    | LinkTo of string * EndPoint
+    | FormTo of string * EndPoint * string * string
 
 module Templating =
     open WebSharper.UI.Next.Html
@@ -19,9 +35,45 @@ module Templating =
 
     let MenuBarGeneral (ctx: Context<EndPoint>) usertype endpoint : Doc list =
         let ( => ) txt act =
-            liAttr [if endpoint = act then yield attr.``class`` "active"] [
+            liAttr [if EndPoint.KindCompare endpoint act then yield attr.``class`` "active"] [
                 aAttr [attr.href (ctx.Link act)] [text txt]
             ]
+
+        let ( =>> ) txt acts =
+            let MKitem ddi =
+                match ddi with
+                    | LinkTo (label, act)  -> liAttr [if EndPoint.KindCompare endpoint act then yield attr.``class`` "active"] [aAttr [attr.href (ctx.Link act)] [text txt]] :> Doc
+                    | FormTo (name, act, placeholder, btn) -> 
+                        let foo = EndPoint.KindCompare endpoint act
+                        liAttr [if foo then yield attr.``class`` "active"]
+                            [formAttr [attr.``class`` "navbar-form navbar-left"
+                                       Attr.Create "role" "search"
+                                       attr.``method`` "post"
+                                       attr.action (ctx.Link act)]
+                                      [
+                                       divAttr [attr.``class`` "form-group"] [
+                                                                              inputAttr [attr.``type`` "text"
+                                                                                         attr.name name
+                                                                                         attr.``class`` "form-control"
+                                                                                         attr.placeholder placeholder] []
+                                                                              buttonAttr [attr.``type`` "submit"
+                                                                                          attr.``class`` "btn btn-default"] [text btn]
+                                                                ]
+                                      ]] :> Doc
+            let getAction ddi = 
+                match ddi with
+                    | LinkTo (_, act) -> act
+                    | FormTo (name, act, placeholder, btn) -> act
+            let submenu () =
+                List.map MKitem acts
+            liAttr [attr.``class`` (if List.exists (EndPoint.KindCompare endpoint << getAction) acts
+                                    then "dropdown active"
+                                    else "dropdown")] [
+                        aAttr [attr.href "#"; attr.``class`` "dropdown-toggle"; attr.``data-`` "toggle" "dropdown"; Attr.Create "role" "button"]
+                              [text txt
+                               bAttr [attr.``class`` "caret"] []]
+                        ulAttr [attr.``class`` "dropdown-menu"] (submenu ())
+                    ]
 
         match usertype with
             | "Student" ->
@@ -32,7 +84,8 @@ module Templating =
             | "Professor" ->
                 [
                     li ["Inicio" => EndPoint.Home]
-                    li ["Predicción" => EndPoint.Prediction]
+                    li ["Predicción" =>> [LinkTo ("Por Grupo", EndPoint.PredictionGroup)
+                                          FormTo ("matricula", PredictAlumn {matricula=""} , "Matrícula", "Buscar")]]
                     li ["Acerca de" => EndPoint.About]
                     li ["Salir" => EndPoint.LogOut]
                 ]
@@ -53,31 +106,11 @@ module Templating =
                     li ["Inicio" => EndPoint.Home]
                 ]
 
-    // Compute a menubar where the menu item for the given endpoint is active
-    let MenuBar (ctx: Context<EndPoint>) endpoint : Doc list =
-        let ( => ) txt act =
-             liAttr [if endpoint = act then yield attr.``class`` "active"] [
-                aAttr [attr.href (ctx.Link act)] [text txt]
-             ]
-        [
-            li ["Home" => EndPoint.Home]
-            li ["About" => EndPoint.About]
-        ]
-
     let MainGeneral ctx action title usertype body =
         Content.Page(
             MainTemplate.Doc(
                 title = title,
                 menubar = MenuBarGeneral ctx usertype action,
-                body = body
-            )
-        )
-
-    let Main ctx action title body =
-        Content.Page(
-            MainTemplate.Doc(
-                title = title,
-                menubar = MenuBar ctx action,
                 body = body
             )
         )
@@ -156,7 +189,7 @@ module Site =
             let! usertype = match loggedIn with
                                 Some username -> Server.UserType username
                               | None -> async.Return ""
-            return! Templating.MainGeneral ctx EndPoint.About "About" usertype
+            return! Templating.MainGeneral ctx EndPoint.About "Acerca de" usertype
                         [
                             h2 [text ("Bienvenido(a) " + nombre + " al Sistema de \"Predicción del Desempeño Académico de Estudiantes\" de la Universidad !")]
                             h4 [text ("El sistema tiene como objetivo el apoyar el trabajo de los profesores(as) y estudiantes, mediante la aplicación de la mineria de datos " +
@@ -190,11 +223,34 @@ module Site =
                             printfn "Length 2: %i" (List.length x)
                 | _ -> printfn "Length 0!"
             let! planes = BaseDatos.obtener_planes ()
-            return! Templating.MainGeneral ctx EndPoint.Prediction "Prediction" usertype
+            return! Templating.MainGeneral ctx EndPoint.PredictionGroup "Predicción por Grupos" usertype
                         [
                             div [client <@ PredictionProfessor.Main predictions planes @>]
 //                            div [client <@ Client.predictionStudent () @>]
                         ]
+        }
+
+    let PredictAlumnPage matricula ctx =
+        async {
+            let! loggedIn = ctx.UserSession.GetLoggedInUser()
+            let! fullname = match loggedIn with
+                                Some username -> Server.UserFullName username
+                              | None -> async.Return ""
+            let! usertype = match loggedIn with
+                                Some username -> Server.UserType username
+                              | None -> async.Return ""
+            return!
+                match (fullname, loggedIn) with
+                    | ("", Some username) -> LogOutPage ctx
+                    | (_, Some username) ->
+                       ([
+                            h1 [text "Bienvenido!"]
+                            h1 [text fullname]
+                            h1 [text ("matricula: " + matricula.matricula)]
+                        ] : list<Doc>)
+                            |> Templating.MainGeneral ctx (EndPoint.PredictAlumn matricula) "Predicción por Alumno" usertype
+                    | (_, None) -> [client <@ Client.AnonymousUser() @>]
+                                     |> Templating.MainGeneral ctx EndPoint.Home "Inicio" usertype
         }
 
     let HomePage ctx =
@@ -227,6 +283,7 @@ module Site =
             | EndPoint.Home -> HomePage ctx
             | EndPoint.About -> AboutPage ctx
             | EndPoint.Admin -> AdminPage ctx
-            | EndPoint.Prediction -> PredictionPage ctx
+            | EndPoint.PredictionGroup -> PredictionPage ctx
+            | EndPoint.PredictAlumn matricula -> PredictAlumnPage matricula ctx
             | EndPoint.LogOut -> LogOutPage ctx
         )
