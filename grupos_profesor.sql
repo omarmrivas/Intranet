@@ -14,7 +14,7 @@ ON (G.profesor = P.profesor AND
     P.apellidos = apellidos)
 INNER JOIN modelos_nominales M
 ON (K.materia = M.materia AND
-    M.parcial = 0)
+    M.parcial = parcial)
 INNER JOIN prediccion_kardex Q
 ON (M.mId = Q.mId AND
     Q.periodo = periodo AND

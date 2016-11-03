@@ -43,6 +43,33 @@ type PrediccionProfesor = {
     descripcion_seleccion : string
     }
 
+
+type PrediccionAlumno = {
+    materia         : string
+    grupo           : string
+    periodo         : string
+    matricula       : string
+    nombreAlumno    : string
+    nombreProfesor  : string
+    apellidos       : string
+    c1              : string
+    i1              : int
+    c2              : string
+    i2              : int
+    c3              : string
+    i4              : int
+    estatusPredicho : string
+    estatus         : string
+    precision       : float32
+    numero_instancias : int
+    atributos       : string
+    descripcion     : string
+    descripcion_seleccion : string
+    periodo_inicial : string
+    periodo_final   : string
+    parcial   : int
+    }
+
 let db_timeout = 60000
 
 [<Literal>]
@@ -142,6 +169,36 @@ let obtener_prediccion_profesor periodo parcial nombre apellidos =
                  P.descripcion
                  P.descripcion_seleccion])
         |> async.Return
+
+
+let obtener_prediccion_alumno matricula =
+    ctx.Procedures.AlumnosProfesor.Invoke(matricula).ResultSet
+        |> Seq.toList
+        |> List.map (fun r -> r.ColumnValues |> Seq.map (string << snd)
+                                             |> Seq.toList)
+(*        |> List.map (fun r -> (*r.ColumnValues |> Seq.map fst
+                                             |> Seq.iter (printfn "%A")*)
+                              r.MapTo<PrediccionAlumno>())
+        |> List.map (fun P -> 
+                [P.materia
+                 P.grupo
+                 P.periodo
+                 P.matricula
+                 P.nombreAlumno
+                 P.nombreProfesor
+                 P.apellidos
+                 P.estatusPredicho
+                 P.estatus
+                 string P.precision
+                 string P.numero_instancias
+                 P.atributos
+                 P.descripcion
+                 P.descripcion_seleccion
+                 P.periodo_inicial
+                 P.periodo_final
+                 string P.parcial])*)
+        |> async.Return
+
 
 [<Rpc>]
 let obtener_planes () =

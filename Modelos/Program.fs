@@ -89,6 +89,16 @@ let main argv =
     printfn "%A" result
     0*)
 
+(*    let result = BaseDatos.obtener_prediccion_alumno "130766"
+    printfn "%A" result
+    0*)
+
+(*    match BaseDatos.prediccion "20151S" "20153S" "20161S" 1u "830G" with
+        | Some (mId, L) -> printfn "%A" (List.exists (fun (mat, _) -> mat = "120312") L)
+        | None -> printfn "No prediction"
+    0*)
+        
+
     if Array.length argv < 5
     then printfn "Entrada incompleta: %A" argv
          printfn "introducir (entrenamiento, prediccion), periodoInicial, periodoFinal, parcial y carrera"

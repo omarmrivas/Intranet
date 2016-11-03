@@ -59,6 +59,138 @@
 			padding: 0 15px 0 15px;
 			border: 3px solid black;
 		}
+		tr.d2 td {
+  			background-color: #181818;
+  			color: white;
+			text-align: center;
+<!--			padding: 10px 0; -->
+			padding: 0 15px 0 15px;
+			border: 3px solid black;
+		}
+			
+<!--
+			
+.tooltip {
+    transform: none;
+    margin: 50px;
+}
+
+.tooltip:hover > .tooltip-text {
+    pointer-events: auto;
+    opacity: 1.0;
+}
+
+.tooltip > .tooltip-text {
+    display: block;
+    position: absolute;
+    z-index: 6000;
+    overflow: visible;
+    padding: 5px 8px;
+    margin-top: 10px;
+    line-height: 16px;
+    border-radius: 4px;
+    text-align: left;
+    color: #fff;
+    background: #000;
+    pointer-events: none;
+    opacity: 0.0;
+    -o-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+/* Arrow */
+.tooltip > .tooltip-text:before {
+    display: inline;
+    top: -5px;
+    content: "";
+    position: absolute;
+    border: solid;
+    border-color: rgba(0, 0, 0, 1) transparent;
+    border-width: 0 .5em .5em .5em;
+    z-index: 6000;
+    left: 20px;
+}
+
+/* Invisible area so you can hover over tooltip */
+.tooltip > .tooltip-text:after {
+    top: -20px;
+    content: " ";
+    display: block;
+    height: 20px;
+    position: absolute;
+    width: 60px;
+    left: 20px;
+}
+
+.tooltip-scroll {
+    overflow-y: auto;
+    max-height: 50px;
+} -->
+			
+			
+/* Popup container - can be anything you want */
+.popup {
+<!--    margin: 20px; -->
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+    overflow-y: auto;
+    visibility: hidden;
+    width: 600px;
+    max-height: 200px;
+<!--    height: 400px; -->
+    background-color: #555;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 8px 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -400px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;} 
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+}
 
 <!-- change navbar defaults 
 		.navbar-default {
@@ -177,6 +309,7 @@ Este sitio fue creado y es mantenido por <a href="http://atit.upslp.edu.mx/index
     <script data-replace="scripts"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		
 <!--	<script src="utilities.js"></script> -->
 </body>
 </html>

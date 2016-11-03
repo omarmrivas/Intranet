@@ -73,6 +73,27 @@ type PrediccionProfesor = {
     descripcion_seleccion : string
     }
 
+
+type PrediccionAlumno = {
+    materia         : string
+    grupo           : string
+    periodo         : string
+    matricula       : string
+    nombreAlumno    : string
+    nombreProfesor  : string
+    apellidos       : string
+    estatusPredicho : string
+    estatus         : string
+    precision       : float32
+    numero_instancias : int
+    atributos       : string
+    descripcion     : string
+    descripcion_seleccion : string
+    periodo_inicial : string
+    periodo_final   : string
+    parcial   : int
+    }
+
 let db_timeout = 60000
 
 [<Literal>]
@@ -132,6 +153,33 @@ let obtener_prediccion_profesor periodo parcial nombre apellidos =
                  P.descripcion
                  P.descripcion_seleccion])
         |> async.Return
+
+let obtener_prediccion_alumno matricula =
+    ctx.Procedures.AlumnosProfesor.Invoke(matricula).ResultSet
+        |> Seq.toList
+        |> List.map (fun r -> r.ColumnValues |> Seq.map (string << snd)
+                                             |> Seq.toList)
+(*        |> List.map (fun r -> r.ColumnValues |> Seq.map fst
+                                             |> Seq.iter (printfn "%A")
+                              r.MapTo<PrediccionAlumno>())
+        |> List.map (fun P -> 
+                [P.materia
+                 P.grupo
+                 P.periodo
+                 P.matricula
+                 P.nombreAlumno
+                 P.nombreProfesor
+                 P.apellidos
+                 P.estatusPredicho
+                 P.estatus
+                 string P.precision
+                 string P.numero_instancias
+                 P.atributos
+                 P.descripcion
+                 P.descripcion_seleccion
+                 P.periodo_inicial
+                 P.periodo_final
+                 string P.parcial])*)
 
 let serializar obj =
     // serialize 
@@ -570,6 +618,7 @@ let to_weka_predict instancias_entrenamiento codigo (ruta, atributos, data) =
                                                                 then None
                                                                 else Some (i, a1, a2) ) atributos_entrenamiento atributos
                                                                 |> List.choose (fun x -> x)
+                 printfn "%A" atributos_diferentes
                  let instances =
                      instances |> List.map2 (fun matricula instancia -> (matricula, instancia)) matriculas
                                |> List.choose (fun (matricula, (instancia : weka.core.Instance)) -> 
@@ -700,6 +749,8 @@ let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
                                |> List.map (fun (matricula, registros) -> (matricula, registros |> List.sortBy (fun r -> (r.Materia, r.Periodo))))
                     let matriculas = List.map fst por_alumnos
 
+                    printfn "Exists1: %A" (List.exists (fun mat -> mat = "120312") matriculas)
+
                     let por_matricula_mapa = 
                         List.fold (fun m (matricula, registros) -> registros |> List.map (fun k -> k.Materia)
                                                                              |> agrega_indice
@@ -708,8 +759,12 @@ let prediccion periodoInicial periodoFinal periodoPrediccion parcial codigo =
                                                                              |> (fun m' -> Map.add matricula m' m)) Map.empty por_alumnos
     
                     let data = List.choose (verifica_ruta m.rutaMaterias por_matricula_mapa) matriculas
+
+                    printfn "Exists2: %A" (List.exists (fun (mat,_) -> mat = "120312") data)
+
                     match to_weka_predict instancias codigo (m.rutaMaterias, m.atributos, data) with
                         | Some (matriculas, instancias) -> 
+                                             printfn "Exists3: %A" (List.exists (fun mat -> mat = "120312") matriculas)
                                              let clasificador = deserializar<weka.classifiers.AbstractClassifier> m.modelo
 //                                             let matriculas = List.map fst data
 

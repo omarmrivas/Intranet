@@ -97,7 +97,7 @@
       <HintPath>..\..\PicNetML\lib\IKVM.OpenJDK.Security.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data.SqlProvider">
-      <HintPath>packages\SQLProvider.1.0.35\lib\FSharp.Data.SqlProvider.dll</HintPath>
+      <HintPath>packages\SQLProvider.1.0.36\lib\FSharp.Data.SqlProvider.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

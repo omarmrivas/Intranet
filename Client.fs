@@ -450,6 +450,14 @@ module PredictionProfessor =
 //                td [text ph.Precision]
             ] :> Doc
 
+        let cabecera = 
+           (["No."
+             "Matrícula"
+             "Nombre"
+             "Predicción"
+             ] |> List.map (fun txt -> (td [text txt]) :> Doc)
+               |> trAttr [attr.``class`` "d2"]) :> Doc
+
         let putInPanel name comp = 
             divc "panel panel-default" [
 //            divc "panel panel-inverse" [
@@ -531,6 +539,7 @@ module PredictionProfessor =
                                                   ]
                                 (predicciones 
                                     |> List.mapi muestraPrediccion
+                                    |> (fun l -> cabecera :: l)
                                     |> table
                                     |> (fun t -> div [t
                                                       br []
@@ -581,6 +590,339 @@ module PredictionProfessor =
                      Atributos = atributos
                      Descripcion = descripcion
                      DescripcionSeleccion = descripcion_seleccion
+                     }
+                | _ -> printfn "Error"
+                       failwith "Error"
+
+        let plan (P : string list) = 
+            match P with
+                | [codigo; materia] -> (codigo, materia)
+                | _ -> printfn "Error"
+                       failwith "Error"
+
+        let predicciones = List.map prediccion predicciones
+        let planes = planes
+                        |> List.map plan
+                        |> List.fold (fun m (codigo, materia) -> Map.add codigo materia m) Map.empty
+        widget predicciones planes
+
+
+[<JavaScript>]
+module PredictionAlumn =
+    // First, we declare types for predictions and how to order them.
+    [<Direct "$element.classList.toggle('show');">]
+    let toggle (element: Dom.Element) = X<unit>
+
+    type PrediccionAlumno = {
+        materia         : string
+        grupo           : string
+        periodo         : string
+        matricula       : string
+        nombreAlumno    : string
+        carrera         : string
+        nombreProfesor  : string
+        apellidos       : string
+        estatusPredicho : string
+        c1              : string
+        i1              : string
+        c2              : string
+        i2              : string
+        c3              : string
+        i3              : string
+        estatus         : string
+        precision       : string
+        numero_instancias : string
+        atributos       : string
+        descripcion     : string
+        descripcion_seleccion : string
+        periodo_inicial : string
+        periodo_final   : string
+        parcial   : string
+        }
+
+    type Order = Alfabetico | Estatus
+
+    type Order with
+
+        /// A textual representation of our orderings.
+        static member Show order =
+            match order with
+            | Alfabetico -> "Apellido"
+//            | Matricula -> "Matrícula"
+            | Estatus -> "Estatus"
+
+    type PrediccionAlumno with
+
+        /// A comparison function, based on whether we're sorting by name or matriculation number.
+        static member Compare order p1 p2 =
+            match order with
+            | Alfabetico -> compare p1.apellidos p2.apellidos
+//            | Matricula -> compare p1.Matricula p2.Matricula
+            | Estatus -> compare p1.estatusPredicho p2.estatusPredicho
+
+        /// A filtering function.
+        static member MatchesQuery q ph =
+            ph.nombreProfesor.Contains(q)
+            || ph.apellidos.Contains(q)
+            || ph.materia.Contains(q)
+            || ph.periodo.Contains(q)
+
+        /// A filtering function.
+        static member MatchesPartial q ph =
+            ph.parcial = q
+
+    let sty n v = Attr.Style n v
+    let cls n = Attr.Class n
+    let divc c docs = Doc.Element "div" [cls c] docs
+
+
+    // This is our prediction widget. We take a list of predictions, and return
+    // an document tree which can be rendered.
+    let widget (predicciones : PrediccionAlumno list) (planes : Map<string, string>) =
+        let etiqueta = match predicciones with
+                        | p :: _ -> p.matricula + " - " + p.nombreAlumno + " (" + p.carrera + ")"
+                        | _ -> ""
+
+        let periodos_mapa = 
+                       List.fold (fun m ph -> let periodo = ph.periodo + " (" + ph.periodo_inicial + "-" + ph.periodo_final + ")"
+                                              match Map.tryFind periodo m with
+                                                | Some l -> Map.add periodo (l @ [ph]) m
+                                                | None ->   Map.add periodo [ph] m) Map.empty predicciones
+                                                |> Map.add "*" predicciones
+
+        let parciales = predicciones |> List.map (fun p -> p.parcial)
+                                     |> List.distinct
+                                     |> List.sort
+
+        let periodos = periodos_mapa |> Map.toList
+                                     |> List.map fst
+
+        // Búsqueda
+        let vquery = Var.Create ""
+
+        // Ordenamiento
+        let vorder = Var.Create Alfabetico
+
+        // Por periodo
+        let vperiodos = match periodos with
+                            | p :: _ -> Var.Create p
+                            | [] -> Var.Create ""
+
+        let vparciales = match parciales with
+                            | p :: _ -> Var.Create p
+                            | [] -> Var.Create ""
+
+        // The above vars are our model. Everything else is computed from them.
+        // Now, compute visible predictions under the current selection:
+
+        let prediccionesVisibles =
+            (View.FromVar vorder)
+                |> View.Map2 (fun query order -> (query, order)) (View.FromVar vquery)
+                |> View.Map2 (fun periodo (query, order) -> (periodo, query, order)) (View.FromVar vperiodos)
+                |> View.Map2 (fun parcial (periodo, query, order) ->
+                      periodos_mapa
+                           |> Map.find periodo
+                           |> List.filter (PrediccionAlumno.MatchesPartial parcial)
+                           |> List.filter (PrediccionAlumno.MatchesQuery query)
+                           |> List.sortWith (PrediccionAlumno.Compare order)) (View.FromVar vparciales)
+
+        // A simple function for displaying the details of a prediction:
+        let muestraPrediccion (getInfo : PrediccionAlumno -> Elt) i ph =
+            let ename = "element_" + string i
+            let popup = divAttr [attr.``class`` "popup"
+                                 on.click (fun element _ -> let target = JS.Document.GetElementById ename
+                                                            toggle target)]
+                                [text "Modelo"
+                                 spanAttr [attr.``class`` "popuptext"; attr.id ename]
+                                          [getInfo ph]
+                                ]
+
+
+            trAttr [attr.``class`` ("d" + string (i % 2))] [
+                td [text (string (i + 1))]
+                td [text ph.materia]
+                td [text ph.grupo]
+                td [text (ph.apellidos + " / " + ph.nombreProfesor)]
+//                td [text ph.precision]
+//                td [text ph.parcial]
+                td [text ph.c1]
+                td [text ph.i1]
+                td [text ph.c2]
+                td [text ph.i2]
+                td [text ph.c3]
+                td [text ph.i3]
+                td [text ph.estatus]
+                td [text ph.estatusPredicho]
+                td [popup]
+            ] :> Doc
+
+        let cabecera = 
+           (["No."
+             "Materia"
+             "Grupo"
+             "Profesor"
+//             "Parcial"
+             "P1"
+             "I1"
+             "P2"
+             "I2"
+             "P3"
+             "I3"
+             "Estatus"
+             "Predicción"
+             "Detalles"
+             ] |> List.map (fun txt -> (td [text txt]) :> Doc)
+               |> trAttr [attr.``class`` "d2"]) :> Doc
+
+
+        let putInPanel name comp = 
+            divc "panel panel-default" [
+//            divc "panel panel-inverse" [
+                divc "panel-heading" [
+                    h3Attr [cls "panel-title"] [
+                        text name
+                    ]
+                ]
+
+                divc "panel-body" [
+                    comp
+                ]
+            ]
+
+        let muestraPredicciones predicciones =
+                match predicciones with
+                    | _ :: _ -> 
+                            let getInfo info =
+                                let descripcion (txt : string) =
+                                    txt.Split [|'\n'|]
+                                        |> Array.toList
+                                        |> List.filter (fun txt -> txt.Trim() <> "")
+                                        |> (fun l -> List.iteri (fun i txt -> printfn "%i, %s" i txt) l
+                                                     l)
+                                        |> List.map text
+                                        |> (fun l -> let pairs = match List.length l with
+                                                                    | 0 -> [text "", text ""]
+                                                                    | 1 -> [List.head l, text ""]
+                                                                    | _ -> List.pairwise l
+                                                     let all = pairs |> List.map (fun (_, t) -> [br[] :> Doc; t])
+                                                                     |> List.concat
+                                                     ((fst << List.head) pairs) :: all)
+                                let attrName attr =
+                                    match attr with
+                                        | "profesor" -> "profesor"
+                                        | "c1" -> "calificación del parcial 1"
+                                        | "i1" -> "inasistencias del parcial 1"
+                                        | "c2" -> "calificación del parcial 2"
+                                        | "i2" -> "inasistencias del parcial 2"
+                                        | "c3" -> "calificación del parcial 3"
+                                        | "i3" -> "inasistencias del parcial 3"
+                                        | "efinal" -> "calificación del exámen final"
+                                        | "final" -> "calificación final"
+                                        | "inasistencias" -> "inasistencias"
+                                        | "estatus" -> "estatus"
+                                        | _ -> "desconocido"
+                                let atributos (txt : string) =
+                                    let extraer (atributo : string) = 
+                                        match atributo.Split [|'_'|] |> Array.toList with
+                                            | (codigo :: num :: atributo :: _) -> 
+                                                       match Map.tryFind codigo planes with
+                                                         | Some materia -> (codigo, num, materia, attrName atributo)
+                                                         | None -> ("", "", "", "")
+                                            | _ -> ("", "", "", "")
+                                    txt.Split [|','|] 
+                                        |> Array.toList
+                                        |> List.map extraer
+                                        |> List.fold (fun m (codigo, num, materia, atributo) ->
+                                                        let key = materia + " (" + codigo + "-" + num + ")"
+                                                        match Map.tryFind key m with
+                                                            | Some l -> Map.add key (l @ [atributo]) m
+                                                            | None -> Map.add key [atributo] m) Map.empty
+                                        |> Map.toList
+                                        |> List.map (fun (materia, l) -> l |> String.concat ", "
+                                                                           |> (fun atributos -> materia + " (" + atributos + ")"))
+                                        |> String.concat ", "
+
+                                let modelInfo = 
+                                              ul [li [text ("Se consideraron " + string info.numero_instancias + " alumnos en la construcción del modelo predictivo.")]
+                                                  li [text ("La precisión del modelo fue de " + info.precision + "% instancias clasificadas correctamente usando validación cruzada.")]
+                                                  li [text "El modelo predictivo uso la siguiente información por materia:"
+                                                      br []
+                                                      text (atributos info.atributos)]
+                                                  li [text "La información del algoritmo de clasificación es la siguiente:"
+                                                      br []
+                                                      p (descripcion info.descripcion)]
+                                                  li [text "La información del algoritmo de selección de atributos es la siguiente:"
+                                                      br []
+                                                      p (descripcion info.descripcion_seleccion)]]
+                                modelInfo
+                            (predicciones
+                                    |> List.mapi (muestraPrediccion getInfo)
+                                    |> (fun l -> cabecera :: l)
+                                    |> table
+                                    |> (fun t -> div [t])) :> Doc
+                    | [] -> (div []) :> Doc
+                             
+
+        let queryPanel = 
+            divc "col-sm-6" [
+                text "Periodo predicción (y entrenamiento): "
+                Doc.Select [Attr.Create "class" "form-control"] id periodos vperiodos
+
+                text "Parcial: "
+                Doc.Select [Attr.Create "class" "form-control"] id parciales vparciales
+
+                // We then have a select box, linked to our orders variable
+                text "Ordenar por: "
+                Doc.Select [Attr.Create "class" "form-control"] Order.Show [Alfabetico; Estatus] vorder
+                // We specify a label, and an input box linked to our query RVar.
+                text "Buscar: "
+                Doc.Input [Attr.Create "class" "form-control"] vquery
+            ] |> putInPanel "Consulta"
+
+        let resultsPanel =
+            tableAttr [cls "table"] [
+                        tbody [
+                            // We map the tableRow function onto the different
+                            // views of the source, and concatenate the resulting
+                            // documents.
+                            ul [ Doc.EmbedView (View.Map muestraPredicciones prediccionesVisibles) ]
+                        ]
+                    ]
+                    |> putInPanel ("Resultados: " + etiqueta)
+        div [
+            queryPanel
+            resultsPanel
+        ]
+
+    let Main predicciones planes =
+        // Funcion que extrae las predicciones de una lista de strings
+        let prediccion P = 
+            match P with 
+                | [materia; grupo; periodo; matricula; nombreAlumno; carrera; nombreProfesor; apellidos; c1; i1; c2; i2; c3; i3; estatusPredicho; estatus; precision; instancias; atributos; descripcion; descripcion_seleccion; periodo_inicial; periodo_final; parcial] -> 
+                    {materia   = materia
+                     grupo     = grupo
+                     periodo   = periodo
+                     matricula = matricula
+                     nombreAlumno    = nombreAlumno
+                     carrera = carrera
+                     nombreProfesor    = nombreProfesor
+                     apellidos = apellidos
+                     c1 = c1
+                     i1 = i1
+                     c2 = c2
+                     i2 = i2
+                     c3 = c3
+                     i3 = i3
+                     estatusPredicho = estatusPredicho
+                     estatus   = estatus
+                     precision = precision
+                     numero_instancias = instancias
+                     atributos = atributos
+                     descripcion = descripcion
+                     descripcion_seleccion = descripcion_seleccion
+                     periodo_inicial = periodo_inicial
+                     periodo_final = periodo_final
+                     parcial = parcial
                      }
                 | _ -> printfn "Error"
                        failwith "Error"
